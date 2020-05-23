@@ -5,8 +5,7 @@ import { TouchableHighlight } from "react-native-gesture-handler";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Animated from "react-native-reanimated";
 
-
-export default class AddOrder extends React.Component {
+export default class AddOrderButton extends React.Component {
     mode = new Animated.Value(0);
     buttonSize = new Animated.Value(1);
 
@@ -26,7 +25,6 @@ export default class AddOrder extends React.Component {
     };
 
     render() {
-        
         const rotation = this.mode.interpolate({
             inputRange: [0, 1],
             outputRange: [0, 45]
@@ -44,6 +42,11 @@ export default class AddOrder extends React.Component {
                             <FontAwesome5 name = "plus" size = {24} color = "#000000"/>
                         </Animated.View>
                     </TouchableHighlight>
+                    <TouchableOpacity onPress = {() => this.handlePress} underlayColor = "#266E7D">
+                        <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+                            <FontAwesome5 name = "plus" size = {24} color = "#ffffff"/>
+                        </Animated.View>
+                    </TouchableOpacity>
                 </Animated.View>
             </View>
         );

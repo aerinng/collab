@@ -1,8 +1,19 @@
 import React from 'react';
-import { View, StatusBar } from "react-native";
+import { View, StatusBar, StyleSheet, Text } from "react-native";
 
 export default Groups = ({ name }) => (
-    <View style={{ flex: 1, backgroundColor: "#000000" }}>
-        <StatusBar barStyle="light-content" />
+    <View style = {styles.container}>
+        <View>
+            <Text>
+                Groups
+            </Text>
+        </View>
     </View>
 );
+
+const styles = StyleSheet.create({
+    container: {
+      alignSelf: 'stretch',
+      padding: 35,
+    },
+});

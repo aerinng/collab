@@ -1140,6 +1140,20 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.10.tgz#5dda643e19e587793bc2034dd9bf7398ad43d401"
   integrity sha512-rk4sWFsmtOw8oyx8SD3KSvawwaK7gRBSEIy2TAwURyGt+3TizssXP1r8nx3zY+R7v2vYYHXZ+k2/GULAT/bcaQ==
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+"@react-native-community/picker@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/picker/-/picker-1.6.0.tgz#ddb2b04ca251b79980e3052ece4e685b7abf0444"
+  integrity sha512-ijB33rCW3m9vu8jbXAcEh+icCmK0pyvCXiGfAwPgGSaFLsmE27dsle3022EbE+dqqQgpxUNtOkrd5C3B+/dcuA==
+
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
 "@react-navigation/bottom-tabs@^5.4.7":
   version "5.4.7"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-5.4.7.tgz#b4e881ef4ed5ea29cb79c0a9e370613e491ac765"
@@ -4425,6 +4439,23 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+react-native-dropdown-picker@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-dropdown-picker/-/react-native-dropdown-picker-2.1.1.tgz#790610b34e965ab5878024105e23d21536fd8b3e"
+  integrity sha512-zLECjazOUbTCsFcP5v+RmWPPAHei5tw/Nc1Fe/pRLgPjoD3BMuO3pUYJHPBeB3AbX+DWSzv/laNO92SLhWMwKg==
+  dependencies:
+    prop-types "^15.7.2"
+    react-native-vector-icons "^6.6.0"
+
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
 react-native-gesture-handler@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.6.1.tgz#678e2dce250ed66e93af409759be22cd6375dd17"
@@ -4435,11 +4466,40 @@ react-native-gesture-handler@^1.6.1:
     invariant "^2.2.4"
     prop-types "^15.7.2"
 
+<<<<<<< HEAD
 react-native-iphone-x-helper@^1.2.1:
+=======
+<<<<<<< HEAD
+react-native-iphone-x-helper@^1.2.1:
+=======
+<<<<<<< HEAD
+react-native-iphone-x-helper@^1.2.1:
+=======
+react-native-iphone-x-helper@^1.0.3, react-native-iphone-x-helper@^1.2.1:
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.1.tgz#645e2ffbbb49e80844bb4cbbe34a126fda1e6772"
   integrity sha512-/VbpIEp8tSNNHIvstuA3Swx610whci1Zpc9mqNkqn14DkMbw+ORviln2u0XyHG1kPvvwTNGZY6QpeFwxYaSdbQ==
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+react-native-keyboard-aware-scroll-view@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/react-native-keyboard-aware-scroll-view/-/react-native-keyboard-aware-scroll-view-0.9.1.tgz#9e54b565a5f19b30bed12221d48921781f7630af"
+  integrity sha512-tBZ8rmjELN0F6t5UBp5CW3NYmZXgVnJSzVCssv/OqG2t6kiB+OUTqxNvUP24K+HARX4H+XaW0aEJSFQkQCv6KA==
+  dependencies:
+    prop-types "^15.6.2"
+    react-native-iphone-x-helper "^1.0.3"
+
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
+>>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
 react-native-material-buttons@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/react-native-material-buttons/-/react-native-material-buttons-0.5.0.tgz#ab2b3e3fc3f500ca713f51e9d75978aff602152a"

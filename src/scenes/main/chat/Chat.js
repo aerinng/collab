@@ -1,8 +1,20 @@
 import React from 'react';
-import { View, StatusBar } from "react-native";
+import { View, StatusBar, StyleSheet, Text } from "react-native";
 
 export default Chat = ({ name }) => (
-    <View style={{ flex: 1, backgroundColor: "#161924" }}>
+    <View style = {styles.container}>
         <StatusBar barStyle="light-content" />
+        <View>
+            <Text>
+                Chat
+            </Text>
+        </View>
     </View>
 );
+
+const styles = StyleSheet.create({
+    container: {
+      alignSelf: 'stretch',
+      padding: 35,
+    },
+});
