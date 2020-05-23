@@ -6,9 +6,6 @@ import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
 import AddOrder from './src/scenes/main/offers/AddOrder';
 import Login from './src/scenes/login/Login';
 import Signup from './src/scenes/login/Signup';
->>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
->>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
->>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
 import Profile from './src/scenes/main/profile/Profile';
 import Groups from './src/scenes/main/groups/Groups';
 import Search from './src/scenes/main/search/Search';
