@@ -3,9 +3,6 @@
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
 >>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
 #### Orbital 2020 - Apollo 11
 
@@ -32,12 +29,9 @@ Collab is a platform that can help us with this common issue. It helps buyers to
    - Notifications of orders for stores of certain categories
 <<<<<<< HEAD
 =======
-<<<<<<< HEAD
-=======
 =======
 Ever wanted to save on delivery, but just don’t have enough items to reach the minimum required amount? How convenient would it be to have a platform to consolidate orders from other interested users near you to receive bigger savings on your order?
 
 Thankfully, Collab is a platform that can help us with the common issue. Essentially, it helps common-like buyers to collate items together for a bigger order to get higher savings.
->>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
 >>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
 >>>>>>> Redid Bottom Tab Navigators and Added Stack Navigators, Pending Navigation Logic
