@@ -23,3 +23,5 @@ Collab is a platform that can help us with this common issue. It helps buyers to
    - Facilitates communication with other buyers
 4. Groups Function
    - Notifications of orders for stores of certain categories
+
+#### Have a look at our [prototype](https://www.figma.com/proto/K21NBhfN3Yd1pUdjtItRIB/Collab?node-id=18%3A0&scaling=scale-down) and [project log]() to find out more!

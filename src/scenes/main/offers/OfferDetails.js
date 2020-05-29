@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView } from "react-native";
 
-class Chat extends React.Component{
+class OfferDetails extends React.Component{
     render(){
         const {docID} = this.props.route.params;
         return (
@@ -9,7 +9,7 @@ class Chat extends React.Component{
                 <ScrollView>
                     <View style = {styles.container}>
                         <View>
-                            <Text style = {styles.header}> Chat </Text>
+                            <Text style = {styles.header}> Offer Details </Text>
                         </View>
                     </View>
                 </ScrollView>
@@ -18,7 +18,7 @@ class Chat extends React.Component{
     }
 };
 
-export default Chat;
+export default OfferDetails;
 
 const styles = StyleSheet.create({
     container: {

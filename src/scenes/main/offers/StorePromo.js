@@ -1,59 +1,46 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
-import * as Progress from 'react-native-progress';
 
 const DATA = [
     {
       id: '1',
       title: 'Fairprice',
-      data: "Groceries",
-      image: require('../../../../assets/fairprice.jpg'),
-      user: "aerin123 - Paya Lebar",
-      progress: '76% of $79.00',
-      progressIdx: 0.76
+      data: "Free delivery with purchase above $79",
+      image: require('../../../../assets/fairprice.jpg')
     },
     {
       id: '2',
       title: 'Cold Storage',
-      data: "Groceries",
-      image: require('../../../../assets/coldstorage.jpg'),
-      user: "alyssa123 - Paya Lebar",
-      progress: '76% of $59.00',
-      progressIdx: 0.76
+      data: "Free delivery with purchase above $79",
+      image: require('../../../../assets/coldstorage.jpg')
     },
     {
       id: '3',
       title: 'Sephora',
-      data: "Make Up",
-      image: require('../../../../assets/sephora.jpg'),
-      user: "aabattery123 - Paya Lebar",
-      progress: "50% of $50.00",
-      progressIdx: 0.5
+      data: "Free delivery with purchase above $50",
+      image: require('../../../../assets/sephora.jpg')
     },
   ];
 
-  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
+  function Item({ id, title, data, image, selected, onSelect }) {
     return (
       <TouchableOpacity
         onPress={() => onSelect(id)}
-        style={[ styles.item, { backgroundColor: selected ? '#77AABA' : '#ffffff' } ]}
+        style={[
+          styles.item,
+          { backgroundColor: selected ? '#77AABA' : '#ffffff' },
+        ]}
       >
-        <Text style={styles.users}>{user}</Text>
         <Text style={styles.detailsTitle}>{title}</Text>
         <Text style={styles.details}>{data}</Text>
         <Image source = {image} style = {styles.icons} />
         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-        <Text style = {styles.progressText}>{progress}</Text>
-        <Progress.Bar 
-            progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-            color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-            style = {{marginTop: 38, alignSelf: 'center'}} />
       </TouchableOpacity>
     );
   }
 
-const Search = ({navigation}) => {
+const StorePromo = ({navigation}) => {
     const [selected, setSelected] = React.useState(new Map());
     const onSelect = React.useCallback(
       id => {
@@ -66,11 +53,14 @@ const Search = ({navigation}) => {
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
-                title = "Search"
+                title = "Store Promotions"
                 subtitle = ""
-                menuImageSource = {require('../../../../assets/store.png')}
+                menuImageSource = {require('../../../../assets/delete.png')}
                 menuImageOnPress = {() => navigation.navigate('Search')}
-                menuImageStyle = {{resizeMode: 'stretch', width: 30, height: 30, marginLeft: 10, marginTop: 10}}
+                menuImageStyle = {{resizeMode: 'stretch', width: 20, height: 20}}
+                profileImageSource = {require('../../../../assets/store.png')}
+                profileImageStyle = {{marginTop: -5, resizeMode: 'stretch', width: 30, height: 30}}
+                // profileImageOnPress = {() => navigation.navigate('Search')} // TO BE changeDDDDDD!!
                 titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
                 searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
@@ -83,9 +73,6 @@ const Search = ({navigation}) => {
                     title={item.title}
                     data = {item.data}
                     image = {item.image}
-                    progressIdx = {item.progressIdx}
-                    progress = {item.progress}
-                    user = {item.user}
                     selected={!!selected.get(item.id)}
                     onSelect={onSelect}
                 />
@@ -95,7 +82,7 @@ const Search = ({navigation}) => {
             />
             <TouchableOpacity 
                 style = {styles.Button}
-                onPress={() => navigation.navigate('OfferDetails')}
+                onPress={() => navigation.navigate('AddOrder')}
             >
                 <Text style = {styles.buttonTexts}> Next </Text>
             </TouchableOpacity>
@@ -103,11 +90,11 @@ const Search = ({navigation}) => {
     )
 };
 
-export default class SearchScreen extends React.Component {
-    render() {
-        const {docID} = this.props.route.params;
-        return <Search navigation = {this.props.navigation}/>;
-    }
+export default class Promo extends React.Component {
+  render() {
+      const {docID} = this.props.route.params;
+      return <StorePromo navigation = {this.props.navigation} />;
+  }
 }
 
 const styles = StyleSheet.create({
@@ -117,11 +104,11 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     item: {
+        backgroundColor: '#f9c2ff',
         paddingVertical: 40,
         marginVertical: 8,
         marginHorizontal: 16,
-        borderRadius: 15,
-        paddingBottom: 15
+        borderRadius: 15
     },
     backbutton: {
         marginLeft: 11,
@@ -167,7 +154,7 @@ const styles = StyleSheet.create({
     },
     detailsTitle: {
         marginLeft: 130,
-        marginTop: -7,
+        marginTop: -10,
         fontSize: 20,
         fontWeight: '500',
         paddingBottom: 5,
@@ -176,15 +163,7 @@ const styles = StyleSheet.create({
     details: {
         marginLeft: 130,
         fontSize: 15,
-        paddingRight: 30,
-        color: '#696B6D'
-    },
-    users: {
-        marginLeft: 130,
-        fontSize: 15,
-        marginTop: -20,
-        color: '#696B6D',
-        paddingBottom: 12
+        paddingRight: 30
     },
     selection: {
         backgroundColor: '#ffffff',
@@ -197,16 +176,8 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         position: 'absolute',
+        marginTop: 60,
+        zIndex: 1,
         alignSelf: 'flex-end',
-        marginTop: 70,
-        zIndex: 1,
-        paddingRight: 10
-    },
-    progressText: {
-        color: '#ffffff',
-        position: 'absolute',
-        marginTop: 135,
-        zIndex: 1,
-        alignSelf: 'center'
     }
 });
