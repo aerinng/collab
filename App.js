@@ -2,59 +2,70 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { View, StatusBar, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Button } from "react-native";
+
+// scenes imports
 import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
-import AddOrder from './src/scenes/main/offers/AddOrder';
 import Login from './src/scenes/login/Login';
 import Signup from './src/scenes/login/Signup';
 import Profile from './src/scenes/main/profile/Profile';
 import Groups from './src/scenes/main/groups/Groups';
 import Search from './src/scenes/main/search/Search';
 import Chat from './src/scenes/main/chat/Chat';
+import StorePromo from './src/scenes/main/offers/StorePromo'
+import AddOrder from './src/scenes/main/offers/AddOrder'
+import Splash from './src/components/Splash';
+import OfferDetails from './src/scenes/main/offers/OfferDetails';
+
+// icons imports
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { NavigationContainer } from '@react-navigation/native';
 
-// if user has account, navigate to Login page,
-// else, navigate to Signup page
+// firebase
+import * as firebase from 'firebase';
+import firestore from 'firebase/firestore';
+import {decode, encode} from 'base-64';
+
+if (!global.btoa) {  global.btoa = encode }
+
+if (!global.atob) { global.atob = decode } 
+
+//API key for configuration
+var firebaseConfig = {
+  apiKey: "AIzaSyAOkCekXGgLyBJE3XXvPDdCqSeFOcD5F7c",
+  authDomain: "collab-testfb.firebaseapp.com",
+  databaseURL: "https://collab-testfb.firebaseio.com",
+  projectId: "collab-testfb",
+  storageBucket: "collab-testfb.appspot.com",
+  messagingSenderId: "714062311887",
+  appId: "1:714062311887:web:88bdfac792c73cdb24a2ba"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+firebase.firestore();
+//User navigated to Login page by default
 const Root = createStackNavigator();
-const RootScreen = ({gotAccount}) => (
-  <Root.Navigator 
-    screenOptions = {{
-      gestureEnabled: true,
-      headerShown: false 
-    }}
-  > 
-    { false ? (
-      <Root.Screen name = "App" component = {StackNavigator} />
-    ) : (
-      <Root.Screen name = "Signup" component = {Signup} />
-    )}
-  </Root.Navigator>
-);
-
-// if user has logged in successfully, navigate to Home page with bottom tabs,
-// else, navigation to Login page
-const Stack = createStackNavigator();
-const StackNavigator = ({isSignedIn}) => (
-  <Stack.Navigator
-    screenOptions = {{
-      gestureEnabled: true,
-      headerShown: false 
-    }}
-  > 
-    { true ? (
-      <Stack.Screen name = "Tabs" component = {TabNavigator} />
-    ) : (
-      <Stack.Screen name = "Login" component = {Login} />
-    )}
-  </Stack.Navigator>
+const RootScreen = () => (
+<Root.Navigator 
+  screenOptions = {{
+    gestureEnabled: true,
+    headerShown: false 
+  }}
+> 
+    <Root.Screen name = "Login" component = {Login} />
+    <Root.Screen name = "Tabs" component = {TabNavigator} />
+    <Root.Screen name = "Signup" component = {Signup} />  
+</Root.Navigator>
 );
 
 // bottom tabs with Search, Groups, Offer, Chat, Profile
 const Tab = createBottomTabNavigator();
-const TabNavigator = () => (
+const TabNavigator = (props) => (
     <Tab.Navigator
       screenOptions = {({ route }) => ({
         tabBarIcon: ({focused, color, size}) => {
@@ -81,23 +92,93 @@ const TabNavigator = () => (
         tabStyle: { backgroundColor: '#ffffff' }
       }}
       >
-      <Tab.Screen name = "Search" component = {Search} />
-      <Tab.Screen name = "Groups" component = {Groups} />
-      <Tab.Screen name = "Offer" component = {AddOrder} />
-      <Tab.Screen name = "Chat" component = {Chat} />
-      <Tab.Screen name = "Profile" component = {Profile} />
+      <Tab.Screen name = "Search" component = {OfferDetailsScreen} initialParams={props.route.params}/>
+      <Tab.Screen name = "Groups" component = {Groups} initialParams={props.route.params}/>
+      <Tab.Screen name = "Offer" component = {Offers} initialParams={props.route.params}/>
+      <Tab.Screen name = "Chat" component = {Chat} initialParams={props.route.params} />
+      <Tab.Screen name = "Profile" component = {Profile} initialParams={props.route.params}/>
   </Tab.Navigator>
 );
+//^ initialParams to pass over the docID to these pages 
 
-const Navigation = () => {
-  // need check how use this
-  // const [isSignedIn, setSignedIn] = React.useState(true);
-  // const [hasAccount, setAccount] = React.useState(true);
+const OffersStack = createStackNavigator();
+function Offers(props) {
   return (
-    <NavigationContainer>
-      <RootScreen gotAccount = {'false'} /> 
+    <OffersStack.Navigator
+      initialRouteName = "StorePromo"
+      screenOptions = {{
+        gestureEnabled: true,
+        headerShown: false
+      }}
+    >
+      <OffersStack.Screen name = "StorePromo" component = {StorePromo} initialParams={props.route.params}/>
+      <OffersStack.Screen name = "AddOrder" component = {AddOrder} initialParams={props.route.params}/>
+    </OffersStack.Navigator>
+  );
+}
+
+const OfferDetailsStack = createStackNavigator();
+const OfferDetailsScreen = (props) => (
+  <OfferDetailsStack.Navigator
+    initialRouteName = "Search"
+    screenOptions = {{
+      gestureEnabled: true,
+      headerShown: false
+    }}
+  >
+    <OfferDetailsStack.Screen name = "Landing" component = {Search} initialParams={props.route.params} />
+    <OfferDetailsStack.Screen name = "OfferDetails" component = {OfferDetails} initialParams={props.route.params} />
+  </OfferDetailsStack.Navigator>
+);
+
+//onStateChange for own debugging purposes, not required for the application
+function Navigation() {
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+  }, []);
+
+  if (isLoading) {
+    return <Splash />;
+  }
+
+  return (
+    <NavigationContainer onStateChange={(state) => console.log('New state is', state)}>
+      <RootScreen/> 
     </NavigationContainer>
   );
 };;
 
 export default Navigation;
+
+const styles = StyleSheet.create({
+  container: {
+    alignSelf: 'stretch',
+    padding: 35,
+    flex: 1,
+  },
+  header: {
+      fontSize: 24,
+      marginBottom: 18,
+      marginTop: 0,
+      fontWeight: 'bold',
+      alignItems: 'center',
+      textAlign: 'center',
+  },
+  Button: {
+      backgroundColor: "#266E7D",
+      marginHorizontal: 70,
+      marginVertical: 25,
+      borderRadius: 10,
+      paddingVertical: 10
+  },
+  buttonText: {
+      textAlign: 'center',
+      fontSize: 23,
+      fontWeight: '600',
+      color: '#ffffff',
+  },
+});

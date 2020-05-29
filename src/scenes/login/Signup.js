@@ -1,65 +1,137 @@
 import React from 'react';
 import { View, StatusBar, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity, SafeAreaView } from "react-native";
+import firebase from 'firebase';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-export default Signup = () => (
-    <SafeAreaView style = {styles.container}>
-    <KeyboardAvoidingView behaviour = "padding">
-        <View style = {styles.container}>
-            <Image 
-                style = {styles.image}
-                source = {require('../../../assets/collab_transparent.png')}
-            />
-            <Text style = {styles.Title}> Register </Text>
-            <Image 
-                style = {styles.icons3}
-                source = {require('../../../assets/name.png')}
-            />
-            <TextInput 
-                style = {styles.TextInput}
-                placeholder = "Name"
-                underlineColorAndroid = { 'transparent' }
-            />
-            <Image 
-                style = {styles.icons4}
-                source = {require('../../../assets/email.png')}
-            />
-            <TextInput 
-                style = {styles.TextInput}
-                placeholder = "Email"
-                underlineColorAndroid = { 'transparent' }
-            />
-            <Image 
-                style = {styles.icons}
-                source = {require('../../../assets/user.png')}
-            />
-            <TextInput 
-                style = {styles.TextInput}
-                placeholder = "Username"
-                underlineColorAndroid = { 'transparent' }
-            />
-            <Image 
-                style = {styles.icons2}
-                source = {require('../../../assets/password.png')}
-            />
-            <TextInput 
-                style = {styles.TextInput}
-                placeholder = "Password"
-                secureTextEntry = {true}
-                underlineColorAndroid = { 'transparent' }
-            />
-            <TouchableOpacity style = {styles.Button}>
-                <Text style = {styles.buttonText}> Sign Up </Text>
-            </TouchableOpacity>
-        </View>
-    </KeyboardAvoidingView>
-    </SafeAreaView>
-);
+class Signup extends React.Component{
+    //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
+    state = {
+        name:'',
+        email:'',
+        username:'',
+        password:'',
+        error:'',
+        docID:''
+    }
+    
+    //Create users with the given email and password (FOR AUTHENTICATION)
+    onBottomPress = () =>{
+        firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password)
+        .then(this.onSignupSucess)
+        .catch(err => {
+            this.setState({
+                error:err.message
+            })
+        })
+
+        //document id is a user id!!
+
+        var user = firebase.auth().currentUser;
+        var UID; 
+        if (user != null) {
+            UID = user.uid;
+            console.log('this is the new unieuq id ', UID);
+        }
+
+        // Add customer details into firebase (FOR DATABASE)
+        firebase.firestore()
+        .collection('info')
+        .add({
+            email: this.state.email,
+            password: this.state.password,
+            promo:'', 
+            location:'', 
+            total:'', 
+            date:'',
+            desc:''
+        }).then((snapshot)=> this.setState({
+            email:'',
+            password:'',
+            docID:snapshot.id
+        }, () => { 
+            //DocID to identify each user. Pass docID data to 'Tabs'
+            this.props.navigation.setParams({docID:this.state.docID}),
+            this.props.navigation.navigate('Tabs', {docID:this.state.docID})
+        }
+        )).catch(err => console.error(err)); //Display error if any
+    }
+
+    //If successful, no error message shown
+    onSignupSucess =  () =>{
+        this.setState({
+            error:''
+        })
+    }        
+
+    render(){
+        return (           
+            <SafeAreaView style = {styles.container}>
+            <KeyboardAwareScrollView>
+                <View style = {styles.container}>
+                    <Image 
+                        style = {styles.image}
+                        source = {require('../../../assets/collab_transparent.png')}
+                    />
+                    <Text style = {styles.Title}> Register </Text>
+                    <Image 
+                        style = {styles.icons3}
+                        source = {require('../../../assets/name.png')}
+                    />
+                    <TextInput 
+                        style = {styles.TextInput}
+                        placeholder = "Name"
+                        value={this.state.name}
+                        onChangeText={name => this.setState({name})}
+                        underlineColorAndroid = { 'transparent' }
+                    />
+                    <Image 
+                        style = {styles.icons4}
+                        source = {require('../../../assets/email.png')}
+                    />
+                    <TextInput 
+                        style = {styles.TextInput}
+                        placeholder = "Email"
+                        value={this.state.email}
+                        onChangeText={email => this.setState({email})}
+                        underlineColorAndroid = { 'transparent' }
+                    />
+                    <Image 
+                        style = {styles.icons}
+                        source = {require('../../../assets/user.png')}
+                    />
+                    <TextInput 
+                        style = {styles.TextInput}
+                        placeholder = "Username"
+                        value={this.state.username}
+                        onChangeText={username => this.setState({username})}
+                        underlineColorAndroid = { 'transparent' }
+                    />
+                    <Image 
+                        style = {styles.icons2}
+                        source = {require('../../../assets/password.png')}
+                    />
+                    <TextInput 
+                        style = {styles.TextInput}
+                        placeholder = "Password"
+                        value={this.state.password}
+                        onChangeText={password => this.setState({password})}
+                        secureTextEntry = {true}
+                        underlineColorAndroid = { 'transparent' }
+                    />
+                    <TouchableOpacity style = {styles.Button} onPress={this.onBottomPress}> 
+                        <Text style = {styles.buttonText}> Sign Up </Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAwareScrollView>
+            </SafeAreaView>
+        );
+        }
+}
 
 const styles = StyleSheet.create({
     container: {
       alignSelf: 'stretch',
       padding: 35,
-      backgroundColor: '#ffffff',
       flex: 1
     },
     image: {
@@ -74,7 +146,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 402,
+        marginTop: 435,
         padding: 10,
         zIndex: 1
     },
@@ -83,7 +155,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 475,
+        marginTop: 505,
         padding: 10,
         zIndex: 1
     },
@@ -92,7 +164,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 252,
+        marginTop: 280,
         padding: 10,
         zIndex: 1
     },
@@ -101,7 +173,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 326,
+        marginTop: 355,
         padding: 10,
         zIndex: 1
     },
@@ -109,7 +181,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 45,
         fontWeight: '600',
-        paddingBottom: 55
+        paddingBottom: 30
     },
     TextInput: {
         alignSelf: 'stretch',
@@ -125,7 +197,7 @@ const styles = StyleSheet.create({
     },
     Button: {
         backgroundColor: "#266E7D",
-        padding: 23,
+        padding: 10,
         marginHorizontal: 70,
         marginVertical: 25,
         borderRadius: 10
@@ -135,8 +207,6 @@ const styles = StyleSheet.create({
         fontSize: 23,
         fontWeight: '600',
         color: '#ffffff',
-        paddingBottom: 50,
-        marginTop: -14
     },
     ForgetPW: {
         color: '#266E7D',
@@ -159,3 +229,5 @@ const styles = StyleSheet.create({
         position: 'absolute'
     }
 });
+
+export default Signup
