@@ -41,15 +41,10 @@ const DATA = [
   }
 
 const StorePromo = ({navigation}) => {
-    const [selected, setSelected] = React.useState(new Map());
-    const onSelect = React.useCallback(
-      id => {
-        const newSelected = new Map(selected);
-        newSelected.set(id, !selected.get(id));
-        setSelected(newSelected);
-      },
-      [selected],
-    );
+  const [selected, setSelected] = React.useState(null);
+  const onSelect = (id) => {
+      setSelected(id);
+  }
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -73,7 +68,7 @@ const StorePromo = ({navigation}) => {
                     title={item.title}
                     data = {item.data}
                     image = {item.image}
-                    selected={!!selected.get(item.id)}
+                    selected={item.id == selected}
                     onSelect={onSelect}
                 />
                 )}

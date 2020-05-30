@@ -54,15 +54,10 @@ const DATA = [
   }
 
 const Search = ({navigation}) => {
-    const [selected, setSelected] = React.useState(new Map());
-    const onSelect = React.useCallback(
-      id => {
-        const newSelected = new Map(selected);
-        newSelected.set(id, !selected.get(id));
-        setSelected(newSelected);
-      },
-      [selected],
-    );
+    const [selected, setSelected] = React.useState(null);
+    const onSelect = (id) => {
+        setSelected(id);
+    }
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -86,7 +81,7 @@ const Search = ({navigation}) => {
                     progressIdx = {item.progressIdx}
                     progress = {item.progress}
                     user = {item.user}
-                    selected={!!selected.get(item.id)}
+                    selected={item.id == selected}
                     onSelect={onSelect}
                 />
                 )}
@@ -193,7 +188,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     arrow: {
-        resizeMode: 'stretch',
         width: 20,
         height: 20,
         position: 'absolute',
