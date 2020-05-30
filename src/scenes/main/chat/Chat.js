@@ -37,15 +37,10 @@ const DATA = [
   }
 
 const Chat = ({navigation}) => {
-    const [selected, setSelected] = React.useState(new Map());
-    const onSelect = React.useCallback(
-      id => {
-        const newSelected = new Map(selected);
-        newSelected.set(id, !selected.get(id));
-        setSelected(newSelected);
-      },
-      [selected],
-    );
+  const [selected, setSelected] = React.useState(null);
+  const onSelect = (id) => {
+      setSelected(id);
+  }
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -68,7 +63,7 @@ const Chat = ({navigation}) => {
                     message = {item.message}
                     image = {item.image}
                     time = {item.time}
-                    selected={!!selected.get(item.id)}
+                    selected={item.id == selected}
                     onSelect={onSelect}
                 />
                 )}
