@@ -24,4 +24,4 @@ Collab is a platform that can help us with this common issue. It helps buyers to
 4. Groups Function
    - Notifications of orders for stores of certain categories
 
-#### Have a look at our [prototype](https://www.figma.com/proto/K21NBhfN3Yd1pUdjtItRIB/Collab?node-id=18%3A0&scaling=scale-down) and [project log]() to find out more!
+### Have a look at our [Project Log](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing) and [Prototype](https://www.figma.com/proto/K21NBhfN3Yd1pUdjtItRIB/Collab?node-id=18%3A0&scaling=scale-down)to find out more!
