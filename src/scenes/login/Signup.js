@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StatusBar, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity, SafeAreaView } from "react-native";
+import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity, SafeAreaView } from "react-native";
 import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -30,7 +30,7 @@ class Signup extends React.Component{
         var UID; 
         if (user != null) {
             UID = user.uid;
-            console.log('this is the new unieuq id ', UID);
+            console.log('this is the new unique id ', UID);
         }
 
         // Add customer details into firebase (FOR DATABASE)
@@ -57,7 +57,7 @@ class Signup extends React.Component{
     }
 
     //If successful, no error message shown
-    onSignupSucess =  () =>{
+    onSignupSucess =  () => {
         this.setState({
             error:''
         })
@@ -230,4 +230,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Signup
+export default Signup;

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { View, StatusBar, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Button } from "react-native";
+import { StyleSheet } from "react-native";
 
 // scenes imports
 import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
@@ -17,6 +17,9 @@ import StorePromo from './src/scenes/main/offers/StorePromo'
 import AddOrder from './src/scenes/main/offers/AddOrder'
 import Splash from './src/components/Splash';
 import OfferDetails from './src/scenes/main/offers/OfferDetails';
+import EditProfile from './src/scenes/main/profile/EditProfile';
+import MyOffers from './src/scenes/main/profile/MyOffers';
+import Settings from './src/scenes/main/profile/Settings';
 
 // icons imports
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -30,7 +33,6 @@ import firestore from 'firebase/firestore';
 import {decode, encode} from 'base-64';
 
 if (!global.btoa) {  global.btoa = encode }
-
 if (!global.atob) { global.atob = decode } 
 
 //API key for configuration
@@ -96,7 +98,7 @@ const TabNavigator = (props) => (
       <Tab.Screen name = "Groups" component = {Groups} initialParams={props.route.params}/>
       <Tab.Screen name = "Offer" component = {Offers} initialParams={props.route.params}/>
       <Tab.Screen name = "Chat" component = {Chat} initialParams={props.route.params} />
-      <Tab.Screen name = "Profile" component = {Profile} initialParams={props.route.params}/>
+      <Tab.Screen name = "Profile" component = {ProfileScreen} initialParams={props.route.params}/>
   </Tab.Navigator>
 );
 //^ initialParams to pass over the docID to these pages 
@@ -131,6 +133,24 @@ const OfferDetailsScreen = (props) => (
   </OfferDetailsStack.Navigator>
 );
 
+const ProfileScreenStack = createStackNavigator();
+function ProfileScreen(props) {
+  return (
+    <ProfileScreenStack.Navigator
+      initialRouteName = "Profile"
+      screenOptions = {{
+        gestureEnabled: true,
+        headerShown: false
+      }}
+    >
+      <ProfileScreenStack.Screen name = "Profile" component = {Profile} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "EditProfile" component = {EditProfile} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "MyOffers" component = {MyOffers} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "Settings" component = {Settings} initialParams={props.route.params}/>
+    </ProfileScreenStack.Navigator>
+  );
+}
+
 //onStateChange for own debugging purposes, not required for the application
 function Navigation() {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -146,7 +166,9 @@ function Navigation() {
   }
 
   return (
-    <NavigationContainer onStateChange={(state) => console.log('New state is', state)}>
+    <NavigationContainer 
+      //onStateChange={(state) => console.log('New state is', state)}
+    >
       <RootScreen/> 
     </NavigationContainer>
   );

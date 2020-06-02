@@ -19,14 +19,12 @@ const DATA = [
     },
   ];
 
+
   function Item({ id, name, message, time, image, selected, onSelect }) {
     return (
       <TouchableOpacity
         onPress={() => onSelect(id)}
-        style={[
-          styles.item,
-          { backgroundColor: selected ? '#77AABA' : '#ffffff' },
-        ]}
+        style={[styles.item]}
       >
         <Text style = {styles.detailsTime}>{time}</Text>
         <Text style={styles.detailsTitle}>{name}</Text>
@@ -95,7 +93,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     item: {
-        backgroundColor: '#f9c2ff',
+        backgroundColor: '#fff',
         paddingVertical: 40,
         marginVertical: 8
     },

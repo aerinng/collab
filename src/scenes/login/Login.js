@@ -4,8 +4,6 @@ import { View, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, Touchab
 //import { render } from 'react-dom';
 //import { withFormik } from 'formik';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
-
 export default class Login extends React.Component {
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
     state ={        
@@ -29,12 +27,12 @@ export default class Login extends React.Component {
     
     }
 
-    onSignUpPress = () =>{
+    onSignUpPress = () => {
         this.props.navigation.navigate('Signup')
     }    
 
     //If logged in successfully, go to 'Tabs'
-    onLoginSuccess =  () =>{
+    onLoginSuccess =  () => {
         this.setState({
             error:''
         })
