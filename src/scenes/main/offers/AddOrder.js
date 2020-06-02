@@ -46,6 +46,7 @@ class AddOrder extends React.Component {
     render() {
         //Retrieving the docID parameter from 'SignUp' page. 
         const {docID} = this.props.route.params;
+        const orderDate = this.state.displayDate.toString().substring(4,16);
         return (
         <SafeAreaView style = {styles.container}>
             <KeyboardAwareScrollView style={styles.scrollView}>
@@ -95,6 +96,7 @@ class AddOrder extends React.Component {
                 />
                 <Text style = { {marginBottom: 5} }> </Text>
                 <Text style = { styles.titles }> Estimated Order Date </Text>
+                <Text style = {styles.date}>{orderDate}</Text>
                 <TouchableOpacity 
                     style = {styles.datepicker} 
                     onPress = {this.showDateTimePicker} 
@@ -103,12 +105,6 @@ class AddOrder extends React.Component {
                         isVisible={this.state.isDateTimePickerVisible}
                         onConfirm={this.handleDatePicked}
                         onCancel={this.hideDateTimePicker}
-                    />
-                    <TextInput
-                        placeholder = 'Enter your Estimated Order Date'
-                        editable = {false}
-                        underlineColorAndroid = { 'transparent' }
-                        onChangeText = {() => this.state.date}
                     />
                 </TouchableOpacity>
                 <Text style = { styles.titles }> Description </Text>
@@ -237,15 +233,31 @@ const styles = StyleSheet.create({
         marginTop: 2
     },
     datepicker: {
-        zIndex: 1,
-        alignSelf: 'stretch',
-        height: 40,
-        color: '#000000',
-        borderColor: '#C5C5C5',
+        width: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        borderStyle: 'solid',
+        borderLeftWidth: 8,
+        borderRightWidth: 8,
+        borderBottomWidth: 16,
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderBottomColor: '#C5C5C5',
+        transform: [{rotate: '180deg'}],
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        marginTop: 468,
+        zIndex: 1
+    },
+    date: {
+        fontSize: 15,
         borderWidth: 1,
-        padding: 10,
-        marginBottom: 15,
+        borderColor: "#C5C5C5",
+        marginBottom: 10,
+        paddingVertical: 10,
         borderRadius: 5,
-        color: '#000000',
-    }
+        paddingHorizontal: 10,
+        backgroundColor: '#fff',
+        textAlign: 'center'
+    },
   });

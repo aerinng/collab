@@ -1,54 +1,31 @@
 import React from 'react';
-import { View, StyleSheet, Text, SafeAreaView, TouchableOpacity, Image, FlatList } from "react-native";
-
-const DATA = [
-    {
-      id: '1',
-      name: 'My Offers',
-    },
-    {
-      id: '2',
-      name: 'Settings',
-    },
-  ];
-
-  function Item({ id, name, image, selected, onSelect }) {
-    return (
-      <TouchableOpacity
-        onPress={() => onSelect(id)}
-        style={[ styles.item, { backgroundColor: selected ? '#77AABA' : '#ffffff' } ]}
-      >
-        <Text style={styles.detailsTitle}>{name}</Text>
-        <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-      </TouchableOpacity>
-    );
-  }
+import { StyleSheet, Text, SafeAreaView, TouchableOpacity, Image} from "react-native";
 
 const Profile = ({navigation}) => {
-    const [selected, setSelected] = React.useState(null);
-    const onSelect = (id) => {
-        setSelected(id);
-    }
     return (
         <SafeAreaView style = {styles.container}>
             <Image source = {require('../../../../assets/userMask.png')} style = {styles.userIcon}/>
             <Text style = {styles.header}> username </Text>
-            <TouchableOpacity style = {styles.Button}>
+            <TouchableOpacity 
+                style = {styles.Button}
+                onPress={() => navigation.navigate('EditProfile')}
+            >
                 <Text style = {styles.buttonTexts}> Edit Profile</Text>
             </TouchableOpacity>
-            <FlatList
-                data={DATA}
-                renderItem={({ item }) => (
-                <Item
-                    id={item.id}
-                    name={item.name}
-                    selected={item.id == selected}
-                    onSelect={onSelect}
-                />
-                )}
-                keyExtractor={item => item.id}
-                extraData={selected}
-            />
+            <TouchableOpacity 
+                style = {styles.item}
+                onPress={() => navigation.navigate('MyOffers')}
+            >
+                <Text style = {styles.detailsTitle}> My Offers</Text>
+                <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+            </TouchableOpacity>
+            <TouchableOpacity 
+                style = {styles.item}
+                onPress={() => navigation.navigate('Settings')}
+            >
+                <Text style = {styles.detailsTitle}> Settings</Text>
+                <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+            </TouchableOpacity>
         </SafeAreaView>
     )
 };
@@ -96,6 +73,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 40,
         borderRadius: 15,
+        backgroundColor: "#fff"
     },
     detailsTitle: {
         marginBottom: 0,

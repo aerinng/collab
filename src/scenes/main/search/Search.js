@@ -37,7 +37,7 @@ const DATA = [
     return (
       <TouchableOpacity
         onPress={() => onSelect(id)}
-        style={[ styles.item, { backgroundColor: selected ? '#77AABA' : '#ffffff' } ]}
+        style={[ styles.item ]}
       >
         <Text style={styles.users}>{user}</Text>
         <Text style={styles.detailsTitle}>{title}</Text>
@@ -116,7 +116,8 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         marginHorizontal: 16,
         borderRadius: 15,
-        paddingBottom: 15
+        paddingBottom: 15,
+        backgroundColor: "#fff"
     },
     backbutton: {
         marginLeft: 11,
