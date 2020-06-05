@@ -38,7 +38,7 @@ export default class SettingsScreen extends React.Component {
         this.setState({displayTime : time});
     };
     render() {
-        const {docID} = this.props.route.params;
+        // const {docID} = this.props.route.params;
         const time = this.state.displayTime.toString().substring(16, 21);
         return (
             <SafeAreaView style = {styles.container}>

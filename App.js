@@ -21,6 +21,7 @@ import EditProfile from './src/scenes/main/profile/EditProfile';
 import MyOffers from './src/scenes/main/profile/MyOffers';
 import Settings from './src/scenes/main/profile/Settings';
 
+
 // icons imports
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -37,16 +38,15 @@ if (!global.atob) { global.atob = decode }
 
 //API key for configuration
 var firebaseConfig = {
-  apiKey: "AIzaSyAOkCekXGgLyBJE3XXvPDdCqSeFOcD5F7c",
-  authDomain: "collab-testfb.firebaseapp.com",
-  databaseURL: "https://collab-testfb.firebaseio.com",
-  projectId: "collab-testfb",
-  storageBucket: "collab-testfb.appspot.com",
-  messagingSenderId: "714062311887",
-  appId: "1:714062311887:web:88bdfac792c73cdb24a2ba"
+  apiKey: "AIzaSyBimOSCbzDNjN7YSp6tWGbLRTg4QbAom0E",
+  authDomain: "collab-f1860.firebaseapp.com",
+  databaseURL: "https://collab-f1860.firebaseio.com",
+  projectId: "collab-f1860",
+  storageBucket: "collab-f1860.appspot.com",
+  messagingSenderId: "376900303039",
+  appId: "1:376900303039:web:5e3bd11c8216e62a87ee0a"
 };
 
-//test
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 

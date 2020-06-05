@@ -5,7 +5,7 @@ const Profile = ({navigation}) => {
     return (
         <SafeAreaView style = {styles.container}>
             <Image source = {require('../../../../assets/userMask.png')} style = {styles.userIcon}/>
-            <Text style = {styles.header}> username </Text>
+            <Text style = {styles.header}> username</Text>
             <TouchableOpacity 
                 style = {styles.Button}
                 onPress={() => navigation.navigate('EditProfile')}
@@ -32,8 +32,12 @@ const Profile = ({navigation}) => {
 
 export default class ProfileScreen extends React.Component {
     render() {
-        const {docID} = this.props.route.params;
-        return <Profile navigation = {this.props.navigation} />
+        if (this.props.route.params != null){
+        const {name} = this.props.route.params
+        return <Profile navigation = {this.props.navigation}  name = {this.props.navigation} /> //or is it name
+        }
+        // const {name} = this.props.route.params;
+        return <Profile navigation = {this.props.navigation}  />
     }
 }
 

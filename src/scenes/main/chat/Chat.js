@@ -19,12 +19,14 @@ const DATA = [
     },
   ];
 
-
   function Item({ id, name, message, time, image, selected, onSelect }) {
     return (
       <TouchableOpacity
         onPress={() => onSelect(id)}
-        style={[styles.item]}
+        style={[
+          styles.item,
+          { backgroundColor: selected ? '#77AABA' : '#ffffff' },
+        ]}
       >
         <Text style = {styles.detailsTime}>{time}</Text>
         <Text style={styles.detailsTitle}>{name}</Text>
@@ -35,10 +37,15 @@ const DATA = [
   }
 
 const Chat = ({navigation}) => {
-  const [selected, setSelected] = React.useState(null);
-  const onSelect = (id) => {
-      setSelected(id);
-  }
+    const [selected, setSelected] = React.useState(new Map());
+    const onSelect = React.useCallback(
+      id => {
+        const newSelected = new Map(selected);
+        newSelected.set(id, !selected.get(id));
+        setSelected(newSelected);
+      },
+      [selected],
+    );
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -61,7 +68,7 @@ const Chat = ({navigation}) => {
                     message = {item.message}
                     image = {item.image}
                     time = {item.time}
-                    selected={item.id == selected}
+                    selected={!!selected.get(item.id)}
                     onSelect={onSelect}
                 />
                 )}
@@ -74,7 +81,7 @@ const Chat = ({navigation}) => {
 
 export default class ChatScreen extends React.Component {
     render() {
-        const {docID} = this.props.route.params;
+        // const {docID} = this.props.route.params;
         return <Chat navigation = {this.props.navigation} />
     }
 }
@@ -93,7 +100,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     item: {
-        backgroundColor: '#fff',
+        backgroundColor: '#f9c2ff',
         paddingVertical: 40,
         marginVertical: 8
     },

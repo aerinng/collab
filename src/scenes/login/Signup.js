@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity, SafeAreaView } from "react-native";
+import { View, StatusBar, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity, SafeAreaView } from "react-native";
 import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -8,10 +8,8 @@ class Signup extends React.Component{
     state = {
         name:'',
         email:'',
-        username:'',
         password:'',
-        error:'',
-        docID:''
+        error:''
     }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
@@ -23,44 +21,15 @@ class Signup extends React.Component{
                 error:err.message
             })
         })
-
-        //document id is a user id!!
-
-        var user = firebase.auth().currentUser;
-        var UID; 
-        if (user != null) {
-            UID = user.uid;
-            console.log('this is the new unique id ', UID);
-        }
-
-        // Add customer details into firebase (FOR DATABASE)
-        firebase.firestore()
-        .collection('info')
-        .add({
-            email: this.state.email,
-            password: this.state.password,
-            promo:'', 
-            location:'', 
-            total:'', 
-            date:'',
-            desc:''
-        }).then((snapshot)=> this.setState({
-            email:'',
-            password:'',
-            docID:snapshot.id
-        }, () => { 
-            //DocID to identify each user. Pass docID data to 'Tabs'
-            this.props.navigation.setParams({docID:this.state.docID}),
-            this.props.navigation.navigate('Tabs', {docID:this.state.docID})
-        }
-        )).catch(err => console.error(err)); //Display error if any
     }
 
+
     //If successful, no error message shown
-    onSignupSucess =  () => {
+    onSignupSucess =  () =>{
         this.setState({
             error:''
         })
+        this.props.navigation.navigate('Login', {name: this.state.name})
     }        
 
     render(){
@@ -68,7 +37,7 @@ class Signup extends React.Component{
             <SafeAreaView style = {styles.container}>
             <KeyboardAwareScrollView>
                 <View style = {styles.container}>
-                    <Image 
+                    <Image  
                         style = {styles.image}
                         source = {require('../../../assets/collab_transparent.png')}
                     />
@@ -102,7 +71,6 @@ class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Username"
-                        value={this.state.username}
                         onChangeText={username => this.setState({username})}
                         underlineColorAndroid = { 'transparent' }
                     />
@@ -230,4 +198,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Signup;
+export default Signup

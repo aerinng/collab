@@ -4,6 +4,8 @@ import { View, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, Touchab
 //import { render } from 'react-dom';
 //import { withFormik } from 'formik';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+
+
 export default class Login extends React.Component {
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
     state ={        
@@ -27,16 +29,21 @@ export default class Login extends React.Component {
     
     }
 
-    onSignUpPress = () => {
+    onSignUpPress = () =>{
         this.props.navigation.navigate('Signup')
     }    
 
     //If logged in successfully, go to 'Tabs'
-    onLoginSuccess =  () => {
+    onLoginSuccess =  () =>{
         this.setState({
             error:''
         })
-        this.props.navigation.navigate('Tabs')
+        try{
+            // const {name} = this.props.route.params
+            this.props.navigation.navigate('Tabs') //, {name:name})
+        }catch{
+            this.props.navigation.navigate('Tabs')
+        }   
     }
 
     render(){
@@ -170,29 +177,3 @@ const styles = StyleSheet.create({
     }
 });
 
-// export default withFormik({
-//     mapPropsToValues: ({details}) => ({
-//       email: details.email,
-//       password: details.password,
-//     }),
-//     enableReinitialize: true,
-//     validationSchema: (props) => yup.object().shape({
-//       email: yup.string().max(30).required(),
-//       password: yup.string().max(15).required()
-//     }),
-//     handleSubmit: (values, { props }) => {
-//       console.log(props);
-//       console.log(values);
-  
-//       addFood(values);
-//     //   if (props.details.id) {
-//     //     values.id = props.details.id;
-//     //     values.createdAt = props.details.createdAt;
-//     //     uploadFood(values, props.onFoodUpdated);
-//     //   } else {
-//     //     uploadFood(values, props.onFoodAdded);
-//     //   }
-//     },
-//   })(Login);
-
- 

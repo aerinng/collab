@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, TextInput, Switch, TouchableOpacity, 
-    ScrollView, SafeAreaView, Image} from "react-native";
+    ScrollView, SafeAreaView, Image, Linking } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -11,6 +11,7 @@ class AddOrder extends React.Component {
         promo:'', 
         location:'', 
         total:'', 
+        category:'',
         date:'',
         desc:'',
         switchValue:false, 
@@ -44,9 +45,9 @@ class AddOrder extends React.Component {
     };
 
     render() {
-        //Retrieving the docID parameter from 'SignUp' page. 
-        const {docID} = this.props.route.params;
+        var user = firebase.auth().currentUser.uid; 
         const orderDate = this.state.displayDate.toString().substring(4,16);
+
         return (
         <SafeAreaView style = {styles.container}>
             <KeyboardAwareScrollView style={styles.scrollView}>
@@ -57,16 +58,23 @@ class AddOrder extends React.Component {
                     <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
                 </TouchableOpacity>
                 <Text style = { styles.header }> Add an Offer </Text>
+
+
+
                 <Text style = { styles.titles }> Store Promotion </Text>
                 <TextInput 
                     style = { styles.TextInput } 
                     placeholder = "Enter Store Promotion"
+                    value = {this.state.promo}
+                    onChangeText={promo => this.setState({promo})}                    
                     underlineColorAndroid = { 'transparent' } 
                 />
                 <Text style = { styles.titles }> My Location </Text>
                 <TextInput 
                     style = { styles.TextInput } 
                     placeholder = "Enter Your Location"
+                    value = {this.state.location}
+                    onChangeText={location => this.setState({location})}                    
                     textContentType = {"fullStreetAddress"}
                     underlineColorAndroid = { 'transparent' } 
                 />
@@ -78,15 +86,19 @@ class AddOrder extends React.Component {
                         {label: 'Stationeries', value: 'Stationeries'}
                     ]}
                     onChangeItems = {(item) => this.changeCategory(item)}
+                    // value = {this.state.category}
                 />
                 <Text style = { styles.titles }> Current Total </Text>
                 <TextInput 
                     style = { styles.TextInput } 
                     keyboardType = {'numeric'}
                     placeholder = "Enter Your Current Total"
+                    value = {this.state.total}
+                    onChangeText={total => this.setState({total})}                                  
                     underlineColorAndroid = { 'transparent' } 
                 />
                 <Text style = { styles.autopost }> Auto - Post </Text>
+                
                 <Switch
                     trackColor={{ false: "#ff0000", true: "#93D17D" }}
                     thumbColor={this.toggleSwitch ? "#ffffff" : "#f4f3f4"}
@@ -111,21 +123,22 @@ class AddOrder extends React.Component {
                 <TextInput 
                     style = { styles.TextInputDesc } 
                     multiline = {true}
+                    value = {this.state.desc}
+                    onChangeText={desc => this.setState({desc})}                    
                     placeholder = "Enter a Description"
                     underlineColorAndroid = { 'transparent' } 
                 />
                 <TouchableOpacity 
                     style = {styles.Button} 
-                    onPress={() =>  {
-                        //Updating the firebase of these fields for this docID, i.e this specific customer                   
-                        firebase.firestore().collection('info').doc(docID).update({
+                     onPress={() =>  {
+                        //Works for login, but not sign-up....               
+                        firebase.firestore().collection('info').doc(user).update({
                             promo:this.state.promo,
                             location:this.state.location,
                             total:this.state.total, 
                             date:this.state.date,
                             desc:this.state.desc                        
                         }).then(
-                            //After filling in, the fields in the screen becomes empty
                             this.setState({
                                 promo:'',
                                 location:'', 
@@ -139,6 +152,12 @@ class AddOrder extends React.Component {
                     }
                 >
                     <Text style = {styles.buttonText}>Post</Text>
+                </TouchableOpacity>
+                <TouchableOpacity //fairpriceButton!
+                    style = {styles.Button}
+                    onPress={()=>{ Linking.openURL('https://www.fairprice.com.sg/promotions')}}
+                >
+                     <Text style = {styles.buttonText}>To Fairprice</Text>
                 </TouchableOpacity>
 
             </KeyboardAwareScrollView>
@@ -261,3 +280,5 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
   });
+
+

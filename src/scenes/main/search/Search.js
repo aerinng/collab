@@ -2,11 +2,13 @@ import React from 'react';
 import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import * as Progress from 'react-native-progress';
+import firebase from 'firebase';
 
 const DATA = [
     {
       id: '1',
       title: 'Fairprice',
+      name: 'Fairprice',
       data: "Groceries",
       image: require('../../../../assets/fairprice.jpg'),
       user: "aerin123 - Paya Lebar",
@@ -17,6 +19,7 @@ const DATA = [
       id: '2',
       title: 'Cold Storage',
       data: "Groceries",
+      name: 'Cold Storage',
       image: require('../../../../assets/coldstorage.jpg'),
       user: "alyssa123 - Paya Lebar",
       progress: '76% of $59.00',
@@ -33,11 +36,13 @@ const DATA = [
     },
   ];
 
+
+  // the pictures 
   function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
     return (
       <TouchableOpacity
         onPress={() => onSelect(id)}
-        style={[ styles.item ]}
+        style={[ styles.item, { backgroundColor: selected ? '#77AABA' : '#ffffff' } ]}
       >
         <Text style={styles.users}>{user}</Text>
         <Text style={styles.detailsTitle}>{title}</Text>
@@ -53,11 +58,21 @@ const DATA = [
     );
   }
 
-const Search = ({navigation}) => {
-    const [selected, setSelected] = React.useState(null);
-    const onSelect = (id) => {
-        setSelected(id);
-    }
+
+const Search = ({navigation, searchKey}) => {
+
+    const [selected, setSelected] = React.useState(new Map());
+    const onSelect = React.useCallback(
+      id => {
+        const newSelected = new Map(selected);
+        newSelected.set(id, !selected.get(id));
+        setSelected(newSelected);
+      },
+      [selected],
+    );
+    const filteredData = DATA.filter((item)=> {
+        return item.title.indexOf(searchKey) >=0
+    })
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -69,6 +84,7 @@ const Search = ({navigation}) => {
                 titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
                 searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
+                onChangeText={(value) => searchKey= value}
             />
            <FlatList
                 data={DATA}
@@ -81,7 +97,7 @@ const Search = ({navigation}) => {
                     progressIdx = {item.progressIdx}
                     progress = {item.progress}
                     user = {item.user}
-                    selected={item.id == selected}
+                    selected={!!selected.get(item.id)}
                     onSelect={onSelect}
                 />
                 )}
@@ -90,7 +106,7 @@ const Search = ({navigation}) => {
             />
             <TouchableOpacity 
                 style = {styles.Button}
-                onPress={() => navigation.navigate('OfferDetails')}
+                onPress={() =>navigation.navigate('OfferDetails')}
             >
                 <Text style = {styles.buttonTexts}> Next </Text>
             </TouchableOpacity>
@@ -99,10 +115,34 @@ const Search = ({navigation}) => {
 };
 
 export default class SearchScreen extends React.Component {
-    render() {
-        const {docID} = this.props.route.params;
-        return <Search navigation = {this.props.navigation}/>;
-    }
+        state ={
+                err:''
+            }
+        render(){
+            // if (this.props.route.params != null){
+                    // const {name} = this.props.route.params
+                    var cUser = firebase.auth().currentUser.uid; 
+                    firebase.firestore().collection('info').doc(cUser).set({ //rmb to add name
+                        promo:'',
+                        location:'',
+                        category:'',
+                        total:'', 
+                        date:'',
+                        desc:''    
+                    }).then(error =>{
+                        this.setState({
+                            err:''
+                        }
+                    )})
+                    .catch(error =>{
+                        this.setState({
+                            err:error.message
+                        })
+                    })
+            // }
+            return <Search navigation = {this.props.navigation} />; //i think need to put SK property
+    
+        }
 }
 
 const styles = StyleSheet.create({
@@ -116,8 +156,7 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         marginHorizontal: 16,
         borderRadius: 15,
-        paddingBottom: 15,
-        backgroundColor: "#fff"
+        paddingBottom: 15
     },
     backbutton: {
         marginLeft: 11,
@@ -189,6 +228,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     arrow: {
+        resizeMode: 'stretch',
         width: 20,
         height: 20,
         position: 'absolute',

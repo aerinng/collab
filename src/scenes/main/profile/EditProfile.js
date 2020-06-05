@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Ima
 
 class EditProfile extends React.Component{
     render(){
-        const {docID} = this.props.route.params;
+        const {name} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <ScrollView style={styles.scrollView}>

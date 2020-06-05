@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Switch } from 'react-native';
+import { DropDown } from "react-native-material-dropdown"
+import { TouchableHighlight } from "react-native-gesture-handler";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Animated from "react-native-reanimated";
 
@@ -23,6 +25,11 @@ export default class AddOrderButton extends React.Component {
     };
 
     render() {
+        const rotation = this.mode.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 45]
+        });
+
         const sizeStyle = {
             transform: [{ scale: this.buttonSize }]
         };
@@ -30,8 +37,13 @@ export default class AddOrderButton extends React.Component {
         return (
             <View>
                 <Animated.View style = {[styles.tabButton, sizeStyle]}>
+                    <TouchableHighlight onPress = {() => this.handlePress} underlayColor = "#7F58FF">
+                        <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+                            <FontAwesome5 name = "plus" size = {24} color = "#000000"/>
+                        </Animated.View>
+                    </TouchableHighlight>
                     <TouchableOpacity onPress = {() => this.handlePress} underlayColor = "#266E7D">
-                        <Animated.View>
+                        <Animated.View style={{ transform: [{ rotate: rotation }] }}>
                             <FontAwesome5 name = "plus" size = {24} color = "#ffffff"/>
                         </Animated.View>
                     </TouchableOpacity>
@@ -94,7 +106,7 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 36,
         backgroundColor: "#266E7D",
-        marginTop: -35,
+        marginTop: -50,
         shadowColor: "#266E7D",
         shadowRadius: 5,
         shadowOffset: { height: 10 },
