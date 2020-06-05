@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Ima
 
 class EditProfile extends React.Component{
     render(){
-        const {docID} = this.props.route.params;
+        //const {name} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <ScrollView style={styles.scrollView}>
@@ -14,6 +14,9 @@ class EditProfile extends React.Component{
                         <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
                     </TouchableOpacity>
                     <Text style = {styles.header}> Edit Profile </Text>
+                    <TouchableOpacity>
+                        <Text> Change Password </Text>
+                    </TouchableOpacity>
                 </ScrollView>
             </SafeAreaView>
         )

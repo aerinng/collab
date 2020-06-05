@@ -43,7 +43,7 @@ const DATA = [
     );
   }
 
-const MyOffers = ({navigation}) => {
+const MyOffersReceived = ({navigation}) => {
         const [selected, setSelected] = React.useState(null);
         const onSelect = (id) => {
             setSelected(id);
@@ -77,10 +77,10 @@ const MyOffers = ({navigation}) => {
     
 };
 
-export default class MyOffersScreen extends React.Component {
+export default class MyOffersReceivedScreen extends React.Component {
     render() {
         //const {docID} = this.props.route.params;
-        return <MyOffers navigation = {this.props.navigation} />;
+        return <MyOffersReceived navigation = {this.props.navigation} />;
     }
 }
 

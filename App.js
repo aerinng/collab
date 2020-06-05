@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { StyleSheet } from "react-native";
 
@@ -19,6 +20,7 @@ import Splash from './src/components/Splash';
 import OfferDetails from './src/scenes/main/offers/OfferDetails';
 import EditProfile from './src/scenes/main/profile/EditProfile';
 import MyOffers from './src/scenes/main/profile/MyOffers';
+import MyOffersReceived from './src/scenes/main/profile/MyOffersReceived';
 import Settings from './src/scenes/main/profile/Settings';
 
 // icons imports
@@ -31,25 +33,50 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore';
 import {decode, encode} from 'base-64';
+//import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging';
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode } 
 
 //API key for configuration
 var firebaseConfig = {
-  apiKey: "AIzaSyAOkCekXGgLyBJE3XXvPDdCqSeFOcD5F7c",
-  authDomain: "collab-testfb.firebaseapp.com",
-  databaseURL: "https://collab-testfb.firebaseio.com",
-  projectId: "collab-testfb",
-  storageBucket: "collab-testfb.appspot.com",
-  messagingSenderId: "714062311887",
-  appId: "1:714062311887:web:88bdfac792c73cdb24a2ba"
+  apiKey: "AIzaSyBimOSCbzDNjN7YSp6tWGbLRTg4QbAom0E",
+  authDomain: "collab-f1860.firebaseapp.com",
+  databaseURL: "https://collab-f1860.firebaseio.com",
+  projectId: "collab-f1860",
+  storageBucket: "collab-f1860.appspot.com",
+  messagingSenderId: "376900303039",
+  appId: "1:376900303039:web:5e3bd11c8216e62a87ee0a"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
 firebase.firestore();
+
+
+// request user's permission to receives notifications
+/*async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    getFCMToken();
+    console.log('Authorization status:', authStatus);
+  }
+}
+
+getFCMToken = async () => {
+  const fcmToken = await messaging().getToken();
+  if (fcmToken) {
+   console.log(fcmToken);
+   console.log("Your Firebase Token is:", fcmToken);
+  } else {
+   console.log("Failed", "No token received");
+  }
+}*/
+
 //User navigated to Login page by default
 const Root = createStackNavigator();
 const RootScreen = () => (
@@ -140,14 +167,35 @@ function ProfileScreen(props) {
       initialRouteName = "Profile"
       screenOptions = {{
         gestureEnabled: true,
-        headerShown: false
       }}
     >
-      <ProfileScreenStack.Screen name = "Profile" component = {Profile} initialParams={props.route.params}/>
-      <ProfileScreenStack.Screen name = "EditProfile" component = {EditProfile} initialParams={props.route.params}/>
-      <ProfileScreenStack.Screen name = "MyOffers" component = {MyOffers} initialParams={props.route.params}/>
-      <ProfileScreenStack.Screen name = "Settings" component = {Settings} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "Profile" component = {Profile} options = {{headerShown: false}}initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "EditProfile" component = {EditProfile} options = {{headerShown: false}} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "MyOffers" component = {MyOffersScreen} 
+        options = {{title: "My Offers", headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, headerTintColor: "#000"}} 
+        initialParams={props.route.params}
+      />
+      <ProfileScreenStack.Screen name = "Settings" component = {Settings} options = {{headerShown: false}} initialParams={props.route.params}/>
     </ProfileScreenStack.Navigator>
+  );
+}
+const MyOffersScreenStack = createMaterialTopTabNavigator();
+function MyOffersScreen(props) {
+  return (
+    <MyOffersScreenStack.Navigator
+      initialRouteName = "Requested"
+      tabBarOptions = {{
+        showLabel: true,
+        activeTintColor: "#266E7D",
+        inactiveTintColor:  "#C4C4C4",
+        indicatorStyle: { backgroundColor: "#266E7D", },
+        labelStyle: { fontSize: 18, fontWeight: '500' },
+        tabStyle: { marginTop: 0 },
+      }}
+    >
+      <MyOffersScreenStack.Screen name = "Requested" component = {MyOffers} initialParams={props.route.params}/>
+      <MyOffersScreenStack.Screen name = "Received" component = {MyOffersReceived} initialParams={props.route.params}/>
+    </MyOffersScreenStack.Navigator>
   );
 }
 
@@ -175,32 +223,3 @@ function Navigation() {
 };;
 
 export default Navigation;
-
-const styles = StyleSheet.create({
-  container: {
-    alignSelf: 'stretch',
-    padding: 35,
-    flex: 1,
-  },
-  header: {
-      fontSize: 24,
-      marginBottom: 18,
-      marginTop: 0,
-      fontWeight: 'bold',
-      alignItems: 'center',
-      textAlign: 'center',
-  },
-  Button: {
-      backgroundColor: "#266E7D",
-      marginHorizontal: 70,
-      marginVertical: 25,
-      borderRadius: 10,
-      paddingVertical: 10
-  },
-  buttonText: {
-      textAlign: 'center',
-      fontSize: 23,
-      fontWeight: '600',
-      color: '#ffffff',
-  },
-});

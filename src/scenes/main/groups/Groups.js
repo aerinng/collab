@@ -95,7 +95,7 @@ const DATA = [
 
 export default class GroupsScreen extends React.Component {
     render() {
-        const {docID} = this.props.route.params;
+        //const {docID} = this.props.route.params;
         return <Groups navigation = {this.props.navigation} />;
     }
 }

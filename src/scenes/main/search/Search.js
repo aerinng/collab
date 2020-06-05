@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import * as Progress from 'react-native-progress';
+import firebase from 'firebase';
 
 const DATA = [
     {
@@ -33,10 +34,13 @@ const DATA = [
     },
   ];
 
-  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
+  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
-        onPress={() => onSelect(id)}
+        onPress={() => {
+            onSelect(id);
+            navigation.navigate('OfferDetails')
+        }}
         style={[ styles.item ]}
       >
         <Text style={styles.users}>{user}</Text>
@@ -53,11 +57,14 @@ const DATA = [
     );
   }
 
-const Search = ({navigation}) => {
+const Search = ({navigation, searchKey}) => {
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
+    const filteredData = DATA.filter((item)=> {
+        return item.title.indexOf(searchKey) >=0
+    })
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -69,6 +76,7 @@ const Search = ({navigation}) => {
                 titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
                 searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
+                onChangeText={(value) => searchKey= value}
             />
            <FlatList
                 data={DATA}
@@ -83,24 +91,40 @@ const Search = ({navigation}) => {
                     user = {item.user}
                     selected={item.id == selected}
                     onSelect={onSelect}
+                    navigation={navigation}
                 />
                 )}
                 keyExtractor={item => item.id}
                 extraData={selected}
             />
-            <TouchableOpacity 
-                style = {styles.Button}
-                onPress={() => navigation.navigate('OfferDetails')}
-            >
-                <Text style = {styles.buttonTexts}> Next </Text>
-            </TouchableOpacity>
         </SafeAreaView>  
     )
 };
 
 export default class SearchScreen extends React.Component {
+    state = {
+        err:''
+    }
     render() {
-        const {docID} = this.props.route.params;
+        //const {name} = this.props.route.params;
+        var cUser = firebase.auth().currentUser.uid; 
+        firebase.firestore().collection('info').doc(cUser).set({ //rmb to add name
+            promo:'',
+            location:'',
+            category:'',
+            total:'', 
+            date:'',
+            desc:''    
+        }).then(error =>{
+            this.setState({
+                err:''
+            }
+        )})
+        .catch(error =>{
+            this.setState({
+                err:error.message
+            })
+        })
         return <Search navigation = {this.props.navigation}/>;
     }
 }
@@ -113,10 +137,10 @@ const styles = StyleSheet.create({
     },
     item: {
         paddingVertical: 40,
-        marginVertical: 8,
         marginHorizontal: 16,
         borderRadius: 15,
         paddingBottom: 15,
+        marginBottom: 20,
         backgroundColor: "#fff"
     },
     backbutton: {
@@ -135,20 +159,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 40,
         flex: 1, 
         backgroundColor: "#000000"
-    },
-    Button: {
-        backgroundColor: "#266E7D",
-        padding: 10,
-        marginHorizontal: 70,
-        marginBottom: 33,
-        marginTop: 10,
-        borderRadius: 10,
-    },
-    buttonTexts: {
-        textAlign: 'center',
-        fontSize: 20,
-        fontWeight: '600',
-        color: '#ffffff',
     },
     icons: {
         position: 'absolute',
