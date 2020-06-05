@@ -23,13 +23,15 @@ const DATA = [
     },
   ];
 
-  function Item({ id, title, data, image, selected, onSelect }) {
+  function Item({ id, title, data, image, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
-        onPress={() => onSelect(id)}
+        onPress={() => {
+          onSelect(id);
+          navigation.navigate('AddOrder');
+        }}
         style={[
-          styles.item,
-          { backgroundColor: selected ? '#77AABA' : '#ffffff' },
+          styles.item
         ]}
       >
         <Text style={styles.detailsTitle}>{title}</Text>
@@ -70,24 +72,19 @@ const StorePromo = ({navigation}) => {
                     image = {item.image}
                     selected={item.id == selected}
                     onSelect={onSelect}
+                    navigation={navigation}
                 />
                 )}
                 keyExtractor={item => item.id}
                 extraData={selected}
             />
-            <TouchableOpacity 
-                style = {styles.Button}
-                onPress={() => navigation.navigate('AddOrder')}
-            >
-                <Text style = {styles.buttonTexts}> Next </Text>
-            </TouchableOpacity>
         </SafeAreaView>  
     )
 };
 
 export default class Promo extends React.Component {
   render() {
-      const {docID} = this.props.route.params;
+      //const {docID} = this.props.route.params;
       return <StorePromo navigation = {this.props.navigation} />;
   }
 }
@@ -99,7 +96,7 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     item: {
-        backgroundColor: '#f9c2ff',
+        backgroundColor: '#fff',
         paddingVertical: 40,
         marginVertical: 8,
         marginHorizontal: 16,

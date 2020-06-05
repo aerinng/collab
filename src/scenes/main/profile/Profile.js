@@ -32,7 +32,7 @@ const Profile = ({navigation}) => {
 
 export default class ProfileScreen extends React.Component {
     render() {
-        const {docID} = this.props.route.params;
+        //const {name} = this.props.route.params;
         return <Profile navigation = {this.props.navigation} />
     }
 }

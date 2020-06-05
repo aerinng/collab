@@ -46,47 +46,6 @@ const styles = StyleSheet.create({
       alignSelf: 'stretch',
       padding: 30
     },
-    scrollView: {
-        marginHorizontal: 10
-    },
-    header: {
-        fontSize: 24,
-        marginBottom: 15,
-        fontWeight: 'bold',
-        alignItems: 'center',
-        textAlign: 'center',
-    },
-    titles: {
-        alignItems: 'stretch',
-        marginBottom: 8,
-        fontWeight: 'bold',
-        fontSize: 15
-    },
-    TextInput: {
-        alignSelf: 'stretch',
-        height: 40,
-        color: '#fff',
-        borderColor: '#000000',
-        borderWidth: 1,
-        padding: 10,
-        marginBottom: 15
-    },
-    Button: {
-        borderColor: '#000000',
-        borderWidth: 1,
-        alignSelf: 'stretch',
-        paddingVertical: 8,
-        marginTop: 10,
-        backgroundColor: '#000000'
-    },
-    buttonText: {
-        color: '#ffffff',
-        fontSize: 20,
-        alignSelf: 'stretch',
-        alignItems: 'center',
-        paddingHorizontal: 125,
-        fontWeight: 'bold'
-    },
     tabButton: {
         alignItems: "center",
         justifyContent: "center",
@@ -100,6 +59,6 @@ const styles = StyleSheet.create({
         shadowOffset: { height: 10 },
         shadowOpacity: 0.3,
         borderWidth: 3,
-        borderColor: "#FFFFFF"
+        borderColor: "#FFFFFF",
     }
   });

@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, StyleSheet, Text, ScrollView, SafeAreaView, FlatList, TouchableOpacity, Image } from "react-native";
+import React, {useEffect} from 'react';
+import { StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, Image } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
+//import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging';
 
 const DATA = [
     {
@@ -74,7 +75,7 @@ const Chat = ({navigation}) => {
 
 export default class ChatScreen extends React.Component {
     render() {
-        const {docID} = this.props.route.params;
+        //const {docID} = this.props.route.params;
         return <Chat navigation = {this.props.navigation} />
     }
 }

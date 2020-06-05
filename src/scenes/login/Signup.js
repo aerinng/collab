@@ -8,10 +8,8 @@ class Signup extends React.Component{
     state = {
         name:'',
         email:'',
-        username:'',
         password:'',
         error:'',
-        docID:''
     }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
@@ -23,37 +21,6 @@ class Signup extends React.Component{
                 error:err.message
             })
         })
-
-        //document id is a user id!!
-
-        var user = firebase.auth().currentUser;
-        var UID; 
-        if (user != null) {
-            UID = user.uid;
-            console.log('this is the new unique id ', UID);
-        }
-
-        // Add customer details into firebase (FOR DATABASE)
-        firebase.firestore()
-        .collection('info')
-        .add({
-            email: this.state.email,
-            password: this.state.password,
-            promo:'', 
-            location:'', 
-            total:'', 
-            date:'',
-            desc:''
-        }).then((snapshot)=> this.setState({
-            email:'',
-            password:'',
-            docID:snapshot.id
-        }, () => { 
-            //DocID to identify each user. Pass docID data to 'Tabs'
-            this.props.navigation.setParams({docID:this.state.docID}),
-            this.props.navigation.navigate('Tabs', {docID:this.state.docID})
-        }
-        )).catch(err => console.error(err)); //Display error if any
     }
 
     //If successful, no error message shown
@@ -61,6 +28,7 @@ class Signup extends React.Component{
         this.setState({
             error:''
         })
+        this.props.navigation.navigate('Login', {name: this.state.name})
     }        
 
     render(){

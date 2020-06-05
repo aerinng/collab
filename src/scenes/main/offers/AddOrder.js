@@ -44,8 +44,7 @@ class AddOrder extends React.Component {
     };
 
     render() {
-        //Retrieving the docID parameter from 'SignUp' page. 
-        const {docID} = this.props.route.params;
+        var user = firebase.auth().currentUser.uid; 
         const orderDate = this.state.displayDate.toString().substring(4,16);
         return (
         <SafeAreaView style = {styles.container}>
@@ -118,7 +117,7 @@ class AddOrder extends React.Component {
                     style = {styles.Button} 
                     onPress={() =>  {
                         //Updating the firebase of these fields for this docID, i.e this specific customer                   
-                        firebase.firestore().collection('info').doc(docID).update({
+                        firebase.firestore().collection('info').doc(user).update({
                             promo:this.state.promo,
                             location:this.state.location,
                             total:this.state.total, 
@@ -139,6 +138,12 @@ class AddOrder extends React.Component {
                     }
                 >
                     <Text style = {styles.buttonText}>Post</Text>
+                </TouchableOpacity>
+                <TouchableOpacity //fairpriceButton!
+                    style = {styles.Button}
+                    onPress={()=>{ Linking.openURL('https://www.fairprice.com.sg/promotions')}}
+                >
+                     <Text style = {styles.buttonText}>To Fairprice</Text>
                 </TouchableOpacity>
 
             </KeyboardAwareScrollView>
