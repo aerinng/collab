@@ -164,7 +164,8 @@ const styles = StyleSheet.create({
     switch: {
         alignSelf: 'flex-end',
         paddingVertical: 25,
-        marginTop: -22
+        marginTop: -22,
+        
     },
     timepicker: {
         width: 0,
@@ -179,8 +180,8 @@ const styles = StyleSheet.create({
         borderBottomColor: '#C5C5C5',
         transform: [{rotate: '180deg'}],
         alignSelf: 'flex-end',
-        position: 'absolute',
-        marginTop: 180,
+        marginRight: 10,
+        marginBottom: -26,
         zIndex: 1
     },
     Button: {
