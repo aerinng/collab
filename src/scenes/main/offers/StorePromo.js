@@ -28,7 +28,7 @@ const DATA = [
       <TouchableOpacity
         onPress={() => {
           onSelect(id);
-          navigation.navigate('AddOrder');
+          navigation.navigate('AddOrder', {data:data, title:title, Pid:id});
         }}
         style={[
           styles.item

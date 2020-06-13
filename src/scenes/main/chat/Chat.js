@@ -1,45 +1,65 @@
 import React, {useEffect} from 'react';
-import { StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, 
+  Image, Modal, TextInput, View } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
-//import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging';
+import firebase from "firebase";
+import { List, Divider } from 'react-native-paper';
 
-const DATA = [
-    {
-      id: '1',
-      name: 'Jane Doe',
-      message: "Thank you! It's a pleasure :D",
-      image: require('../../../../assets/female.png'),
-      time: "9.05pm"
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      message: "Will inform you again :)",
-      image: require('../../../../assets/male.png'),
-      time: "2.45pm"
-    },
-  ];
-
-
-  function Item({ id, name, message, time, image, selected, onSelect }) {
-    return (
-      <TouchableOpacity
-        onPress={() => onSelect(id)}
-        style={[styles.item]}
-      >
-        <Text style = {styles.detailsTime}>{time}</Text>
-        <Text style={styles.detailsTitle}>{name}</Text>
-        <Text style={styles.details}>{message}</Text>
-        <Image source = {image} style = {styles.icons} />
-      </TouchableOpacity>
-    );
+export default class Chat extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      textInputName: '',
+      modalVisible: false,
+      threads: '',
+      unsubscribe: null
+    };
   }
 
-const Chat = ({navigation}) => {
-  const [selected, setSelected] = React.useState(null);
-  const onSelect = (id) => {
-      setSelected(id);
+  setModalVisible = (visible) => {
+    this.setState({ modalVisible: visible });
   }
+
+  setThreads = (thread) => {
+    this.setState({threads: thread});
+  }
+
+  // fetch chats data from Firestore
+  componentDidMount() {
+    this.getChats(firebase.auth().currentUser.uid);
+  }
+
+  // stop listening to changes from Firestore
+  componentWillUnmount() {
+    var unsubscribe = this.state.unsubscribe;
+    unsubscribe();
+  }
+
+  // onSnapshot get realtime updates from Firestore
+  getChats = (user) => {
+    this.state.unsubscribe = firebase.firestore()
+                                     .collection('chats: ' + user)
+                                     //.where('latestMessage.timeStamp', '>', 'A')
+                                     .orderBy('latestMessage.timeStamp', 'desc')
+                                     .onSnapshot(querySnapshot => {
+                                         const threads = querySnapshot.docs.map(documentSnapshot => {
+                                          //console.log(documentSnapshot.get('name'))
+                                          return {
+                                            _id: documentSnapshot.id,
+                                            name: '',
+                                            latestMessage: {
+                                              text: ''
+                                            },
+                                            ...documentSnapshot.data()
+                                          };
+                                        });
+                                        this.setThreads(threads);
+                                      });
+      }
+
+  render() {
+    var user = firebase.auth().currentUser.uid;
+    const { modalVisible } = this.state;
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -48,36 +68,102 @@ const Chat = ({navigation}) => {
                 menuImageStyle = {{resizeMode: 'stretch', width: 0, height: 0}}
                 profileImageSource = {require('../../../../assets/edit.png')}
                 profileImageStyle = {{marginTop: -5, resizeMode: 'stretch', width: 25, height: 25}}
-                profileImageOnPress = {() => navigation.navigate('Chat')}
+                profileImageOnPress = {() => {
+                  this.setModalVisible(true);
+                  //console.log("before " + this.state.modalVisible);
+                  
+                }}
                 titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
                 searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
             />
-            <FlatList
-                data={DATA}
-                renderItem={({ item }) => (
-                <Item
-                    id={item.id}
-                    name={item.name}
-                    message = {item.message}
-                    image = {item.image}
-                    time = {item.time}
-                    selected={item.id == selected}
-                    onSelect={onSelect}
-                />
-                )}
-                keyExtractor={item => item.id}
-                extraData={selected}
-            />
+            <View style = {[styles.container]}>
+                    <Modal
+                      transparent={true}
+                      style = {{
+                        marginHorizontal: 30,
+                        flex: 1,
+                        backgroundColor: "#266E7D",
+                        borderRadius: 20,
+                        padding: 35,
+                        alignItems: "center",}}
+                      visible = {modalVisible}
+                      animationType="slide"
+                    >
+                      <View style = {styles.container}>
+                        <TouchableOpacity
+                          onPress = {() => this.setModalVisible(!modalVisible)}
+                        >
+                          <Image source = {require('../../../../assets/delete.png')} style = {{resizeMode: 'stretch', width: 15, height: 15, marginTop: 200, marginBottom: -310}}/>
+                        </TouchableOpacity>
+                        <TextInput 
+                          placeholder = "Whom would you like to message?"
+                          onChangeText={
+                            textInputName => this.setState({ textInputName })
+                            //firebase.auth().
+                          }
+                          style ={{backgroundColor: "#fff", marginTop: 250, marginHorizontal: 10, borderRadius: 15, padding: 10}}
+                        />
+                        <TouchableOpacity
+                          style = {{paddingHorizontal: 37, 
+                            paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, 
+                            alignSelf: 'center', borderRadius: 10}}
+                          onPress = {() => {
+                            firebase.firestore()
+                                    .collection('chats: ' + user)
+                                    .add({
+                                      name: this.state.textInputName,
+                                      latestMessage: {
+                                        timeStamp: new Date().getTime(),
+                                        text: 'You have created a room.'
+                                      },
+                                    })
+                                    .then(docRef => {
+                                      docRef.collection('msg').add({
+                                        timeStamp: new Date().getTime(),
+                                        text: 'You have created a room.',
+                                        system: true
+                                      })
+                                      this.props.navigation.navigate('Chat');
+                                    });
+                            this.setModalVisible(!modalVisible);
+                            //console.log("after " + this.state.modalVisible);
+                          }}
+                        >
+                            <Text
+                              style = {{textAlign: 'center', fontSize: 18, fontWeight: '600', 
+                              position: 'absolute', marginTop: 3, color: "#fff", marginLeft: 8}}
+                            > 
+                              Create 
+                            </Text>
+                          </TouchableOpacity>
+                          </View>
+                      </Modal>
+                    </View>
+                    <View style = {styles.container2}>
+                      <FlatList
+                        data={this.state.threads}
+                        keyExtractor={(item) => item._id}
+                        ItemSeparatorComponent={() => <Divider />}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            onPress={() => this.props.navigation.navigate('ChatRoom', { threads: item , user: user})}
+                          >
+                          <List.Item
+                            title={item.name}
+                            description={item.latestMessage.text}
+                            titleNumberOfLines={1}
+                            titleStyle={styles.listTitle}
+                            descriptionStyle={styles.listDescription}
+                            descriptionNumberOfLines={1}
+                          />
+                          </TouchableOpacity>
+                        )}
+                      />
+            </View>
         </SafeAreaView>
     )
-}
-
-export default class ChatScreen extends React.Component {
-    render() {
-        //const {docID} = this.props.route.params;
-        return <Chat navigation = {this.props.navigation} />
-    }
+  }
 }
 
 const styles = StyleSheet.create({
@@ -86,49 +172,15 @@ const styles = StyleSheet.create({
       padding: 35,
       flex: 1
     },
-    header: {
-        fontSize: 30,
-        marginBottom: 18,
-        fontWeight: '600',
-        alignItems: 'center',
-        textAlign: 'center',
+    container2: {
+      paddingHorizontal: 15,
+      flex: 300,
+      marginTop: -90
     },
-    item: {
-        backgroundColor: '#fff',
-        paddingVertical: 40,
-        marginVertical: 8
+    listTitle: {
+      fontSize: 22,
     },
-    detailsTitle: {
-        marginLeft: 130,
-        marginTop: -10,
-        fontSize: 20,
-        fontWeight: '500',
-        paddingBottom: 5,
-        paddingRight: 30
-    },
-    details: {
-        marginLeft: 130,
-        fontSize: 15,
-        paddingRight: 30,
-        marginTop: 5,
-        color: '#696969'
-    },
-    detailsTime: {
-        fontSize: 15,
-        marginTop: -15,
-        marginRight: 15,
-        alignSelf: 'flex-end',
-        color: '#696969'
-    },
-    icons: {
-        position: 'absolute',
-        width: 100,
-        height: 100,
-        marginTop: 15,
-        paddingLeft: 5,
-        borderColor: '#000000',
-        borderWidth: 1,
-        borderRadius: 50,
-        marginLeft: 15,
+    listDescription: {
+      fontSize: 16,
     },
 });

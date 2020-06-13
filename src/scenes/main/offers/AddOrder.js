@@ -44,6 +44,11 @@ class AddOrder extends React.Component {
     };
 
     render() {
+        //these things are carried over from Store Promo.
+        const {data} = this.props.route.params
+        const {title} = this.props.route.params
+        const {Pid} = this.props.route.params
+
         var user = firebase.auth().currentUser.uid; 
         const orderDate = this.state.displayDate.toString().substring(4,16);
         return (
@@ -57,15 +62,15 @@ class AddOrder extends React.Component {
                 </TouchableOpacity>
                 <Text style = { styles.header }> Add an Offer </Text>
                 <Text style = { styles.titles }> Store Promotion </Text>
-                <TextInput 
-                    style = { styles.TextInput } 
-                    placeholder = "Enter Store Promotion"
-                    underlineColorAndroid = { 'transparent' } 
-                />
+                <Text value = {this.state.promo} style = {{paddingBottom: 10, paddingLeft: 2}}>
+                    {title}: {data}
+                </Text>
                 <Text style = { styles.titles }> My Location </Text>
                 <TextInput 
                     style = { styles.TextInput } 
                     placeholder = "Enter Your Location"
+                    value = {this.state.location}
+                    onChangeText={location => this.setState({location})}   
                     textContentType = {"fullStreetAddress"}
                     underlineColorAndroid = { 'transparent' } 
                 />
@@ -83,6 +88,8 @@ class AddOrder extends React.Component {
                     style = { styles.TextInput } 
                     keyboardType = {'numeric'}
                     placeholder = "Enter Your Current Total"
+                    value = {this.state.total}
+                    onChangeText={total => this.setState({total})}  
                     underlineColorAndroid = { 'transparent' } 
                 />
                 <Text style = { styles.autopost }> Auto - Post </Text>
@@ -104,6 +111,7 @@ class AddOrder extends React.Component {
                         isVisible={this.state.isDateTimePickerVisible}
                         onConfirm={this.handleDatePicked}
                         onCancel={this.hideDateTimePicker}
+                        value = {this.state.date}
                     />
                 </TouchableOpacity>
                 <Text style = { styles.titles }> Description </Text>
@@ -112,19 +120,22 @@ class AddOrder extends React.Component {
                     multiline = {true}
                     placeholder = "Enter a Description"
                     underlineColorAndroid = { 'transparent' } 
+                    value = {this.state.desc}
+                    onChangeText={desc => this.setState({desc})} 
                 />
                 <TouchableOpacity 
                     style = {styles.Button} 
                     onPress={() =>  {
                         //Updating the firebase of these fields for this docID, i.e this specific customer                   
-                        firebase.firestore().collection('info').doc(user).update({
-                            promo:this.state.promo,
+                        firebase.firestore().collection(user).add({
+                            promo:data,
                             location:this.state.location,
                             total:this.state.total, 
-                            date:this.state.date,
-                            desc:this.state.desc                        
-                        }).then(
-                            //After filling in, the fields in the screen becomes empty
+                            category: this.state.category, 
+                            date:this.state.displayDate.toString(),
+                            desc:this.state.desc,
+                            PromoId:Pid                  
+                        }).then( (snapshot) => {
                             this.setState({
                                 promo:'',
                                 location:'', 
@@ -132,10 +143,10 @@ class AddOrder extends React.Component {
                                 date:'',
                                 desc:''                            
                             })
-                        ).catch(err =>  alert(err.message) );
                         this.props.navigation.navigate('Search');
-                    }
-                    }
+                        }   
+                    ).catch(err =>  alert(err.message));
+                    }}
                 >
                     <Text style = {styles.buttonText}>Post</Text>
                 </TouchableOpacity>
@@ -226,8 +237,7 @@ const styles = StyleSheet.create({
     },
     switch: {
         alignSelf: 'flex-end',
-        marginTop: 380,
-        position: 'absolute'
+        marginTop: -30,
     },
     backbutton: {
         zIndex: 1,
@@ -250,8 +260,9 @@ const styles = StyleSheet.create({
         borderBottomColor: '#C5C5C5',
         transform: [{rotate: '180deg'}],
         alignSelf: 'flex-end',
-        position: 'absolute',
-        marginTop: 468,
+        marginTop: -33,
+        marginRight: 10,
+        paddingBottom: 23,
         zIndex: 1
     },
     date: {

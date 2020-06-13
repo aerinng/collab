@@ -14,6 +14,7 @@ import Profile from './src/scenes/main/profile/Profile';
 import Groups from './src/scenes/main/groups/Groups';
 import Search from './src/scenes/main/search/Search';
 import Chat from './src/scenes/main/chat/Chat';
+import ChatRoom from './src/scenes/main/chat/ChatRoom';
 import StorePromo from './src/scenes/main/offers/StorePromo'
 import AddOrder from './src/scenes/main/offers/AddOrder'
 import Splash from './src/components/Splash';
@@ -40,42 +41,19 @@ if (!global.atob) { global.atob = decode }
 
 //API key for configuration
 var firebaseConfig = {
-  apiKey: "AIzaSyBimOSCbzDNjN7YSp6tWGbLRTg4QbAom0E",
-  authDomain: "collab-f1860.firebaseapp.com",
-  databaseURL: "https://collab-f1860.firebaseio.com",
-  projectId: "collab-f1860",
-  storageBucket: "collab-f1860.appspot.com",
-  messagingSenderId: "376900303039",
-  appId: "1:376900303039:web:5e3bd11c8216e62a87ee0a"
+    apiKey: "AIzaSyCjbiA-yf0xWjpk2EjnIMlDxOdq2RsKSug",
+    authDomain: "collab-8af51.firebaseapp.com",
+    databaseURL: "https://collab-8af51.firebaseio.com",
+    projectId: "collab-8af51",
+    storageBucket: "collab-8af51.appspot.com",
+    messagingSenderId: "688778678705",
+    appId: "1:688778678705:web:97a9bcc682a22bd4512d90"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
 firebase.firestore();
-
-
-// request user's permission to receives notifications
-/*async function requestUserPermission() {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
-
-  if (enabled) {
-    getFCMToken();
-    console.log('Authorization status:', authStatus);
-  }
-}
-
-getFCMToken = async () => {
-  const fcmToken = await messaging().getToken();
-  if (fcmToken) {
-   console.log(fcmToken);
-   console.log("Your Firebase Token is:", fcmToken);
-  } else {
-   console.log("Failed", "No token received");
-  }
-}*/
 
 //User navigated to Login page by default
 const Root = createStackNavigator();
@@ -86,8 +64,10 @@ const RootScreen = () => (
     headerShown: false 
   }}
 > 
-    <Root.Screen name = "Login" component = {Login} />
+    
+  <Root.Screen name = "Login" component = {Login} />
     <Root.Screen name = "Tabs" component = {TabNavigator} />
+    
     <Root.Screen name = "Signup" component = {Signup} />  
 </Root.Navigator>
 );
@@ -124,7 +104,7 @@ const TabNavigator = (props) => (
       <Tab.Screen name = "Search" component = {OfferDetailsScreen} initialParams={props.route.params}/>
       <Tab.Screen name = "Groups" component = {Groups} initialParams={props.route.params}/>
       <Tab.Screen name = "Offer" component = {Offers} initialParams={props.route.params}/>
-      <Tab.Screen name = "Chat" component = {Chat} initialParams={props.route.params} />
+      <Tab.Screen name = "Chat" component = {ChatStackScreen} initialParams={props.route.params} />
       <Tab.Screen name = "Profile" component = {ProfileScreen} initialParams={props.route.params}/>
   </Tab.Navigator>
 );
@@ -197,6 +177,33 @@ function MyOffersScreen(props) {
       <MyOffersScreenStack.Screen name = "Received" component = {MyOffersReceived} initialParams={props.route.params}/>
     </MyOffersScreenStack.Navigator>
   );
+}
+
+const ChatStack = createStackNavigator();
+function ChatStackScreen(props) {
+  return (
+    <ChatStack.Navigator
+      initialRouteName = "ChatScreen"
+      screenOptions = {{
+        gestureEnabled: true,
+      }}
+    >
+      <ChatStack.Screen 
+        name = "ChatScreen" 
+        component = {Chat} 
+        options = {{headerShown: false, title: "Chats"}} 
+        initialParams={props.route.params}
+      />
+      <ChatStack.Screen 
+        name = "ChatRoom" 
+        component = {ChatRoom} 
+        initialParams={{route: props.route.params, user: firebase.auth().currentUser.uid}}
+        options={({route}) => ({title: route.params.threads.name, 
+          headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, 
+          headerTintColor: "#000"})}
+      />
+    </ChatStack.Navigator>
+  )
 }
 
 //onStateChange for own debugging purposes, not required for the application
