@@ -1,41 +1,116 @@
 import React from 'react';
 import { StyleSheet, Text, SafeAreaView, TouchableOpacity, Image} from "react-native";
+import firebase from 'firebase';
+import { useIsFocused } from '@react-navigation/native';
 
-const Profile = ({navigation}) => {
-    return (
-        <SafeAreaView style = {styles.container}>
-            <Image source = {require('../../../../assets/userMask.png')} style = {styles.userIcon}/>
-            <Text style = {styles.header}> username </Text>
-            <TouchableOpacity 
-                style = {styles.Button}
-                onPress={() => navigation.navigate('EditProfile')}
-            >
-                <Text style = {styles.buttonTexts}> Edit Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style = {styles.item}
-                onPress={() => navigation.navigate('MyOffers')}
-            >
-                <Text style = {styles.detailsTitle}> My Offers</Text>
-                <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style = {styles.item}
-                onPress={() => navigation.navigate('Settings')}
-            >
-                <Text style = {styles.detailsTitle}> Settings</Text>
-                <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-            </TouchableOpacity>
-        </SafeAreaView>
-    )
+class Profile extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            userAvatar: 'null',
+            imageChosen: false,
+            unsubscribe: ''
+        };
+    }
+
+    onSignOut = () => {
+        firebase.auth().signOut().then(function() {
+            alert("You have signed out successfully.");
+        }).catch(function(error) {
+            alert(error.message);
+        })
+        this.props.navigation.navigate('Login');
+    }
+
+    getData = () => {
+        var user = firebase.auth().currentUser;
+        var document = firebase.firestore().collection('info').doc(user.email);
+        this.state.unsubscribe = document.get().then((doc) => {
+            var data = doc.data();
+            this.setState({userAvatar: data.avatar});
+            if (this.state.userAvatar !== 'null') {
+                this.setState({imageChosen: true})
+            } else {
+                this.setState({imageChosen: false})
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+    }
+
+    componentDidMount() {
+        this.getData();
+    }
+
+    componentDidUpdate(prevProps) {
+        const isFocused = this.props;
+        if (this.props.userAvatar !== prevProps.userAvatar && isFocused) {
+            this.getData();
+        }
+      }
+
+    componentWillUnmount() {
+        var unsubscribe = this.state.unsubscribe;
+        unsubscribe;
+    }
+
+    focusChange = () => {
+        const isFocused = this.props;
+        if (isFocused) {
+            this.getData();
+        }
+    }
+
+    render() {
+        const isFocused = this.props;
+        return (
+            <SafeAreaView style = {styles.container}>
+                <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
+                <Image source = {require('../../../../assets/userMask.png')} style = {{width: 150, height: 150, alignSelf: 'center',
+                borderRadius: 100, marginTop: -150, opacity: this.state.imageChosen ? 0 : 1}}/>
+                <Text style = {styles.header}> username </Text>
+                <TouchableOpacity 
+                    style = {styles.Button}
+                    onPress={() => this.props.navigation.navigate('EditProfile')}
+                >
+                    <Text style = {styles.buttonTexts}> Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {styles.item}
+                    onPress={() => this.props.navigation.navigate('MyOffers')}
+                >
+                    <Text style = {styles.detailsTitle}> My Offers</Text>
+                    <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {styles.item}
+                    onPress={() => this.props.navigation.navigate('Settings')}
+                >
+                    <Text style = {styles.detailsTitle}> Settings</Text>
+                    <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {styles.itemNew}
+                    onPress = {() => this.props.navigation.navigate('ChangePassword')}
+                >
+                    <Text style = {styles.detailsTitleNew}> Change Password</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {styles.itemNew2}
+                    onPress = {this.onSignOut}
+                >
+                    <Text style = {styles.detailsTitleNew2}>Log Out</Text>
+                </TouchableOpacity>
+            </SafeAreaView>
+        )
+    }
 };
 
-export default class ProfileScreen extends React.Component {
-    render() {
-        //const {name} = this.props.route.params;
-        return <Profile navigation = {this.props.navigation} />
-    }
-}
+export default function(props) {
+    const isFocused = useIsFocused();
+  
+    return <Profile {...props} isFocused={isFocused} />;
+  }
 
 const styles = StyleSheet.create({
     container: {
@@ -54,7 +129,7 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         alignSelf: 'center',
-        borderRadius: 50,
+        borderRadius: 100,
         marginTop: 70
     },
     Button: {
@@ -76,7 +151,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff"
     },
     detailsTitle: {
-        marginBottom: 0,
         fontSize: 25,
         fontWeight: '600',
         justifyContent: 'center',
@@ -90,5 +164,36 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         marginTop: 32,
         zIndex: 1,
+    },
+    itemNew: {
+        marginTop: 15,
+        marginLeft: 40,
+        borderRadius: 15,
+        backgroundColor: "#fff",
+        alignSelf: 'flex-start'
+    },
+    detailsTitleNew: {
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
+        zIndex: 1,
+        padding: 15,
+        color: "#266E7D"
+    },
+    itemNew2: {
+        marginTop: -51,
+        marginRight: 40,
+        borderRadius: 15,
+        backgroundColor: "#fff",
+        alignSelf: 'flex-end'
+    },
+    detailsTitleNew2: {
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
+        zIndex: 1,
+        padding: 15,
+        paddingHorizontal: 30,
+        color: "#266E7D"
     },
 });

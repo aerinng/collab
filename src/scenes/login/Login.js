@@ -58,6 +58,7 @@ export default class Login extends React.Component {
                     placeholder = "Email"
                     value = {this.state.email}
                     underlineColorAndroid = { 'transparent' }
+                    autoCapitalize = 'none'
                 />
                 <Image 
                     style = {styles.icons2}
@@ -70,6 +71,7 @@ export default class Login extends React.Component {
                     placeholder = "Password"
                     secureTextEntry = {true}
                     underlineColorAndroid = { 'transparent' }
+                    autoCapitalize = 'none'
                 />
                 <TouchableOpacity style = {styles.Button} onPress = {this.onBottomPress}>
                     <Text style = {styles.buttonText}> Sign In </Text>

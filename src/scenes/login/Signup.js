@@ -8,14 +8,17 @@ class Signup extends React.Component{
     state = {
         name:'',
         email:'',
+        username: '',
         password:'',
+        address: '',
         error:'',
+        err: ''
     }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
     onBottomPress = () =>{
         firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password)
-        .then(this.onSignupSucess)
+        .then(this.onSignupSuccess)
         .catch(err => {
             this.setState({
                 error:err.message
@@ -24,12 +27,38 @@ class Signup extends React.Component{
     }
 
     //If successful, no error message shown
-    onSignupSucess =  () => {
+    onSignupSuccess =  () => {
         this.setState({
             error:''
         })
-        this.props.navigation.navigate('Login', {name: this.state.name})
+        this.addToDB();
+        this.props.navigation.navigate('Preference');
     }        
+
+    addToDB = () => {
+        var cUser = firebase.auth().currentUser.uid; 
+        firebase.firestore().collection('info').doc(this.state.email).set({ //rmb to add name
+            promo:'',
+            location:'',
+            category:'',
+            total:'', 
+            date:'',
+            desc:'',
+            avatar: 'null',
+            address: this.state.address,
+            name: this.state.name,
+            username: this.state.username
+        }).then(error =>{
+            this.setState({
+                err:''
+            }
+        )})
+        .catch(error =>{
+            this.setState({
+                err:error.message
+            })
+        });
+    }
 
     render(){
         return (           
@@ -51,6 +80,7 @@ class Signup extends React.Component{
                         value={this.state.name}
                         onChangeText={name => this.setState({name})}
                         underlineColorAndroid = { 'transparent' }
+                        autoCapitalize = 'none'
                     />
                     <Image 
                         style = {styles.icons4}
@@ -62,6 +92,7 @@ class Signup extends React.Component{
                         value={this.state.email}
                         onChangeText={email => this.setState({email})}
                         underlineColorAndroid = { 'transparent' }
+                        autoCapitalize = 'none'
                     />
                     <Image 
                         style = {styles.icons}
@@ -73,6 +104,7 @@ class Signup extends React.Component{
                         value={this.state.username}
                         onChangeText={username => this.setState({username})}
                         underlineColorAndroid = { 'transparent' }
+                        autoCapitalize = 'none'
                     />
                     <Image 
                         style = {styles.icons2}
@@ -85,6 +117,7 @@ class Signup extends React.Component{
                         onChangeText={password => this.setState({password})}
                         secureTextEntry = {true}
                         underlineColorAndroid = { 'transparent' }
+                        autoCapitalize = 'none'
                     />
                     <TouchableOpacity style = {styles.Button} onPress={this.onBottomPress}> 
                         <Text style = {styles.buttonText}> Sign Up </Text>
