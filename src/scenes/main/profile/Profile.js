@@ -9,7 +9,8 @@ class Profile extends React.Component {
         this.state = {
             userAvatar: 'null',
             imageChosen: false,
-            unsubscribe: ''
+            unsubscribe: '',
+            username: '',
         };
     }
 
@@ -28,6 +29,7 @@ class Profile extends React.Component {
         this.state.unsubscribe = document.get().then((doc) => {
             var data = doc.data();
             this.setState({userAvatar: data.avatar});
+            this.setState({username: data.username});
             if (this.state.userAvatar !== 'null') {
                 this.setState({imageChosen: true})
             } else {
@@ -67,8 +69,8 @@ class Profile extends React.Component {
             <SafeAreaView style = {styles.container}>
                 <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
                 <Image source = {require('../../../../assets/userMask.png')} style = {{width: 150, height: 150, alignSelf: 'center',
-                borderRadius: 100, marginTop: -150, opacity: this.state.imageChosen ? 0 : 1}}/>
-                <Text style = {styles.header}> username </Text>
+                borderRadius: 100, marginTop: -140, opacity: this.state.imageChosen ? 0 : 1}}/>
+                <Text style = {styles.header}>{ this.state.username }</Text>
                 <TouchableOpacity 
                     style = {styles.Button}
                     onPress={() => this.props.navigation.navigate('EditProfile')}
@@ -121,7 +123,6 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 35,
         marginBottom: 10,
-        marginTop: 10,
         fontWeight: 'bold',
         textAlign: 'center',
     },
@@ -130,13 +131,13 @@ const styles = StyleSheet.create({
         height: 150,
         alignSelf: 'center',
         borderRadius: 100,
-        marginTop: 70
+        marginTop: 20
     },
     Button: {
         backgroundColor: "#fff",
         padding: 10,
         marginHorizontal: 135,
-        marginBottom: 20,
+        marginBottom: 10,
         borderRadius: 10,
     },
     buttonTexts: {
@@ -177,7 +178,8 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         textAlign: 'center',
         zIndex: 1,
-        padding: 15,
+        padding: 10,
+        paddingVertical: 15,
         color: "#266E7D"
     },
     itemNew2: {
@@ -193,7 +195,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         zIndex: 1,
         padding: 15,
-        paddingHorizontal: 30,
+        paddingHorizontal: 20,
         color: "#266E7D"
     },
 });

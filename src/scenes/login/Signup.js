@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity, SafeAreaVie
 import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-class Signup extends React.Component{
+export default class Signup extends React.Component{
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
     state = {
         name:'',
@@ -126,7 +126,7 @@ class Signup extends React.Component{
             </KeyboardAwareScrollView>
             </SafeAreaView>
         );
-        }
+    }
 }
 
 const styles = StyleSheet.create({
@@ -230,5 +230,3 @@ const styles = StyleSheet.create({
         position: 'absolute'
     }
 });
-
-export default Signup;

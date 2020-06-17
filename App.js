@@ -4,7 +4,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { StyleSheet } from "react-native";
 
 // scenes imports
 import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
@@ -36,7 +35,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore';
 import {decode, encode} from 'base-64';
-//import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging';
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode } 
@@ -67,9 +65,9 @@ const RootScreen = () => (
   }}
 >    
   <Root.Screen name = "Login" component = {Login} />
+  <Root.Screen name = "Preference" component = {Preference}/> 
   <Root.Screen name = "Tabs" component = {TabNavigator} />
   <Root.Screen name = "Signup" component = {Signup} />
-  <Root.Screen name = "Preference" component = {Preference}/> 
 </Root.Navigator>
 );
 

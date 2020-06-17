@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
+import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList, Linking } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 
 const DATA = [
@@ -7,23 +7,26 @@ const DATA = [
       id: '1',
       title: 'Fairprice',
       data: "Free delivery with purchase above $79",
-      image: require('../../../../assets/fairprice.jpg')
+      image: require('../../../../assets/fairprice.jpg'),
+      url: 'https://www.fairprice.com.sg/promotions'
     },
     {
       id: '2',
       title: 'Cold Storage',
       data: "Free delivery with purchase above $79",
-      image: require('../../../../assets/coldstorage.jpg')
+      image: require('../../../../assets/coldstorage.jpg'),
+      url: 'https://coldstorage.com.sg/deals/'
     },
     {
       id: '3',
       title: 'Sephora',
       data: "Free delivery with purchase above $50",
-      image: require('../../../../assets/sephora.jpg')
+      image: require('../../../../assets/sephora.jpg'),
+      url: 'https://www.sephora.sg/sale'
     },
   ];
 
-  function Item({ id, title, data, image, selected, onSelect, navigation }) {
+  function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
         onPress={() => {
@@ -34,10 +37,17 @@ const DATA = [
           styles.item
         ]}
       >
+        <TouchableOpacity
+          style = {{backgroundColor: "#C5C5C5", borderRadius: 15, marginLeft: 255, marginRight: 10, marginTop: -30, padding: 10}}
+          onPress={()=>{ Linking.openURL(url)}}
+        >
+          <Text style = {{color: "#000", fontSize: 15, fontWeight: '600', textAlign: 'center'}}>Website</Text>
+        </TouchableOpacity>
         <Text style={styles.detailsTitle}>{title}</Text>
         <Text style={styles.details}>{data}</Text>
         <Image source = {image} style = {styles.icons} />
         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+        
       </TouchableOpacity>
     );
   }
@@ -70,6 +80,7 @@ const StorePromo = ({navigation}) => {
                     title={item.title}
                     data = {item.data}
                     image = {item.image}
+                    url = {item.url}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
@@ -97,7 +108,8 @@ const styles = StyleSheet.create({
     },
     item: {
         backgroundColor: '#fff',
-        paddingVertical: 40,
+        paddingTop: 40,
+        paddingBottom: 40,
         marginVertical: 8,
         marginHorizontal: 16,
         borderRadius: 15

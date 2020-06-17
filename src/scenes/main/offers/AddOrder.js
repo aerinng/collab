@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, TextInput, Switch, TouchableOpacity, 
-    ScrollView, SafeAreaView, Image} from "react-native";
+    ScrollView, SafeAreaView, Image, Linking } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -150,13 +150,6 @@ class AddOrder extends React.Component {
                 >
                     <Text style = {styles.buttonText}>Post</Text>
                 </TouchableOpacity>
-                <TouchableOpacity //fairpriceButton!
-                    style = {styles.Button}
-                    onPress={()=>{ Linking.openURL('https://www.fairprice.com.sg/promotions')}}
-                >
-                     <Text style = {styles.buttonText}>To Fairprice</Text>
-                </TouchableOpacity>
-
             </KeyboardAwareScrollView>
         </SafeAreaView>
         );
