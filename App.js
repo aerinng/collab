@@ -23,6 +23,8 @@ import EditProfile from './src/scenes/main/profile/EditProfile';
 import MyOffers from './src/scenes/main/profile/MyOffers';
 import MyOffersReceived from './src/scenes/main/profile/MyOffersReceived';
 import Settings from './src/scenes/main/profile/Settings';
+import Preference from './src/scenes/login/Preference';
+import ChangePassword from './src/scenes/main/profile/ChangePassword';
 
 // icons imports
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -63,12 +65,11 @@ const RootScreen = () => (
     gestureEnabled: true,
     headerShown: false 
   }}
-> 
-    
+>    
   <Root.Screen name = "Login" component = {Login} />
-    <Root.Screen name = "Tabs" component = {TabNavigator} />
-    
-    <Root.Screen name = "Signup" component = {Signup} />  
+  <Root.Screen name = "Tabs" component = {TabNavigator} />
+  <Root.Screen name = "Signup" component = {Signup} />
+  <Root.Screen name = "Preference" component = {Preference}/> 
 </Root.Navigator>
 );
 
@@ -156,6 +157,7 @@ function ProfileScreen(props) {
         initialParams={props.route.params}
       />
       <ProfileScreenStack.Screen name = "Settings" component = {Settings} options = {{headerShown: false}} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "ChangePassword" component = {ChangePassword} options = {{headerShown: false}} initialParams={props.route.params}/>
     </ProfileScreenStack.Navigator>
   );
 }

@@ -108,13 +108,15 @@ export default class SearchScreen extends React.Component {
     render() {
         //const {name} = this.props.route.params;
         var cUser = firebase.auth().currentUser.uid; 
-        firebase.firestore().collection('info').doc(cUser).set({ //rmb to add name
+        /*firebase.firestore().collection('info').doc(cUser).set({ //rmb to add name
             promo:'',
             location:'',
             category:'',
             total:'', 
             date:'',
-            desc:''    
+            desc:'',
+            address: '',
+            name:''    
         }).then(error =>{
             this.setState({
                 err:''
@@ -124,7 +126,7 @@ export default class SearchScreen extends React.Component {
             this.setState({
                 err:error.message
             })
-        })
+        })*/
         return <Search navigation = {this.props.navigation}/>;
     }
 }
