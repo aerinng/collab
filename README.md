@@ -55,6 +55,7 @@ We will be developing an web application for iOS that contains these features.
    - Request will be sent to other buyers via notifications.
 2. Auto-Retrieval of Data from Websites 
    - Displays discounts from selected stores 
+   - Links user to external stores websites
 3. Messaging Function
    - Facilitates communication with other buyers
 4. Groups Function
