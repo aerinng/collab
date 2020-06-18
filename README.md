@@ -113,9 +113,26 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 1) Additional option for Google or Facebook authentication when logging in 
 2) Filters promotions for stores that are the user’s favourites
 
+### System Testing Log
+No. | Issue | Solution | Fixed?
+----|-------|----------|-------
+1 | Auto-Post Function: Couldn't call methods based on time intervals | Imported and used 'moment' libraries to use their date features | :white_check_mark:
+2 | Notification Function: react-native-push-token doesn't generate push tokens properly | Had to import permissions + notifications from expo | :white_check_mark:
+3 | Search Page: Data couldn't be retrieved properly because page doesn't re-render between the tab navigations | Used useIsFocused hook from @react-navigation/native. As long as pages between tabs are changed, it will cause a re-render | :white_check_mark:
+4 | Sign Up Page: Upon creating new user, firebase reflects that the newly created user is signed in. However upon running code, the current signed-in user is another user | Changed workflow of the app to navigate from Signup page to Login page. Doing so make sures the current signed in user is correct. | :white_check_mark:
+5 | Profile Page: Infinite loop of fetching data from firebase | Use componentWillUnmount from React Lifecycle Components to clean up any subscriptions | :white_check_mark:
+6 | Edit Profile Page: Multiline placeholder text input not displayed upon rendering of page | Split address inputs into different text input field lines so each address line would be short and able to be displayed properly | :white_check_mark:
+7 | Chat Page: Individual chatroom's preview latest message not displayed properly | Update firebase document field to be the latest message while simultaneously adding the message into subcollection | :white_check_mark:
+8 | Edit Profile Page: Receives error of Maximum update depth exceeded due to too many setStates | Redesigned the UI/UX so editing profile doesn't require modals and Change password, Log out buttons are on Profile Page instead | :white_check_mark:
+9 | React Native text input auto-capitalisation of the first letter resulted in different database fetched from firebase despite having the same email/uid string | Turn off auto-capitalisation for all text inputs in our app | :white_check_mark:
+10 | Profile Page: Doesn't auto update user's picture or username after changing them on Edit Profile Page | Use componentDidUpdate from React Lifecycle Components and compared props so data would be fetched from firebase, hence displaying the latest user data on profile page | :white_check_mark:
+11 | Preference Page: Page is bypassed despite being inserted in the navigations | Work in Progress! | :negative_squared_cross_mark:
+12 | Chat Page: Didn't know how to allow users to search usernames from firebase in order to create a chatroom between both users | Work in Progress! | :negative_squared_cross_mark:
+13 | Connection to Firebase while running simulator: Quota limits are hit sometimes even though database does not reflect that limit was hit | Work in Progress! | :negative_squared_cross_mark:
+
 ### Development Plan
 Target | Actions to reach target | Target Date (Tentative)
------------- | -------------| ------------ 
+-------| ------------------------| ---------------------- 
 Notification Pop-ups | Understand how ‘react-native-push-notification’ works | Mid June (17th June)
 Auto-Retrieval of Data from Websites Function | Reach out to relevant stores to request utilizing their APIs. Understand how APIs work (to request, passing the authentication etc). If unable to obtain APIs, will store data in database and fetch from there. | End June (30th June)
 Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July)
