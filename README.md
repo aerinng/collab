@@ -66,7 +66,7 @@ We want shoppers to be able to communicate with other buyers in their neighbourh
 4) I want to enjoy savings from purchases I make regularly without needing to go through the physical trouble of gathering people to reach the minimum purchase amount.
 
 ## App Features
-We will be developing an web application for iOS that contains these features. 
+We will be developing an application for iOS that contains these features. 
 1. Auto-Post of Requests
    - Buyers who purchase items from certain stores often can set an auto-posting of requests to sub-buyers. This automates the request for more sub-buyers to join their orders based on a frequency set by the main buyers.
    - Request will be sent to other buyers via notifications.
