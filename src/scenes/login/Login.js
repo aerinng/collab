@@ -39,8 +39,12 @@ export default class Login extends React.Component {
             error:''
         })
         try{
-            // const {name} = this.props.route.params
-            this.props.navigation.navigate('Tabs') //, {name:name})
+            const {name} = this.props.route.params
+            const {email} = this.props.route.params
+            const {password} = this.props.route.params
+            const {username} = this.props.route.params
+            console.log("Login: first tab ", password)
+            this.props.navigation.navigate('Tabs', {name:name, email:email, password:password,username:username})
         }catch{
             this.props.navigation.navigate('Tabs')
         }   

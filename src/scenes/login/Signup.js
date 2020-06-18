@@ -9,7 +9,8 @@ class Signup extends React.Component{
         name:'',
         email:'',
         password:'',
-        error:''
+        error:'',
+        username:''
     }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
@@ -17,9 +18,7 @@ class Signup extends React.Component{
         firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password)
         .then(this.onSignupSucess)
         .catch(err => {
-            this.setState({
-                error:err.message
-            })
+            alert(err.message)
         })
     }
 
@@ -29,7 +28,9 @@ class Signup extends React.Component{
         this.setState({
             error:''
         })
-        this.props.navigation.navigate('Login', {name: this.state.name})
+        this.props.navigation.navigate('Login', 
+        {name: this.state.name, email: this.state.email, password:this.state.password,
+        username:this.state.username})
     }        
 
     render(){
@@ -71,6 +72,7 @@ class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Username"
+                        value={this.state.username}
                         onChangeText={username => this.setState({username})}
                         underlineColorAndroid = { 'transparent' }
                     />
@@ -86,6 +88,16 @@ class Signup extends React.Component{
                         secureTextEntry = {true}
                         underlineColorAndroid = { 'transparent' }
                     />
+
+
+                        {/* <TextInput  //TEMPORARY, MOVE TO PREF PAGE
+                        style = {styles.TextInput}
+                        placeholder = "Pref"
+                        value={this.state.pref}
+                        onChangeText={pref => this.setState({pref})}
+                        secureTextEntry = {true}
+                        underlineColorAndroid = { 'transparent' }
+                    /> */}
                     <TouchableOpacity style = {styles.Button} onPress={this.onBottomPress}> 
                         <Text style = {styles.buttonText}> Sign Up </Text>
                     </TouchableOpacity>

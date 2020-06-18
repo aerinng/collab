@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, TextInput, Switch, TouchableOpacity, 
-    ScrollView, SafeAreaView, Image, Linking } from "react-native";
+    ScrollView, SafeAreaView, Image} from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
+import {daily, weekly, biweekly, monthly} from './AddOrdFunc'
 
 class AddOrder extends React.Component {
     state = {
@@ -14,7 +15,7 @@ class AddOrder extends React.Component {
         category:'',
         date:'',
         desc:'',
-        switchValue:false, 
+        switchValue:false,  //yes or no 
         isDateTimePickerVisible: false, 
         displayDate: '', 
         item: null
@@ -22,8 +23,7 @@ class AddOrder extends React.Component {
 
     changeCategory(item) {
         this.setState({ 
-            label: item.label, 
-            value: item.value
+            category: item.value
         });
     }
 
@@ -45,9 +45,14 @@ class AddOrder extends React.Component {
     };
 
     render() {
-        var user = firebase.auth().currentUser.uid; 
-        const orderDate = this.state.displayDate.toString().substring(4,16);
+        //these information are carried over from Store Promo.
+        const {data} = this.props.route.params
+        const {title} = this.props.route.params
+        const {Pid} = this.props.route.params
+        const {image} = this.props.route.params
 
+        var user = firebase.auth().currentUser; 
+        const orderDate = this.state.displayDate.toString().substring(4,16);
         return (
         <SafeAreaView style = {styles.container}>
             <KeyboardAwareScrollView style={styles.scrollView}>
@@ -58,23 +63,16 @@ class AddOrder extends React.Component {
                     <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
                 </TouchableOpacity>
                 <Text style = { styles.header }> Add an Offer </Text>
-
-
-
                 <Text style = { styles.titles }> Store Promotion </Text>
-                <TextInput 
-                    style = { styles.TextInput } 
-                    placeholder = "Enter Store Promotion"
-                    value = {this.state.promo}
-                    onChangeText={promo => this.setState({promo})}                    
-                    underlineColorAndroid = { 'transparent' } 
-                />
+                <Text value = {this.state.promo} style = {{paddingBottom: 10, paddingLeft: 2}}>
+                    {title}: {data}
+                </Text>
                 <Text style = { styles.titles }> My Location </Text>
                 <TextInput 
                     style = { styles.TextInput } 
                     placeholder = "Enter Your Location"
                     value = {this.state.location}
-                    onChangeText={location => this.setState({location})}                    
+                    onChangeText={location => this.setState({location})}   
                     textContentType = {"fullStreetAddress"}
                     underlineColorAndroid = { 'transparent' } 
                 />
@@ -86,7 +84,6 @@ class AddOrder extends React.Component {
                         {label: 'Stationeries', value: 'Stationeries'}
                     ]}
                     onChangeItems = {(item) => this.changeCategory(item)}
-                    // value = {this.state.category}
                 />
                 <Text style = { styles.titles }> Current Total </Text>
                 <TextInput 
@@ -94,11 +91,10 @@ class AddOrder extends React.Component {
                     keyboardType = {'numeric'}
                     placeholder = "Enter Your Current Total"
                     value = {this.state.total}
-                    onChangeText={total => this.setState({total})}                                  
+                    onChangeText={total => this.setState({total})}  
                     underlineColorAndroid = { 'transparent' } 
                 />
                 <Text style = { styles.autopost }> Auto - Post </Text>
-                
                 <Switch
                     trackColor={{ false: "#ff0000", true: "#93D17D" }}
                     thumbColor={this.toggleSwitch ? "#ffffff" : "#f4f3f4"}
@@ -117,28 +113,36 @@ class AddOrder extends React.Component {
                         isVisible={this.state.isDateTimePickerVisible}
                         onConfirm={this.handleDatePicked}
                         onCancel={this.hideDateTimePicker}
+                        value = {this.state.date}
                     />
                 </TouchableOpacity>
                 <Text style = { styles.titles }> Description </Text>
                 <TextInput 
                     style = { styles.TextInputDesc } 
                     multiline = {true}
-                    value = {this.state.desc}
-                    onChangeText={desc => this.setState({desc})}                    
                     placeholder = "Enter a Description"
                     underlineColorAndroid = { 'transparent' } 
+                    value = {this.state.desc}
+                    onChangeText={desc => this.setState({desc})} 
                 />
                 <TouchableOpacity 
                     style = {styles.Button} 
-                     onPress={() =>  {
-                        //Works for login, but not sign-up....               
-                        firebase.firestore().collection('info').doc(user).update({
-                            promo:this.state.promo,
+                    onPress={() =>  {                
+                        firebase.firestore().collection(user.email).add({ //add my order id inside
+                            data:data,
+                            title:title,
                             location:this.state.location,
                             total:this.state.total, 
-                            date:this.state.date,
-                            desc:this.state.desc                        
-                        }).then(
+                            category: this.state.category, 
+                            date:this.state.displayDate.toString(),
+                            desc:this.state.desc,
+                            image:image,
+                            switch: this.state.switchValue
+                        }).then( (snapshot) => {//all asynchronous.....
+                            console.log("already added"); 
+                            snapshot.update({
+                                id:snapshot.id
+                            })
                             this.setState({
                                 promo:'',
                                 location:'', 
@@ -146,10 +150,13 @@ class AddOrder extends React.Component {
                                 date:'',
                                 desc:''                            
                             })
-                        ).catch(err =>  alert(err.message) );
-                        this.props.navigation.navigate('Search');
-                    }
-                    }
+                            if (this.state.switchValue){
+                                daily(snapshot.id, user.email)
+                            }
+                        // this.props.navigation.navigate('Search');
+                        alert("Added Succesfully"); 
+                        })
+                    }}
                 >
                     <Text style = {styles.buttonText}>Post</Text>
                 </TouchableOpacity>
@@ -240,8 +247,7 @@ const styles = StyleSheet.create({
     },
     switch: {
         alignSelf: 'flex-end',
-        marginTop: 380,
-        position: 'absolute'
+        marginTop: -30,
     },
     backbutton: {
         zIndex: 1,
@@ -264,8 +270,9 @@ const styles = StyleSheet.create({
         borderBottomColor: '#C5C5C5',
         transform: [{rotate: '180deg'}],
         alignSelf: 'flex-end',
-        position: 'absolute',
-        marginTop: 468,
+        marginTop: -33,
+        marginRight: 10,
+        paddingBottom: 23,
         zIndex: 1
     },
     date: {
@@ -280,5 +287,3 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
   });
-
-

@@ -1,9 +1,10 @@
+  
 import 'react-native-gesture-handler';
 import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { StyleSheet } from "react-native";
 
 // scenes imports
 import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
@@ -13,14 +14,17 @@ import Profile from './src/scenes/main/profile/Profile';
 import Groups from './src/scenes/main/groups/Groups';
 import Search from './src/scenes/main/search/Search';
 import Chat from './src/scenes/main/chat/Chat';
+import ChatRoom from './src/scenes/main/chat/ChatRoom';
 import StorePromo from './src/scenes/main/offers/StorePromo'
 import AddOrder from './src/scenes/main/offers/AddOrder'
 import Splash from './src/components/Splash';
 import OfferDetails from './src/scenes/main/offers/OfferDetails';
 import EditProfile from './src/scenes/main/profile/EditProfile';
 import MyOffers from './src/scenes/main/profile/MyOffers';
+import MyOffersReceived from './src/scenes/main/profile/MyOffersReceived';
 import Settings from './src/scenes/main/profile/Settings';
-
+import Preference from './src/scenes/login/Preference';
+import ChangePassword from './src/scenes/main/profile/ChangePassword';
 
 // icons imports
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -38,19 +42,20 @@ if (!global.atob) { global.atob = decode }
 
 //API key for configuration
 var firebaseConfig = {
-  apiKey: "AIzaSyBimOSCbzDNjN7YSp6tWGbLRTg4QbAom0E",
-  authDomain: "collab-f1860.firebaseapp.com",
-  databaseURL: "https://collab-f1860.firebaseio.com",
-  projectId: "collab-f1860",
-  storageBucket: "collab-f1860.appspot.com",
-  messagingSenderId: "376900303039",
-  appId: "1:376900303039:web:5e3bd11c8216e62a87ee0a"
+    apiKey: "AIzaSyCjbiA-yf0xWjpk2EjnIMlDxOdq2RsKSug",
+    authDomain: "collab-8af51.firebaseapp.com",
+    databaseURL: "https://collab-8af51.firebaseio.com",
+    projectId: "collab-8af51",
+    storageBucket: "collab-8af51.appspot.com",
+    messagingSenderId: "688778678705",
+    appId: "1:688778678705:web:97a9bcc682a22bd4512d90"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
 firebase.firestore();
+
 //User navigated to Login page by default
 const Root = createStackNavigator();
 const RootScreen = () => (
@@ -59,10 +64,11 @@ const RootScreen = () => (
     gestureEnabled: true,
     headerShown: false 
   }}
-> 
-    <Root.Screen name = "Login" component = {Login} />
-    <Root.Screen name = "Tabs" component = {TabNavigator} />
-    <Root.Screen name = "Signup" component = {Signup} />  
+>    
+  <Root.Screen name = "Login" component = {Login} />
+  <Root.Screen name = "Preference" component = {Preference}/> 
+  <Root.Screen name = "Tabs" component = {TabNavigator} />
+  <Root.Screen name = "Signup" component = {Signup} />
 </Root.Navigator>
 );
 
@@ -98,7 +104,7 @@ const TabNavigator = (props) => (
       <Tab.Screen name = "Search" component = {OfferDetailsScreen} initialParams={props.route.params}/>
       <Tab.Screen name = "Groups" component = {Groups} initialParams={props.route.params}/>
       <Tab.Screen name = "Offer" component = {Offers} initialParams={props.route.params}/>
-      <Tab.Screen name = "Chat" component = {Chat} initialParams={props.route.params} />
+      <Tab.Screen name = "Chat" component = {ChatStackScreen} initialParams={props.route.params} />
       <Tab.Screen name = "Profile" component = {ProfileScreen} initialParams={props.route.params}/>
   </Tab.Navigator>
 );
@@ -141,15 +147,64 @@ function ProfileScreen(props) {
       initialRouteName = "Profile"
       screenOptions = {{
         gestureEnabled: true,
-        headerShown: false
       }}
     >
-      <ProfileScreenStack.Screen name = "Profile" component = {Profile} initialParams={props.route.params}/>
-      <ProfileScreenStack.Screen name = "EditProfile" component = {EditProfile} initialParams={props.route.params}/>
-      <ProfileScreenStack.Screen name = "MyOffers" component = {MyOffers} initialParams={props.route.params}/>
-      <ProfileScreenStack.Screen name = "Settings" component = {Settings} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "Profile" component = {Profile} options = {{headerShown: false}}initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "EditProfile" component = {EditProfile} options = {{headerShown: false}} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "MyOffers" component = {MyOffersScreen} 
+        options = {{title: "My Offers", headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, headerTintColor: "#000"}} 
+        initialParams={props.route.params}
+      />
+      <ProfileScreenStack.Screen name = "Settings" component = {Settings} options = {{headerShown: false}} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "ChangePassword" component = {ChangePassword} options = {{headerShown: false}} initialParams={props.route.params}/>
     </ProfileScreenStack.Navigator>
   );
+}
+const MyOffersScreenStack = createMaterialTopTabNavigator();
+function MyOffersScreen(props) {
+  return (
+    <MyOffersScreenStack.Navigator
+      initialRouteName = "Requested"
+      tabBarOptions = {{
+        showLabel: true,
+        activeTintColor: "#266E7D",
+        inactiveTintColor:  "#C4C4C4",
+        indicatorStyle: { backgroundColor: "#266E7D", },
+        labelStyle: { fontSize: 18, fontWeight: '500' },
+        tabStyle: { marginTop: 0 },
+      }}
+    >
+      <MyOffersScreenStack.Screen name = "Requested" component = {MyOffers} initialParams={props.route.params}/>
+      <MyOffersScreenStack.Screen name = "Received" component = {MyOffersReceived} initialParams={props.route.params}/>
+    </MyOffersScreenStack.Navigator>
+  );
+}
+
+const ChatStack = createStackNavigator();
+function ChatStackScreen(props) {
+  return (
+    <ChatStack.Navigator
+      initialRouteName = "ChatScreen"
+      screenOptions = {{
+        gestureEnabled: true,
+      }}
+    >
+      <ChatStack.Screen 
+        name = "ChatScreen" 
+        component = {Chat} 
+        options = {{headerShown: false, title: "Chats"}} 
+        initialParams={props.route.params}
+      />
+      <ChatStack.Screen 
+        name = "ChatRoom" 
+        component = {ChatRoom} 
+        initialParams={{route: props.route.params, user: firebase.auth().currentUser.uid}}
+        options={({route}) => ({title: route.params.threads.name, 
+          headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, 
+          headerTintColor: "#000"})}
+      />
+    </ChatStack.Navigator>
+  )
 }
 
 //onStateChange for own debugging purposes, not required for the application
@@ -176,32 +231,3 @@ function Navigation() {
 };;
 
 export default Navigation;
-
-const styles = StyleSheet.create({
-  container: {
-    alignSelf: 'stretch',
-    padding: 35,
-    flex: 1,
-  },
-  header: {
-      fontSize: 24,
-      marginBottom: 18,
-      marginTop: 0,
-      fontWeight: 'bold',
-      alignItems: 'center',
-      textAlign: 'center',
-  },
-  Button: {
-      backgroundColor: "#266E7D",
-      marginHorizontal: 70,
-      marginVertical: 25,
-      borderRadius: 10,
-      paddingVertical: 10
-  },
-  buttonText: {
-      textAlign: 'center',
-      fontSize: 23,
-      fontWeight: '600',
-      color: '#ffffff',
-  },
-});

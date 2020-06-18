@@ -1,15 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, SafeAreaView, TouchableOpacity, Image} from "react-native";
+import firebase from 'firebase';
 
-const Profile = ({navigation}) => {
-    return (
+
+const Profile = ({navigation, username}) => {
+        return (
         <SafeAreaView style = {styles.container}>
             <Image source = {require('../../../../assets/userMask.png')} style = {styles.userIcon}/>
-            <Text style = {styles.header}> username</Text>
+            <Text style = {styles.header}>{username}</Text>
             <TouchableOpacity 
                 style = {styles.Button}
                 onPress={() => navigation.navigate('EditProfile')}
             >
+                
                 <Text style = {styles.buttonTexts}> Edit Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity 
@@ -31,13 +34,30 @@ const Profile = ({navigation}) => {
 };
 
 export default class ProfileScreen extends React.Component {
+    state={
+        username:''
+    }
+    componentDidMount(){
+        var user = firebase.auth().currentUser; 
+        firebase.firestore().collection("info").where("email", "==", user.email)
+        .get()
+        .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                console.log(doc.id, " => ", doc.data());
+                var data = doc.data();
+                this.setState({
+                    username: data.username
+                })
+            });
+            
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+    }
+
     render() {
-        if (this.props.route.params != null){
-        const {name} = this.props.route.params
-        return <Profile navigation = {this.props.navigation}  name = {this.props.navigation} /> //or is it name
-        }
-        // const {name} = this.props.route.params;
-        return <Profile navigation = {this.props.navigation}  />
+        return <Profile navigation = {this.props.navigation} username={this.state.username} />
     }
 }
 

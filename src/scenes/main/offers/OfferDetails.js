@@ -7,81 +7,81 @@ class OfferDetails extends React.Component{
     state = {
         users:null
     }
+    componentDidMount(){
+        //trying to update state, but code is gone 
+            var user = firebase.auth().currentUser; 
+            const {orderID} = this.props.route.params
+            firebase.firestore().collection(user.email).doc(orderID).get()
+            .then(sth => {
+                    const results = []
+                    results.push(sth.data())
+                    this.setState({
+                        users: results
+                    })
+                    console.log("users: " , this.state.users)
+                }   
+                
+            )
+            .catch(err => console.error(err));
+    }    
 
     render(){
-        //Displaying the order details --> but causes warning 
-        // var user = firebase.auth().currentUser; 
-        // firebase.firestore().collection('info').doc(user.uid).get()
-        // .then(sth => {
-        //         const results = []
-        //         results.push(sth.data())
-        //         this.setState({
-        //             users: results
-        //         })
-        //     }
-        // )
-        // .catch(err => console.error(err))
-
-
+        console.log("Offer Details: render"); 
         return (
-            // // <SafeAreaView style = {styles.container}>
-            //     // <ScrollView style={styles.scrollView}>
-                
-            // <FlatList
-            // ListHeaderComponent={
-            //     <>
-            //     <TouchableOpacity  
-            //             style = {styles.backbutton}
-            //             onPress={() => this.props.navigation.goBack()}
-            //         >     
-            //              <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
-            //         </TouchableOpacity>
-            //         <Text style = {styles.header} > Offer Details </Text>
-            //         </>
-            // }
-            // data={this.state.users}
-            // renderItem={({item}) => (
-            // <View style={styles.itemContainer}>
-            // <Text style = { styles.titles }> Store Promotion </Text>
-            // <Text style = { styles.data }>Fairprice - Free delivery with purchase above $79</Text>
-            // <Text>{item.promo}</Text>
-            // <Text style = { styles.titles }> My Location </Text>
-            // <Text style ={ styles.data}>{item.location}</Text>  
-            // <Text style = { styles.titles }> Category </Text>
-            // <Text style ={ styles.data }>{item.category}</Text>
-            // <Text style = { styles.titles }> Current Total </Text>
-            // <Text style ={ styles.data }>{item.total}</Text>
-            // <Text style = { styles.titles }> Estimated Order Date </Text>
-            // <Text style ={ styles.data }>{item.date}</Text>
-            // <Text style = { styles.titles }> Description </Text>           
-            // <Text style ={ styles.data }>{item.desc}</Text>
-            //     </View>)}
-            // style={styles.container}
-            // keyExtractor={item => item.email} />
-            //     //  {/* </ScrollView> */}
-            // //  </SafeAreaView>
-
-
-
-
-            <SafeAreaView style = {styles.container}>
-                <ScrollView style={styles.scrollView}>
-                    <TouchableOpacity  
+            <FlatList
+            ListHeaderComponent={
+                <>
+                <TouchableOpacity  
                         style = {styles.backbutton}
-                        onPress={() => this.props.navigation.goBack()}
-                    >
-                        <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
+                        onPress={() => {this.props.navigation.goBack()
+                        
+                    }}
+                    >     
+                         <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
                     </TouchableOpacity>
                     <Text style = {styles.header} > Offer Details </Text>
-                    <Text style = { styles.titles }> Store Promotion </Text>
-                    <Text style = { styles.data }>Fairprice - Free delivery with purchase above $79</Text>
-                    <Text style = { styles.titles }> My Location </Text>
-                    <Text style = { styles.titles }> Category </Text>
-                    <Text style = { styles.titles }> Current Total </Text>
-                    <Text style = { styles.titles }> Estimated Order Date </Text>
-                    <Text style = { styles.titles }> Description </Text>
-                </ScrollView>
-            </SafeAreaView>
+                    </>
+            }
+            data={this.state.users}
+            renderItem={({item}) => (
+            <View style={styles.itemContainer}>
+            <Text style = { styles.titles }> Store Promotion </Text>
+            {/* <Text style = { styles.data }>Fairprice - Free delivery with purchase above $79</Text> */}
+            <Text>{item.data}</Text>
+            <Text style = { styles.titles }> My Location </Text>
+            <Text style ={ styles.data}>{item.location}</Text>  
+            <Text style = { styles.titles }> Category </Text>
+            <Text style ={ styles.data }>{item.category}</Text>
+            <Text style = { styles.titles }> Current Total </Text>
+            <Text style ={ styles.data }>{item.total}</Text>
+            <Text style = { styles.titles }> Estimated Order Date </Text>
+            <Text style ={ styles.data }>{item.date}</Text>
+            <Text style = { styles.titles }> Description </Text>           
+            <Text style ={ styles.data }>{item.desc}</Text>
+                </View>)}
+            style={styles.container}
+            keyExtractor={item => item} />
+
+
+            // <SafeAreaView style = {styles.container}>
+            //     <ScrollView style={styles.scrollView}>
+            //         <TouchableOpacity  
+            //             style = {styles.backbutton}
+            //             onPress={() => {this.props.navigation.goBack()
+            //             console.log("go back")
+            //         }}>
+            //             <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
+            //         </TouchableOpacity>
+            //         <Text style = {styles.header} > Offer Details </Text>
+            //         <Text style = { styles.titles }> Store Promotion </Text>
+            //         <Text style = { styles.data }>Fairprice - Free delivery with purchase above $79</Text>
+            //         <Text style = { styles.titles }> My Location </Text>
+            //         <Text style = { styles.titles }> Category </Text>
+            //         <Text style = { styles.titles }> Current Total </Text>
+            //         <Text style = { styles.titles }> Estimated Order Date </Text>
+            //         <Text style = { styles.titles }> Description </Text>
+            //     </ScrollView>
+            // </SafeAreaView>
         )
     }
 };
