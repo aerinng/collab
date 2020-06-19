@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, FlatList } from "react-native";
 import * as Progress from 'react-native-progress';
+import { useIsFocused } from '@react-navigation/native';
+import firebase from 'firebase';
 
 const DATA = [
-    {
+    /*{
       id: '1',
       title: 'Fairprice',
       data: "Groceries",
@@ -20,7 +22,7 @@ const DATA = [
       user: "alyssa123 - Paya Lebar",
       progress: '76% of $59.00',
       progressIdx: 0.76
-    },
+    },*/
   ];
 
   function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
@@ -44,14 +46,34 @@ const DATA = [
   }
 
 const MyOffers = ({navigation}) => {
-        const [selected, setSelected] = React.useState(null);
+        /*const [selected, setSelected] = React.useState(null);
         const onSelect = (id) => {
             setSelected(id);
         }
         const [selected2, setSelected2] = React.useState(null);
         const onSelect2 = (id) => {
             setSelected2(id);
-        }
+        }*/
+        const isFocused = useIsFocused();
+        const [selected, setSelected] = React.useState(new Map());
+        const onSelect = React.useCallback(
+          id => {
+            const newSelected = new Map(selected);
+            newSelected.set(id, !selected.get(id));
+            setSelected(newSelected);
+            DATA.length = 0; //EMPTY THE LIST
+          },
+          [selected],
+        );
+        var user = firebase.auth().currentUser; 
+        DATA.length = 0;
+        //entering in DATA from this logged in user
+        firebase.firestore().collection(user.email).get()
+        .then(snap => {
+            snap.forEach(docs =>{      
+                DATA.push(docs.data())//just push the id
+            })
+        })
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -62,9 +84,9 @@ const MyOffers = ({navigation}) => {
                         title={item.title}
                         data = {item.data}
                         image = {item.image}
-                        progressIdx = {item.progressIdx}
-                        progress = {item.progress}
-                        user = {item.user}
+                        //progressIdx = {item.progressIdx}
+                        //progress = {item.progress}
+                        //user = {item.user}
                         selected={item.id == selected}
                         onSelect={onSelect}
                     />

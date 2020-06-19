@@ -3,9 +3,12 @@ import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
+import {  Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import { useIsFocused } from '@react-navigation/native';
 
 const DATA = [
-    {
+    /*{
       id: '1',
       title: 'Fairprice',
       data: "Groceries",
@@ -31,7 +34,7 @@ const DATA = [
       user: "aabattery123 - Paya Lebar",
       progress: "50% of $50.00",
       progressIdx: 0.5
-    },
+    },*/
   ];
 
   function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
@@ -39,9 +42,9 @@ const DATA = [
       <TouchableOpacity
         onPress={() => {
             onSelect(id);
-            navigation.navigate('OfferDetails')
+            navigation.navigate('OfferDetails', {orderID:id})
         }}
-        style={[ styles.item ]}
+        style={[ styles.item]}
       >
         <Text style={styles.users}>{user}</Text>
         <Text style={styles.detailsTitle}>{title}</Text>
@@ -65,6 +68,19 @@ const Search = ({navigation, searchKey}) => {
     const filteredData = DATA.filter((item)=> {
         return item.title.indexOf(searchKey) >=0
     })
+
+    const isFocused = useIsFocused();
+
+    var user = firebase.auth().currentUser;
+    //entering in DATA from this logged in user
+    firebase.firestore().collection(user.email).get()
+    .then(snap => {
+      DATA.length = 0;
+        snap.forEach(docs =>{      
+            DATA.push(docs.data())
+        })
+        console.log("Data [search] ", DATA)
+    })
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -78,6 +94,27 @@ const Search = ({navigation, searchKey}) => {
                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
                 onChangeText={(value) => searchKey= value}
             />
+            <TouchableOpacity style = {styles.selection} 
+                title = "Send Push Notification"
+                onPress = {async () => {
+                    console.log("push notifcation pushed")
+                    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Accept-encoding': 'gzip, deflate',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            to: 'ExponentPushToken[E3h9-HK9lNgzpMQTG5TyYa]', //this one needa change
+                            sound: 'default',
+                            title: 'Demo',
+                            body: 'testing',
+                            _displayInForeground: true,
+                        })
+                    });
+                }}
+            />
            <FlatList
                 data={DATA}
                 renderItem={({ item }) => (
@@ -86,9 +123,9 @@ const Search = ({navigation, searchKey}) => {
                     title={item.title}
                     data = {item.data}
                     image = {item.image}
-                    progressIdx = {item.progressIdx}
-                    progress = {item.progress}
-                    user = {item.user}
+                    //progressIdx = {item.progressIdx}
+                    //progress = {item.progress}
+                    //user = {item.user}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
@@ -103,31 +140,77 @@ const Search = ({navigation, searchKey}) => {
 
 export default class SearchScreen extends React.Component {
     state = {
-        err:''
+        err:'',
+        users:null,
+        foo:false
     }
-    render() {
-        //const {name} = this.props.route.params;
-        var cUser = firebase.auth().currentUser.uid; 
-        /*firebase.firestore().collection('info').doc(cUser).set({ //rmb to add name
-            promo:'',
-            location:'',
-            category:'',
-            total:'', 
-            date:'',
-            desc:'',
-            address: '',
-            name:''    
-        }).then(error =>{
-            this.setState({
-                err:''
-            }
-        )})
-        .catch(error =>{
-            this.setState({
-                err:error.message
+
+    registerForPushNotificationsAsync = async () => {
+        var user = await firebase.auth().currentUser;
+        const { status: existingStatus } = await Permissions.getAsync(
+          Permissions.NOTIFICATIONS
+        );
+        let finalStatus = existingStatus;
+        // only ask if permissions have not already been determined, because
+        // iOS won't necessarily prompt the user a second time.
+        if (existingStatus !== 'granted') {
+          // Android remote notification permissions are granted during the app
+          // install, so this will only ask on iOS
+          const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+          finalStatus = status;
+        }
+        // Stop here if the user did not grant permissions
+        if (finalStatus !== 'granted') {
+          return;
+        }
+        try {
+          // Get the token that uniquely identifies this device
+          let token = await Notifications.getExpoPushTokenAsync();
+          try{
+            // POST the token to your backend server from where you can retrieve it to send push notifications.
+            firebase.firestore().collection('info').doc(user.email).update({
+                pushToken:token
             })
-        })*/
-        return <Search navigation = {this.props.navigation}/>;
+          }catch(error){
+            console.log("error")
+          }
+          //Creating a new collection 
+          try{
+            const {pref} = this.props.route.params.pref; ///from login page 
+            firebase.firestore().collection(pref).doc(user.email).set({
+              pushToken:token
+            })
+          }catch(error){
+            console.log('error')
+          }
+        } catch (error) {
+          console.log('error');
+        }
+    };            
+
+    async componentDidMount() {
+        console.log("going to register")
+        await this.registerForPushNotificationsAsync();
+    }     
+
+    render(){       
+        var user = firebase.auth().currentUser; 
+        // console.log("Search: render", user.email)
+        if (this.props.route.params != null) { //from login page
+            const {email} = this.props.route.params
+            const {password} = this.props.route.params
+            const {username} = this.props.route.params
+            const {name} = this.props.route.params; 
+            firebase.firestore().collection('info').doc(user.email).set({ 
+                name: name,
+                email: email, 
+                password: password,
+                username:username,
+                frequency:'', //for Auto-Post frequency, to be updated eventually
+                pushToken:''
+            })
+        } 
+        return <Search navigation = {this.props.navigation} user ={user}/>
     }
 }
 

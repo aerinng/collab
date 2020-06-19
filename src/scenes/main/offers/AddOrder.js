@@ -5,12 +5,14 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
+import {daily, weekly, biweekly, monthly} from './AddOrdFunc'
 
 class AddOrder extends React.Component {
     state = {
         promo:'', 
         location:'', 
-        total:'', 
+        total:'',
+        category:'', 
         date:'',
         desc:'',
         switchValue:false, 
@@ -21,7 +23,7 @@ class AddOrder extends React.Component {
 
     changeCategory(item) {
         this.setState({ 
-            label: item.label, 
+            //label: item.label, 
             value: item.value
         });
     }
@@ -48,8 +50,9 @@ class AddOrder extends React.Component {
         const {data} = this.props.route.params
         const {title} = this.props.route.params
         const {Pid} = this.props.route.params
+        const {image} = this.props.route.params
 
-        var user = firebase.auth().currentUser.uid; 
+        var user = firebase.auth().currentUser; 
         const orderDate = this.state.displayDate.toString().substring(4,16);
         return (
         <SafeAreaView style = {styles.container}>
@@ -126,16 +129,21 @@ class AddOrder extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button} 
                     onPress={() =>  {
-                        //Updating the firebase of these fields for this docID, i.e this specific customer                   
-                        firebase.firestore().collection(user).add({
-                            promo:data,
+                        firebase.firestore().collection(user.email).add({ //add my order id inside
+                            data:data,
+                            title:title,
                             location:this.state.location,
                             total:this.state.total, 
                             category: this.state.category, 
                             date:this.state.displayDate.toString(),
                             desc:this.state.desc,
-                            PromoId:Pid                  
-                        }).then( (snapshot) => {
+                            image:image,
+                            switch: this.state.switchValue
+                        }).then( (snapshot) => { //all asynchronous.....
+                            console.log("already added"); 
+                            snapshot.update({
+                                id:snapshot.id
+                            })
                             this.setState({
                                 promo:'',
                                 location:'', 
@@ -143,9 +151,12 @@ class AddOrder extends React.Component {
                                 date:'',
                                 desc:''                            
                             })
-                        this.props.navigation.navigate('Search');
-                        }   
-                    ).catch(err =>  alert(err.message));
+                            if (this.state.switchValue){
+                                daily(snapshot.id, user.email)
+                            }
+                        // this.props.navigation.navigate('Search');
+                        alert("Added Successfully"); 
+                        })
                     }}
                 >
                     <Text style = {styles.buttonText}>Post</Text>

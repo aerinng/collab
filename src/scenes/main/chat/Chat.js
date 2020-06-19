@@ -12,7 +12,9 @@ export default class Chat extends React.Component {
       textInputName: '',
       modalVisible: false,
       threads: '',
-      unsubscribe: null
+      unsubscribe: null,
+      username: '',
+      gotUser: false
     };
   }
 
@@ -26,7 +28,7 @@ export default class Chat extends React.Component {
 
   // fetch chats data from Firestore
   componentDidMount() {
-    this.getChats(firebase.auth().currentUser.uid);
+    this.getChats(firebase.auth().currentUser.email);
   }
 
   // stop listening to changes from Firestore
@@ -39,26 +41,116 @@ export default class Chat extends React.Component {
   getChats = (user) => {
     this.state.unsubscribe = firebase.firestore()
                                      .collection('chats: ' + user)
-                                     //.where('latestMessage.timeStamp', '>', 'A')
                                      .orderBy('latestMessage.timeStamp', 'desc')
                                      .onSnapshot(querySnapshot => {
                                          const threads = querySnapshot.docs.map(documentSnapshot => {
                                           //console.log(documentSnapshot.get('name'))
-                                          return {
+                                          const firebaseData = documentSnapshot.data();
+                                          const data = {
                                             _id: documentSnapshot.id,
                                             name: '',
                                             latestMessage: {
                                               text: ''
                                             },
-                                            ...documentSnapshot.data()
+                                            ...firebaseData
                                           };
+                                          return data;
                                         });
                                         this.setThreads(threads);
                                       });
-      }
+  }
+
+  findUsername = () => {
+    firebase.firestore()
+            .collection('info')
+            .where('username', '==', this.state.textInputName)
+            .get()
+            .then(querySnapshot => {
+              var curr = this;
+              const threads = querySnapshot.forEach(function(doc) {
+                //curr.setState({username: doc.data().username})
+                var mail = doc.id;
+                console.log("firstmail: " + mail)
+                curr.findName(mail);
+                /*if (doc.data().username !== curr.state.textInputName) {
+                  alert("Username cannot be found.");
+                }*/
+                console.log("text input: " + curr.state.textInputName)
+                console.log("username found: " + doc.data().username)
+              })
+              //console.log("username updated " + this.state.username)
+              this.setState({gotUser: true})
+            })
+            .catch((error) => {
+              alert("Username cannot be found.");
+              console.log(error)
+            });
+  }
+
+  findName = (email) => {
+    var mail = email;
+    var currU = firebase.auth().currentUser.email;
+    console.log("curr email: " + currU)
+    console.log("friendMail: " + mail)
+    var document = firebase.firestore().collection('info').doc(currU);
+
+    document.get()
+            .then(doc => {
+              var curr = this;
+              this.setState({username: doc.data().username})
+              console.log("name attained11: " + this.state.username)
+              this.addOwnChat(currU);
+              this.addFriendChat(mail, this.state.username);
+            })
+            .catch(function(error) {
+              console.log("Eeeeerror getting document:", error);
+            });
+          console.log("name attained: " + this.state.username)
+    //this.addFriendChat(mail, this.state.username);
+  }
+
+  addOwnChat = (user) => {
+  firebase.firestore()
+          .collection('chats: ' + user)
+          .add({
+            name: this.state.textInputName,
+            latestMessage: {
+              timeStamp: new Date().getTime(),
+              text: 'You have created a room.'
+            },
+          })
+          .then(docRef => {
+            docRef.collection('msg').add({
+              timeStamp: new Date().getTime(),
+              text: 'You have created a room.',
+              system: true
+            })
+            this.props.navigation.navigate('Chat');
+          });
+  }
+
+  addFriendChat = (email, name) => {
+    firebase.firestore()
+            .collection('chats: ' + email)
+            .add({
+              name: name,
+              latestMessage: {
+                timeStamp: new Date().getTime(),
+                text: 'You have created a room.'
+              },
+            })
+            .then(docRef => {
+              docRef.collection('msg').add({
+                timeStamp: new Date().getTime(),
+                text: 'You have created a room.',
+                system: true
+              })
+              //this.props.navigation.navigate('Chat');
+            });
+  }
 
   render() {
-    var user = firebase.auth().currentUser.uid;
+    var user = firebase.auth().currentUser.email;
     const { modalVisible } = this.state;
     return (
         <SafeAreaView style = {styles.container}>
@@ -68,11 +160,7 @@ export default class Chat extends React.Component {
                 menuImageStyle = {{resizeMode: 'stretch', width: 0, height: 0}}
                 profileImageSource = {require('../../../../assets/edit.png')}
                 profileImageStyle = {{marginTop: -5, resizeMode: 'stretch', width: 25, height: 25}}
-                profileImageOnPress = {() => {
-                  this.setModalVisible(true);
-                  //console.log("before " + this.state.modalVisible);
-                  
-                }}
+                profileImageOnPress = {() => {this.setModalVisible(true)}}
                 titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
                 searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
@@ -97,11 +185,11 @@ export default class Chat extends React.Component {
                           <Image source = {require('../../../../assets/delete.png')} style = {{resizeMode: 'stretch', width: 15, height: 15, marginTop: 200, marginBottom: -310}}/>
                         </TouchableOpacity>
                         <TextInput 
-                          placeholder = "Whom would you like to message?"
-                          onChangeText={
-                            textInputName => this.setState({ textInputName })
-                            //firebase.auth().
-                          }
+                          placeholder = "Enter a username to start chatting!"
+                          autoCapitalize = 'none'
+                          onChangeText={(textInputName) => {
+                            this.setState({ textInputName: textInputName })
+                          }}
                           style ={{backgroundColor: "#fff", marginTop: 250, marginHorizontal: 10, borderRadius: 15, padding: 10}}
                         />
                         <TouchableOpacity
@@ -109,23 +197,8 @@ export default class Chat extends React.Component {
                             paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, 
                             alignSelf: 'center', borderRadius: 10}}
                           onPress = {() => {
-                            firebase.firestore()
-                                    .collection('chats: ' + user)
-                                    .add({
-                                      name: this.state.textInputName,
-                                      latestMessage: {
-                                        timeStamp: new Date().getTime(),
-                                        text: 'You have created a room.'
-                                      },
-                                    })
-                                    .then(docRef => {
-                                      docRef.collection('msg').add({
-                                        timeStamp: new Date().getTime(),
-                                        text: 'You have created a room.',
-                                        system: true
-                                      })
-                                      this.props.navigation.navigate('Chat');
-                                    });
+                            console.log("hello " + this.state.textInputName)
+                            this.findUsername();
                             this.setModalVisible(!modalVisible);
                             //console.log("after " + this.state.modalVisible);
                           }}
@@ -147,7 +220,7 @@ export default class Chat extends React.Component {
                         ItemSeparatorComponent={() => <Divider />}
                         renderItem={({ item }) => (
                           <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('ChatRoom', { threads: item , user: user})}
+                            onPress={() => this.props.navigation.navigate('ChatRoom', { threads: item , user: user, })}
                           >
                           <List.Item
                             title={item.name}

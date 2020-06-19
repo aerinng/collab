@@ -1,11 +1,81 @@
 import React from 'react';
-import { StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View, SafeAreaView } from "react-native";
 import * as Progress from 'react-native-progress';
+import firebase from 'firebase';
 
-class OfferDetails extends React.Component{
+class OfferDetails extends React.Component {
+    state = {
+        users:null
+    }
+    componentDidMount() {
+        //trying to update state, but code is gone 
+        var user = firebase.auth().currentUser; 
+        const {orderID} = this.props.route.params
+        firebase.firestore().collection(user.email).doc(orderID).get()
+        .then(sth => {
+                const results = []
+                results.push(sth.data())
+                this.setState({
+                    users: results
+                })
+                console.log("users: " , this.state.users)
+            }   
+            
+        )
+        .catch(err => console.error(err));
+    }    
+
     render(){
-        //const {name} = this.props.route.params;
+        console.log("Offer Details: render"); 
         return (
+            <SafeAreaView style = {styles.container}>
+                <FlatList
+                    ListHeaderComponent = {
+                        <>
+                            <TouchableOpacity  
+                                style = {styles.backbutton}
+                                onPress={() => {this.props.navigation.goBack()}}
+                            >     
+                                <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
+                            </TouchableOpacity>
+                            <Text style = {styles.header} > Offer Details </Text>
+                        </>
+                    }
+                    data={this.state.users}
+                    renderItem={({item}) => (
+                        <View style={styles.itemContainer}>
+                            <Text style = { styles.titles }> Store Promotion </Text>
+                            {/* <Text style = { styles.data }>Fairprice - Free delivery with purchase above $79</Text> */}
+                            <Text>{item.data}</Text>
+                            <Text style = { styles.titles }> My Location </Text>
+                            <Text style ={ styles.data}>{item.location}</Text>  
+                            <Text style = { styles.titles }> Category </Text>
+                            <Text style ={ styles.data }>{item.category}</Text>
+                            <Text style = { styles.titles }> Current Total </Text>
+                            <Text style ={ styles.data }>{item.total}</Text>
+                            <Text style = { styles.titles }> Progress </Text>
+                            <Text style = {styles.progressText}>33% of $79.00</Text>
+                            <Progress.Bar 
+                                progress={0.33} width={330} height ={30} borderRadius = {15} 
+                                color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
+                                style = {{marginBottom: 15, alignSelf: 'center'}}
+                            />
+                            <Text style = { styles.titles }> Estimated Order Date </Text>
+                            <Text style ={ styles.data }>{item.date}</Text>
+                            <Text style = { styles.titles }> Description </Text>           
+                            <Text style ={ styles.data }>{item.desc}</Text>
+                        </View>
+                    )}
+                    style={styles.container}
+                    keyExtractor={item => item} 
+                /> 
+                <TouchableOpacity style = {styles.Button}>
+                    <Text style = {styles.buttonText}> Edit </Text>
+                </TouchableOpacity>
+            </SafeAreaView>
+        );
+        // Did this commented out code without backend
+        /*return (
             <SafeAreaView style = {styles.container}>
                 <ScrollView style={styles.scrollView}>
                     <TouchableOpacity  
@@ -39,7 +109,7 @@ class OfferDetails extends React.Component{
                     </TouchableOpacity>
                 </ScrollView>
             </SafeAreaView>
-        )
+        )*/
     }
 };
 
@@ -98,6 +168,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 60,
         backgroundColor: '#000000',
+        marginHorizontal: 35
     },
     buttonText: {
         color: '#ffffff',

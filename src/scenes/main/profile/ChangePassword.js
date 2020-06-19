@@ -81,10 +81,11 @@ const styles = StyleSheet.create({
         resizeMode: 'stretch',
     },
     textInput: {
-        borderColor: "#000",
+        borderColor: "#FFF",
         borderWidth: 1,
         padding: 13,
-        borderRadius: 15
+        borderRadius: 15,
+        backgroundColor: "#FFF"
     },
     item: {
         marginTop: 50,
