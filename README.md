@@ -68,15 +68,17 @@ We want shoppers to be able to communicate with other buyers in their neighbourh
 ## App Features
 We will be developing an application for iOS that contains these features. 
 1. Auto-Post of Requests
-   - Buyers who purchase items from certain stores often can set an auto-posting of requests to sub-buyers. This automates the request for more sub-buyers to join their orders based on a frequency set by the main buyers.
-   - Request will be sent to other buyers via notifications.
+   - Buyers who purchase items from certain stores often can set an auto-posting of their offer requests to sub-buyers. This automates the request to sub-buyers to join their orders based on a frequency set by the main buyers.
+   - Request will be sent to sub-buyers via notifications.
+   - Reduces the physical inconvenience required for main buyers to add an offer repetitively.
 2. Auto-Retrieval of Data from Websites 
    - Displays discounts from selected stores 
-   - Links user to external stores websites
+   - Links user to external stores promotions websites for easy reference
 3. Messaging Function
    - Facilitates communication with other buyers
 4. Groups Function
-   - Notifications of any offers posted by other buyers for stores of certain categories
+   - Allow buyer to receive notifications of any offers posted by other buyers for stores of certain categories
+   - Groups are categorised by the type of products the store sells
 5. Notifications Function
    - Allow main buyers to be notified when other buyers are interested in combining orders with them.
    - Allow sub-buyers to be notified when the main buyer accepts their request to combine the order.
@@ -155,7 +157,7 @@ Auto-Retrieval of Data from Websites Function | Reach out to relevant stores to 
 Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July)
 Messaging Function | Research the technologies and languages used on other similar chatting applications. | Mid July (17th July)
 Groups Function | Program the application such that it identifies each user’s favourites. | Mid July (17th July)
-Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon all successful implementations. | TBC
+Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon all successful implementations. | Ongoing
 
 ## Project Logs
 1) [Milestone 1](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing)
