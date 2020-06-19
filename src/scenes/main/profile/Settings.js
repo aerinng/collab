@@ -3,6 +3,7 @@ import { TextInput, StyleSheet, Text, ScrollView,
     SafeAreaView, TouchableOpacity, Image, Switch } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from "react-native-modal-datetime-picker";
+import firebase from 'firebase'; 
 
 export default class SettingsScreen extends React.Component {
     state = { 
@@ -12,6 +13,7 @@ export default class SettingsScreen extends React.Component {
         switchValue4: false,
         isDateTimePickerVisible: false, 
         displayTime: "", 
+        frequency: ""
     };
     toggleSwitch1 = (value) => {
         this.setState({switchValue1: value})
@@ -37,8 +39,23 @@ export default class SettingsScreen extends React.Component {
         this.hideDateTimePicker();
         this.setState({displayTime : time});
     };
+
+    changeFreq(item) {
+        this.setState({ 
+            frequency: item.value
+        });
+    };
+
+    onSave = () => {
+        var user = firebase.auth().currentUser;
+        //Update this into 'info' collection
+        firebase.firestore().collection('info').doc(user.email).update({
+            frequency: this.state.frequency
+        })
+        this.props.navigation.navigate('Profile')
+    }
+
     render() {
-        //const {docID} = this.props.route.params;
         const time = this.state.displayTime.toString().substring(16, 21);
         return (
             <SafeAreaView style = {styles.container}>
@@ -109,7 +126,7 @@ export default class SettingsScreen extends React.Component {
                     />
                     <TouchableOpacity 
                         style = {styles.Button} 
-                        onPress={() => this.props.navigation.navigate('Profile')}
+                        onPress={this.onSave}
                     >
                         <Text style = {styles.buttonText}>Save</Text>
                     </TouchableOpacity>

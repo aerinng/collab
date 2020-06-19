@@ -5,6 +5,7 @@ import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
 
 class EditProfile extends React.Component{
     constructor(props) {
@@ -13,10 +14,12 @@ class EditProfile extends React.Component{
             textInputName: '',
             textInputUsername: '',
             textInputEmail: '',
-            textInputAddress: '',
+            textInputAddressLine1: '',
+            textInputAddressLine2: '',
             name: '',
             username: '',
-            address: '',
+            addressLine1: 'Address Line 1',
+            addressLine2: 'Address Line 2',
             err: '',
             unsubscribe: '',
             userAvatar: 'null',
@@ -37,8 +40,12 @@ class EditProfile extends React.Component{
     }
 
     // to be added
-    setAddress = (address) => {
-        this.setState({textInputAddress: address});
+    setAddress1 = (address) => {
+        this.setState({textInputAddressLine1: address});
+    }
+
+    setAddress2 = (address) => {
+        this.setState({textInputAddressLine2: address});
     }
     
     changeName = () => {
@@ -55,26 +62,33 @@ class EditProfile extends React.Component{
         })
     }
 
-    changeEmail = () => {
+    /*changeEmail = () => {
         firebase.auth().currentUser.updateEmail(this.state.textInputEmail).then(function() {
             alert("Email updated successfully.");
           }).catch(function(error) {
             alert(error.message);
           });
-    }
+    }*/
 
     changeAddress = () => {
         var user = firebase.auth().currentUser;
         firebase.firestore().collection('info').doc(user.email).update({
-            address: this.state.textInputAddress
+            addressLine1: this.state.textInputAddressLine1,
+            addressLine2: this.state.textInputAddressLine2,
         })
     }
 
     setsStates = (data) => {
         this.setState({username: data.username});
         this.setState({name: data.name});
-        this.setState({address: data.address});
+        if (data.addressLine1 != '') {
+            this.setState({addressLine1: data.addressLine1});
+        }
+        if (data.addressLine2 != '') {
+            this.setState({addressLine2: data.addressLine2});
+        }
         this.setState({userAvatar: data.avatar});
+        this.setState({status: data.status})
         if (this.state.userAvatar !== 'null') {
             this.setState({imageChosen: true})
         }
@@ -86,18 +100,26 @@ class EditProfile extends React.Component{
         this.state.unsubscribe = document.get().then((doc) => {
             var data = doc.data();
             this.setsStates(data);
-            console.log("1. " + this.state.username);
-            console.log("2. " + this.state.name);
-            console.log("3. " + this.state.address);
-            console.log("4. " + this.state.userAvatar);
         }).catch(function(error) {
             console.log("Error getting document:", error);
         });
     }
 
+    askPermission = async () => {
+        if (Constants.platform.ios) {
+          const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+          console.log(status)
+          if (status !== 'granted') {
+            alert('Oops, we need camera roll permission :")');
+          } else if (status == 'granted'){
+              this.handleUserAvatar();
+          }
+        }
+    }
+
     handleUserAvatar = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
@@ -117,6 +139,9 @@ class EditProfile extends React.Component{
 
     componentDidMount() {
         this.getData();
+        if (this.state.status == 'undetermined' && Constants.platform.ios) {
+            this.state.status = ImagePicker.requestCameraRollPermissionsAsync();
+        }
     }
 
     componentWillUnmount() {
@@ -132,13 +157,15 @@ class EditProfile extends React.Component{
                 <View style={styles.scrollView}>
                     <TouchableOpacity  
                         style = {styles.backbutton}
-                        onPress={() => this.props.navigation.goBack()}
+                        onPress={() => this.props.navigation.navigate('Profile')}
                     >
                         <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style = {{color: "#266E7D", width: 150, height: 100}}
-                        onPress = {this.handleUserAvatar}
+                        onPress = {() => {
+                            this.askPermission();
+                        }}
                     >
                         <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
                         <Ionicons 
@@ -170,24 +197,33 @@ class EditProfile extends React.Component{
                         }}
                     />
                     <Text style = {styles.fieldName}>Email</Text>
-                    <TextInput 
+                    <Text style = {{fontSize: 10}}>Oops, you can't change this!</Text>
+                    <Text 
                         style = {styles.fieldText}
                         placeholder = {user.email}
                         placeholderTextColor = "#000"
                         onChangeText={textInput => {
                             this.setEmail(textInput);
                         }}
-                    />
+                    >{user.email}</Text>
                     <Divider />
                     <Text style = {styles.fieldName}>My Address</Text>
                     <TextInput 
                         style = {styles.fieldText}
-                        multiline = {true}
-                        //numberOfLines = {5}
-                        placeholder = {this.state.address}
+                        placeholder = {this.state.addressLine1}
                         placeholderTextColor = "#000"
+                        maxLength ={20}
                         onChangeText={textInput => {
-                            this.setAddress(textInput);
+                            this.setAddress1(textInput);
+                        }}
+                    />
+                    <TextInput 
+                        style = {styles.fieldText}
+                        placeholder = {this.state.addressLine2}
+                        placeholderTextColor = "#000"
+                        maxLength ={20}
+                        onChangeText={textInput => {
+                            this.setAddress2(textInput);
                         }}
                     />
                     <Divider />
@@ -206,7 +242,7 @@ class EditProfile extends React.Component{
                             if (this.state.textInputEmail != '') {
                                 this.changeEmail();
                             }
-                            this.props.navigation.goBack();
+                            this.props.navigation.navigate('Profile');
                         }}
                     >
                         <Text style = {styles.detailsTitle}>Save</Text>
@@ -251,8 +287,9 @@ const styles = StyleSheet.create({
         fontSize: 33,
         fontWeight: 'bold',
         textAlign: 'right',
-        marginLeft: 210,
-        position: 'absolute'
+        marginLeft: 185,
+        position: 'absolute',
+        marginRight: -30
     },
     userIcon: {
         width: 140,

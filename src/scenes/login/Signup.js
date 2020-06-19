@@ -10,7 +10,8 @@ export default class Signup extends React.Component{
         email:'',
         username: '',
         password:'',
-        address: '',
+        addressLine1: '',
+        addressLine2: '',
         error:'',
         err: ''
     }
@@ -23,6 +24,7 @@ export default class Signup extends React.Component{
             this.setState({
                 error:err.message
             })
+            alert(this.state.error);
         })
     }
 
@@ -32,7 +34,7 @@ export default class Signup extends React.Component{
             error:''
         })
         this.addToDB();
-        this.props.navigation.navigate('Preference');
+        //this.props.navigation.navigate('Preference');
     }        
 
     addToDB = () => {
@@ -45,7 +47,8 @@ export default class Signup extends React.Component{
             date:'',
             desc:'',
             avatar: 'null',
-            address: this.state.address,
+            addressLine1: this.state.addressLine1,
+            addressLine2: this.state.addressLine2,
             name: this.state.name,
             username: this.state.username
         }).then(error =>{
@@ -119,7 +122,13 @@ export default class Signup extends React.Component{
                         underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
-                    <TouchableOpacity style = {styles.Button} onPress={this.onBottomPress}> 
+                    <TouchableOpacity 
+                        style = {styles.Button} 
+                        onPress={() => {
+                            this.onBottomPress();
+                            this.props.navigation.navigate('Preference');
+                        }}
+                    > 
                         <Text style = {styles.buttonText}> Sign Up </Text>
                     </TouchableOpacity>
                 </View>

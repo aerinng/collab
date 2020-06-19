@@ -24,8 +24,8 @@ class Profile extends React.Component {
     }
 
     getData = () => {
-        var user = firebase.auth().currentUser;
-        var document = firebase.firestore().collection('info').doc(user.email);
+        var user = firebase.auth().currentUser.email;
+        var document = firebase.firestore().collection('info').doc(user);
         this.state.unsubscribe = document.get().then((doc) => {
             var data = doc.data();
             this.setState({userAvatar: data.avatar});
@@ -44,9 +44,9 @@ class Profile extends React.Component {
         this.getData();
     }
 
-    componentDidUpdate(prevProps) {
-        const isFocused = this.props;
-        if (this.props.userAvatar !== prevProps.userAvatar && isFocused) {
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.userAvatar !== prevState.userAvatar ||
+            this.props !== prevProps) {
             this.getData();
         }
       }
@@ -56,20 +56,12 @@ class Profile extends React.Component {
         unsubscribe;
     }
 
-    focusChange = () => {
-        const isFocused = this.props;
-        if (isFocused) {
-            this.getData();
-        }
-    }
-
     render() {
-        const isFocused = this.props;
         return (
             <SafeAreaView style = {styles.container}>
                 <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
                 <Image source = {require('../../../../assets/userMask.png')} style = {{width: 150, height: 150, alignSelf: 'center',
-                borderRadius: 100, marginTop: -140, opacity: this.state.imageChosen ? 0 : 1}}/>
+                borderRadius: 100, marginTop: -150, opacity: this.state.imageChosen ? 0 : 1}}/>
                 <Text style = {styles.header}>{ this.state.username }</Text>
                 <TouchableOpacity 
                     style = {styles.Button}
@@ -109,9 +101,7 @@ class Profile extends React.Component {
 };
 
 export default function(props) {
-    const isFocused = useIsFocused();
-  
-    return <Profile {...props} isFocused={isFocused} />;
+    return <Profile {... props} />;
   }
 
 const styles = StyleSheet.create({
@@ -131,7 +121,8 @@ const styles = StyleSheet.create({
         height: 150,
         alignSelf: 'center',
         borderRadius: 100,
-        marginTop: 20
+        marginTop: 20,
+        backgroundColor: "#266E7D"
     },
     Button: {
         backgroundColor: "#fff",

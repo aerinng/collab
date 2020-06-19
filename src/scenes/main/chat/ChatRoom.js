@@ -15,8 +15,9 @@ export default function ChatRoom({route, user}) {
         console.log(messages);
         const text = messages[0].text;
       
+        // current user add
         firebase.firestore()
-                .collection('chats: ' + user)
+                .collection('chats: ' + email)
                 .doc(threads._id)
                 .collection('msg')
                 .add({
@@ -29,7 +30,7 @@ export default function ChatRoom({route, user}) {
                 });
         
         await firebase.firestore()
-                .collection('chats: ' + user)
+                .collection('chats: ' + email)
                 .doc(threads._id)
                 .set(
                 {
@@ -40,11 +41,38 @@ export default function ChatRoom({route, user}) {
                 },
                 { merge: true }
                 );
+
+        // friend user add
+        /*firebase.firestore()
+                .collection('chats: ' + email)
+                .doc(threads._id)
+                .collection('msg')
+                .add({
+                    text,
+                    timeStamp: new Date().getTime(),
+                    user: {
+                        _id: user,
+                        email: email
+                    }
+                });
+        
+        await firebase.firestore()
+                .collection('chats: ' + email)
+                .doc(threads._id)
+                .set(
+                {
+                    latestMessage: {
+                        text,
+                        timeStamp: new Date().getTime()
+                    }
+                },
+                { merge: true }
+                );*/
     }
 
     useEffect(() => {
         const messagesListener = firebase.firestore()
-                                         .collection('chats: ' + user)
+                                         .collection('chats: ' + email)
                                          .doc(threads._id)
                                          .collection('msg')
                                          .orderBy('timeStamp', 'desc')
@@ -52,10 +80,10 @@ export default function ChatRoom({route, user}) {
                                          const msg = querySnapshot.docs.map(doc => {
                                             const firebaseData = doc.data();
                                             const data = {
-                                            _id: doc.id,
-                                            text: '',
-                                            timeStamp: new Date().getTime(),
-                                            ...firebaseData
+                                                _id: doc.id,
+                                                text: '',
+                                                timeStamp: new Date().getTime(),
+                                                ...firebaseData
                                             };
                                             if (!firebaseData.system) {
                                                 data.user = {

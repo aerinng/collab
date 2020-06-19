@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList, Linking } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
+import firebase from 'firebase'; 
 
 const DATA = [
-    {
+    /*{
       id: '1',
       title: 'Fairprice',
       data: "Free delivery with purchase above $79",
@@ -23,7 +24,7 @@ const DATA = [
       data: "Free delivery with purchase above $50",
       image: require('../../../../assets/sephora.jpg'),
       url: 'https://www.sephora.sg/sale'
-    },
+    },*/
   ];
 
   function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
@@ -31,7 +32,7 @@ const DATA = [
       <TouchableOpacity
         onPress={() => {
           onSelect(id);
-          navigation.navigate('AddOrder', {data:data, title:title, Pid:id});
+          navigation.navigate('AddOrder', {Pid:id, title:title, data:data, image:image});
         }}
         style={[
           styles.item
@@ -47,7 +48,6 @@ const DATA = [
         <Text style={styles.details}>{data}</Text>
         <Image source = {image} style = {styles.icons} />
         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-        
       </TouchableOpacity>
     );
   }
@@ -56,7 +56,46 @@ const StorePromo = ({navigation}) => {
   const [selected, setSelected] = React.useState(null);
   const onSelect = (id) => {
       setSelected(id);
+      console.log(id);
   }
+  DATA.length = 0;
+
+  //just for fairprice...
+  firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/fairprice.jpg')
+          })
+          DATA.push(docs.data()) //from firebase
+        })
+        // console.log("Data", DATA)
+    })
+
+    firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/sephora.jpg')
+          })
+          DATA.push(docs.data()) //from firebase
+        })
+        console.log("Data", DATA)
+    })
+
+
+    firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/coldstorage.jpg')
+          })
+          DATA.push(docs.data()) //from firebase
+        })
+        // console.log("Data", DATA)
+        console.log(" Data in SP", DATA)
+    })
+
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -95,7 +134,6 @@ const StorePromo = ({navigation}) => {
 
 export default class Promo extends React.Component {
   render() {
-      //const {docID} = this.props.route.params;
       return <StorePromo navigation = {this.props.navigation} />;
   }
 }
