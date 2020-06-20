@@ -17,53 +17,45 @@ export default class Signup extends React.Component{
     }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
-    onBottomPress = () =>{
-        firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password)
-        .then(this.onSignupSuccess)
-        .catch(err => {
-            this.setState({
-                error:err.message
-            })
-            alert(this.state.error);
-        })
+    onBottomPress = () => {
+        firebase.auth()
+                .createUserWithEmailAndPassword(this.state.email,this.state.password)
+                .then(this.onSignupSuccess)
+                .catch(err => {
+                    alert(err);
+                })
     }
 
     //If successful, no error message shown
     onSignupSuccess =  () => {
-        this.setState({
-            error:''
-        })
-        this.addToDB();
-        //this.props.navigation.navigate('Preference');
-    }        
-
-    addToDB = () => {
-        var cUser = firebase.auth().currentUser.uid; 
-        firebase.firestore().collection('info').doc(this.state.email).set({ //rmb to add name
-            promo:'',
-            location:'',
-            category:'',
-            total:'', 
-            date:'',
-            desc:'',
-            avatar: 'null',
-            addressLine1: this.state.addressLine1,
-            addressLine2: this.state.addressLine2,
-            name: this.state.name,
-            username: this.state.username
-        }).then(error =>{
-            this.setState({
-                err:''
-            }
-        )})
-        .catch(error =>{
-            this.setState({
-                err:error.message
-            })
-        });
+        //var cUser = firebase.auth().currentUser.uid; 
+        var mail = this.state.email;
+        firebase.firestore()
+                .collection('info')
+                .doc(mail)
+                .set({
+                    promo:'',
+                    location:'',
+                    category:'',
+                    total:'', 
+                    date:'',
+                    desc:'',
+                    avatar: 'null',
+                    addressLine1: this.state.addressLine1,
+                    addressLine2: this.state.addressLine2,
+                    name: this.state.name,
+                    username: this.state.username
+                })
+                //.then(() => {
+                //    this.props.navigation.navigate('Preference');
+                //})
+                .catch(error => {
+                    alert(error);
+                });
+        this.props.navigation.navigate('Preference');
     }
 
-    render(){
+    render() {
         return (           
             <SafeAreaView style = {styles.container}>
             <KeyboardAwareScrollView>
@@ -80,9 +72,9 @@ export default class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Name"
-                        value={this.state.name}
-                        onChangeText={name => this.setState({name})}
-                        underlineColorAndroid = { 'transparent' }
+                        //value={this.state.name}
+                        onChangeText={name => this.setState({name: name})}
+                        //underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
                     <Image 
@@ -92,9 +84,9 @@ export default class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Email"
-                        value={this.state.email}
-                        onChangeText={email => this.setState({email})}
-                        underlineColorAndroid = { 'transparent' }
+                        //value={this.state.email}
+                        onChangeText={email => this.setState({email: email})}
+                        //underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
                     <Image 
@@ -104,9 +96,9 @@ export default class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Username"
-                        value={this.state.username}
-                        onChangeText={username => this.setState({username})}
-                        underlineColorAndroid = { 'transparent' }
+                        //value={this.state.username}
+                        onChangeText={username => this.setState({username: username})}
+                        //underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
                     <Image 
@@ -116,17 +108,17 @@ export default class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Password"
-                        value={this.state.password}
-                        onChangeText={password => this.setState({password})}
+                        //value={this.state.password}
+                        onChangeText={password => this.setState({password: password})}
                         secureTextEntry = {true}
-                        underlineColorAndroid = { 'transparent' }
+                        //underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
                     <TouchableOpacity 
                         style = {styles.Button} 
-                        onPress={() => {
+                        onPress = {() => {
                             this.onBottomPress();
-                            this.props.navigation.navigate('Preference');
+                            //this.props.navigation.navigate('Preference');
                         }}
                     > 
                         <Text style = {styles.buttonText}> Sign Up </Text>
