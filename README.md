@@ -16,7 +16,7 @@ AA Battery
 - [User Stories](https://github.com/aerinng/collab#user-stories)
 - [App Features](https://github.com/aerinng/collab#app-features)
 - [Program Flow](https://github.com/aerinng/collab#program-flow)
-- [How Collab Looks Like](https://github.com/aerinng/collab#how-collab-looks-like)
+- [How Collab Works](https://github.com/aerinng/collab#how-collab-works)
 - [Tech Stack](https://github.com/aerinng/collab#tech-stack)
 - [What Makes Collab Unique](https://github.com/aerinng/collab#what-makes-collab-unique)
 - [Challenges Encountered](https://github.com/aerinng/collab#challenges-encountered)
@@ -24,10 +24,14 @@ AA Battery
 - [System Testing Log](https://github.com/aerinng/collab#system-testing-log)
 - [Development Plan](https://github.com/aerinng/collab#development-plan)
 - [Project Logs](https://github.com/aerinng/collab#project-logs)
+- [User Guide](https://github.com/aerinng/collab#user-guide)
 
 ## App Description
 
-Collab is an application that can facilitate buyers to collaborate and collate items for a bigger order to achieve higher savings.
+Collab is an application serving as a communication platform to facilitate buyers to collaborate and collate items for a bigger order to achieve higher savings. Collab allows users to list the orders they will be making in order to find other buyers to combine orders with. 
+
+Collab will not be responsible for any payment to be made between buyers or orders to be made in external stores and is simply a platform to reach out to potential collaborators.
+
 <p align="center">
    <img src="https://i.imgur.com/V5yb6Li.png" width="600">
 </p>
@@ -68,17 +72,17 @@ We want shoppers to be able to communicate with other buyers in their neighbourh
 ## App Features
 We will be developing an application for iOS that contains these features. 
 1. Auto-Post of Requests
-   - Buyers who purchase items from certain stores often can set an auto-posting of their offer requests to sub-buyers. This automates the request to sub-buyers to join their orders based on a frequency set by the main buyers.
-   - Request will be sent to sub-buyers via notifications.
-   - Reduces the physical inconvenience required for main buyers to add an offer repetitively.
+   - Allows users to automate the request of posting their offer on Collab at a frequency set by the main buyers
+   - Reduces the physical inconvenience required for main buyers to add an offer repetitively, which may occur at a frequent rate (e.g. daily, weekly)
+   - This automated request for a particular promotion will only be valid if the promotion is still ongoing
 2. Auto-Retrieval of Data from Websites 
-   - Displays discounts from selected stores 
+   - Displays discounts from selected stores which will be retrieved from Collab's database
    - Links user to external stores promotions websites for easy reference
 3. Messaging Function
    - Facilitates communication with other buyers
 4. Groups Function
-   - Allow buyer to receive notifications of any offers posted by other buyers for stores of certain categories
-   - Groups are categorised by the type of products the store sells
+   - Stores are categorised into Groups by the type of products the store sells (e.g. groceries, make up)
+   - Users can join Groups to receive notifications of any offers posted by other buyers for the particular categories
 5. Notifications Function
    - Allow main buyers to be notified when other buyers are interested in combining orders with them.
    - Allow sub-buyers to be notified when the main buyer accepts their request to combine the order.
@@ -89,7 +93,7 @@ The diagram below depicts the brief overview of Collab’s workflow.
    <img src="https://i.imgur.com/bObrX8O.png" width="600">
 </p>
 
-## How Collab Looks Like
+## How Collab Works
 <p align="center">
    <img src="https://i.imgur.com/F0Xs9tm.png" width="600">
 </p>
@@ -98,9 +102,17 @@ When the user first opens the application, they will have to create an account b
 
 By clicking on the ‘Sign Up’ button, they will be redirected to the ‘Register’ page. 
 
-Upon successful login, they are brought to the main menu. The landing page will be the ‘Search’ page. There are a total of 5 tabs which the user can click on to use their features. Namely, the pages are: Search, Group, (Add) Offer, Chat, and Profile. 
+Upon successful login using user's email and password, they are brought to the main menu. The landing page will be the ‘Search’ page. There are a total of 5 tabs which the user can click on to use their features. Namely, the pages are: Search, Group, (Add) Offer, Chat, and Profile. 
+
+Search page allows users to search for any offers that are listed on Collab. Users can thereafter choose to join the offer listed, if they intend to buy items from the same store too.
+
+Group page allows users to join groups which contains offers categorised by the type of products the store they included in their offer listing sells. Users will also receive notifications for any offer listings posted in the groups they joined.
 
 (Add) Offer will lead the user to a screen displaying a list of store promotions. Thereafter, the user will fill in a form before successfully posting their offer to Collab. The necessary details are keyed in by the user, after which they will ‘Post’ and have the details saved. 
+
+Chat page allows users to communicate with other users that are registered on Collab.
+
+Profile page allows users to edit their particulars, edit their auto-post frequency and notifications settings as well as view the offers that they have created or joined.
 
 Have a look at our [Prototype](https://www.figma.com/proto/K21NBhfN3Yd1pUdjtItRIB/Collab?node-id=18%3A0&scaling=scale-down)! Actual UI/UX of our application may differ from this prototype.
 
@@ -125,12 +137,21 @@ Watchlist to keep track of favourite item’s promotion | No | Yes | No
 Additional Features | ‘Groups’ page which users can join communities who have bought similar items | Calculate how much savings you will accumulate during a promotion | ‘Coupons’ page with promotional codes and coupons (stores include FoodPanda, Zalora etc)
 
 ## Challenges Encountered
-1) We tried to contact stores to obtain their APIs for easy retrieval of promotions data, but there was no response received. If we are unable to obtain APIs, we will store the data in our database and fetch the data from there.
-2) Authenticating with Google can be quite challenging, hence we will implement this at a later phase, when most of our features are ready.
+1) We tried to contact stores to obtain their APIs for easy retrieval of promotions data, but there was no response received. Hence, we will store the data in our database and fetch the data from there.
+2) Authenticating with Google can be quite challenging, hence we will implement this at a later phase during Milestone 3, when most of our features are ready.
+3) Store Promotions page takes a really long loading time or requires a scroll before items can render. We will attempt to optimise the loading time of our screens in Milestone 3.
+4) When searching for usernames to create a Chat Room with, user must type in the entire username in order to search for the user. We will attempt to implement realtime searching in Milestone 3 if time permits.
+5) Connection to Firebase while running simulator: Quota limits are hit sometimes even though database does not reflect that limit was hit. We are not sure why does this happen but so far it is not a big issue as it only affected us a few times.
 
-## Possible Improvements
-1) Additional option for Google or Facebook authentication when logging in 
+## Possible Enhancements for Milestone 3
+1) Additional option for Google authentication when logging in 
 2) Filters promotions for stores that are the user’s favourites
+3) For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached
+4) Notifications for chat messages
+5) Allow users to send images and display their avatar icons on chat rooms
+6) Display alert if no username is found when searching for username on Chat page
+7) Optimisation of loading time
+8) Search Bars: Realtime searching from database
 
 ## System Testing Log
 No. | Issue | Solution | Fixed?
@@ -146,8 +167,7 @@ No. | Issue | Solution | Fixed?
 9 | React Native text input auto-capitalisation of the first letter resulted in different database fetched from firebase despite having the same email/uid string | Turn off auto-capitalisation for all text inputs in our app | :white_check_mark:
 10 | Profile Page: Doesn't auto update user's picture or username after changing them on Edit Profile Page | Use componentDidUpdate from React Lifecycle Components and compared props so data would be fetched from firebase, hence displaying the latest user data on profile page | :white_check_mark:
 11 | Preference Page: Page is bypassed despite being inserted in the navigations | Work in Progress! | :negative_squared_cross_mark:
-12 | Chat Page: Didn't know how to allow users to search usernames from firebase in order to create a chatroom between both users | Work in Progress! | :negative_squared_cross_mark:
-13 | Connection to Firebase while running simulator: Quota limits are hit sometimes even though database does not reflect that limit was hit | Work in Progress! | :negative_squared_cross_mark:
+12 | Chat Page: Could not find the opposing user's username and email when passed as parameters to another function from Chat to Chat Room, hence received an error due to passing an empty object to firebase | Define the parameters inside an object in Chats then pass the entire object to Chat Room | :white_check_mark:
 
 ## Development Plan
 Target | Actions to reach target | Target Date (Tentative)
@@ -157,9 +177,12 @@ Auto-Retrieval of Data from Websites Function | Reach out to relevant stores to 
 Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July)
 Messaging Function | Research the technologies and languages used on other similar chatting applications. | Mid July (17th July)
 Groups Function | Program the application such that it identifies each user’s favourites. | Mid July (17th July)
-Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon all successful implementations. | Ongoing
+Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon successful implementations. | Ongoing
 
 ## Project Logs
 1) [Milestone 1](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing)
-2) [Milestone 2]() (Coming soon)
-3) [Milestone 3]() (Coming soon)
+2) [Milestone 2]() (Coming to you on 29 June!)
+3) [Milestone 3]() (Coming to you on 27 July!)
+
+## User Guide
+Coming to you on 29 June!
