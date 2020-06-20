@@ -9,6 +9,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
 import Login from './src/scenes/login/Login';
 import Signup from './src/scenes/login/Signup';
+import Preference from './src/scenes/login/Preference';
 import Profile from './src/scenes/main/profile/Profile';
 import Groups from './src/scenes/main/groups/Groups';
 import Search from './src/scenes/main/search/Search';
@@ -22,7 +23,6 @@ import EditProfile from './src/scenes/main/profile/EditProfile';
 import MyOffers from './src/scenes/main/profile/MyOffers';
 import MyOffersReceived from './src/scenes/main/profile/MyOffersReceived';
 import Settings from './src/scenes/main/profile/Settings';
-import Preference from './src/scenes/login/Preference';
 import ChangePassword from './src/scenes/main/profile/ChangePassword';
 
 // icons imports
@@ -103,7 +103,7 @@ const TabNavigator = (props) => (
       <Tab.Screen name = "Search" component = {OfferDetailsScreen} initialParams={props.route.params}/>
       <Tab.Screen name = "Groups" component = {Groups} initialParams={props.route.params}/>
       <Tab.Screen name = "Offer" component = {Offers} initialParams={props.route.params}/>
-      <Tab.Screen name = "Chat" component = {ChatStackScreen} initialParams={props.route.params} />
+      <Tab.Screen name = "Chat" component = {ChatStackScreen} initialParams={props.route.params}/>
       <Tab.Screen name = "Profile" component = {ProfileScreen} initialParams={props.route.params}/>
   </Tab.Navigator>
 );
@@ -198,7 +198,7 @@ function ChatStackScreen(props) {
         name = "ChatRoom" 
         component = {ChatRoom} 
         initialParams={{route: props.route.params, user: firebase.auth().currentUser.uid}}
-        options={({route}) => ({title: route.params.threads.name, 
+        options={({route}) => ({title: route.params.threads.name,
           headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, 
           headerTintColor: "#000"})}
       />

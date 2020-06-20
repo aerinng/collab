@@ -14,6 +14,8 @@ export default class Chat extends React.Component {
       threads: '',
       unsubscribe: null,
       username: '',
+      friendUsername: '',
+      friendEmail: '',
       gotUser: false
     };
   }
@@ -24,6 +26,13 @@ export default class Chat extends React.Component {
 
   setThreads = (thread) => {
     this.setState({threads: thread});
+  }
+
+  setFriendDetails = (email, user) => {
+    this.setState({friendEmail: email});
+    this.setState({friendUsername: user});
+   //console.log("test1: " + this.state.friendEmail);
+    //console.log("test2: " + this.state.friendUsername)
   }
 
   // fetch chats data from Firestore
@@ -44,7 +53,7 @@ export default class Chat extends React.Component {
                                      .orderBy('latestMessage.timeStamp', 'desc')
                                      .onSnapshot(querySnapshot => {
                                          const threads = querySnapshot.docs.map(documentSnapshot => {
-                                          //console.log(documentSnapshot.get('name'))
+                                          //console.log("SUBS: " + documentSnapshot.id)
                                           const firebaseData = documentSnapshot.data();
                                           const data = {
                                             _id: documentSnapshot.id,
@@ -68,20 +77,20 @@ export default class Chat extends React.Component {
             .then(querySnapshot => {
               var curr = this;
               const threads = querySnapshot.forEach(function(doc) {
-                //curr.setState({username: doc.data().username})
                 var mail = doc.id;
-                console.log("firstmail: " + mail)
+                var userObtained = doc.data().username;
+                //console.log("firstmail: " + mail)
+                //console.log("firstuser: " + userObtained)
+                curr.setFriendDetails(mail, userObtained);
                 curr.findName(mail);
-                /*if (doc.data().username !== curr.state.textInputName) {
-                  alert("Username cannot be found.");
-                }*/
-                console.log("text input: " + curr.state.textInputName)
-                console.log("username found: " + doc.data().username)
+                //console.log("text input: " + curr.state.textInputName)
+                //console.log("username found: " + doc.data().username)
               })
               //console.log("username updated " + this.state.username)
               this.setState({gotUser: true})
             })
             .catch((error) => {
+              this.setState({gotUser: false})
               alert("Username cannot be found.");
               console.log(error)
             });
@@ -90,63 +99,76 @@ export default class Chat extends React.Component {
   findName = (email) => {
     var mail = email;
     var currU = firebase.auth().currentUser.email;
-    console.log("curr email: " + currU)
-    console.log("friendMail: " + mail)
+    //console.log("curr email: " + currU)
+    //console.log("friendMail: " + mail)
     var document = firebase.firestore().collection('info').doc(currU);
 
     document.get()
             .then(doc => {
               var curr = this;
               this.setState({username: doc.data().username})
-              console.log("name attained11: " + this.state.username)
-              this.addOwnChat(currU);
-              this.addFriendChat(mail, this.state.username);
+              //console.log("name attained11: " + this.state.username)
+              this.addOwnChat(currU, mail);
+              this.addFriendChat(mail, this.state.username, currU);
             })
             .catch(function(error) {
               console.log("Eeeeerror getting document:", error);
             });
-          console.log("name attained: " + this.state.username)
-    //this.addFriendChat(mail, this.state.username);
+          //console.log("name attained: " + this.state.username)
   }
 
-  addOwnChat = (user) => {
-  firebase.firestore()
-          .collection('chats: ' + user)
-          .add({
+  addOwnChat = (user, friendEmail) => {
+    var docRef = firebase.firestore()
+                         .collection('chats: ' + user)
+                         .doc(friendEmail);
+    docRef.set({
             name: this.state.textInputName,
             latestMessage: {
               timeStamp: new Date().getTime(),
               text: 'You have created a room.'
             },
           })
-          .then(docRef => {
-            docRef.collection('msg').add({
-              timeStamp: new Date().getTime(),
-              text: 'You have created a room.',
-              system: true
-            })
-            this.props.navigation.navigate('Chat');
+          .catch(function(error) {
+            console.error("Error writing document: ", error);
           });
+
+          //.then(docRef => {
+    docRef.collection('msg')
+          .add({
+            timeStamp: new Date().getTime(),
+            text: 'You have created a room.',
+            system: true
+          })
+            //this.props.navigation.navigate('Chat');
+          //})
+          
   }
 
-  addFriendChat = (email, name) => {
-    firebase.firestore()
+  addFriendChat = (email, name, ownEmail) => {
+    var docRef = firebase.firestore()
             .collection('chats: ' + email)
-            .add({
-              name: name,
-              latestMessage: {
-                timeStamp: new Date().getTime(),
-                text: 'You have created a room.'
-              },
-            })
-            .then(docRef => {
-              docRef.collection('msg').add({
-                timeStamp: new Date().getTime(),
-                text: 'You have created a room.',
-                system: true
-              })
+            .doc(ownEmail);
+    docRef.set({
+            name: name,
+            latestMessage: {
+              timeStamp: new Date().getTime(),
+              text: 'You have created a room.'
+            },
+          })
+          .catch(function(error) {
+            console.error("Error writing document: ", error);
+          });
+            //.then(docRef => {
+    docRef.collection('msg')
+          .add({
+            timeStamp: new Date().getTime(),
+            text: 'You have created a room.',
+            system: true
+          })
               //this.props.navigation.navigate('Chat');
-            });
+            //})
+            
+          
   }
 
   render() {
@@ -197,9 +219,12 @@ export default class Chat extends React.Component {
                             paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, 
                             alignSelf: 'center', borderRadius: 10}}
                           onPress = {() => {
-                            console.log("hello " + this.state.textInputName)
+                            //console.log("hello " + this.state.textInputName)
                             this.findUsername();
                             this.setModalVisible(!modalVisible);
+                            /*if (!this.state.gotUser) {
+                              alert("Username cannot be found!")
+                            }*/
                             //console.log("after " + this.state.modalVisible);
                           }}
                         >
@@ -220,11 +245,17 @@ export default class Chat extends React.Component {
                         ItemSeparatorComponent={() => <Divider />}
                         renderItem={({ item }) => (
                           <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('ChatRoom', { threads: item , user: user, })}
+                            onPress={() => this.props.navigation.navigate(
+                              'ChatRoom', { 
+                                threads: item , 
+                                //friendEmail: this.state.friendEmail, 
+                                //friendUsername: this.state.friendUsername 
+                              })}
                           >
                           <List.Item
                             title={item.name}
                             description={item.latestMessage.text}
+                            left = {props => <List.Icon {...props} icon="chat" />}
                             titleNumberOfLines={1}
                             titleStyle={styles.listTitle}
                             descriptionStyle={styles.listDescription}
