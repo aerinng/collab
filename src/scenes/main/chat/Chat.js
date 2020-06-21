@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import { StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, 
   Image, Modal, TextInput, View } from "react-native";
-import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import firebase from "firebase";
-import { List, Divider } from 'react-native-paper';
+import { List, Divider, Searchbar } from 'react-native-paper';
+
 
 export default class Chat extends React.Component {
   constructor(props) {
@@ -176,16 +176,26 @@ export default class Chat extends React.Component {
     const { modalVisible } = this.state;
     return (
         <SafeAreaView style = {styles.container}>
-            <GorgeousHeader
-                title = "Chats"
-                subtitle = ""
-                menuImageStyle = {{resizeMode: 'stretch', width: 0, height: 0}}
-                profileImageSource = {require('../../../../assets/edit.png')}
-                profileImageStyle = {{marginTop: -5, resizeMode: 'stretch', width: 25, height: 25}}
-                profileImageOnPress = {() => {this.setModalVisible(true)}}
-                titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
-                searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
-                searchInputStyle ={{marginLeft: 30, marginTop: -20}}
+            <TouchableOpacity onPress = {() => {this.setModalVisible(true)}} >
+              <Image
+                source = {require('../../../../assets/edit.png')}
+                style = {{marginTop: 15, resizeMode: 'stretch', width: 30, height: 30, alignSelf: 'flex-end', marginRight: 25}}
+              />
+            </TouchableOpacity>
+            <Text 
+              style = {{fontSize: 30, fontWeight: '600', marginTop: -30, alignSelf: 'center', borderRadius:15}}
+            >
+              Chats
+            </Text>
+            <Searchbar 
+              //onChangeText={text => {
+              // setTimeout((text) => searched(text), 1500);
+              //}}
+              placeholder = "Search Chats"
+              style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginTop: 15, marginBottom: 25}}
+              //value = {query}
+              //theme = {{color: "266E7D"}}
+              // to change cursor colour bc its purple rn 
             />
             <View style = {[styles.container]}>
                     <Modal

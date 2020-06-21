@@ -20,10 +20,11 @@ export default class Signup extends React.Component{
     onBottomPress = () => {
         firebase.auth()
                 .createUserWithEmailAndPassword(this.state.email,this.state.password)
-                .then(this.onSignupSuccess)
+                //.then(this.onSignupSuccess())
                 .catch(err => {
                     alert(err);
                 })
+        this.onSignupSuccess();
     }
 
     //If successful, no error message shown
@@ -46,13 +47,12 @@ export default class Signup extends React.Component{
                     name: this.state.name,
                     username: this.state.username
                 })
-                //.then(() => {
-                //    this.props.navigation.navigate('Preference');
-                //})
+                .then(() => {
+                   this.props.navigation.navigate('Preferences');
+                })
                 .catch(error => {
                     alert(error);
                 });
-        this.props.navigation.navigate('Preference');
     }
 
     render() {
@@ -74,7 +74,6 @@ export default class Signup extends React.Component{
                         placeholder = "Name"
                         //value={this.state.name}
                         onChangeText={name => this.setState({name: name})}
-                        //underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
                     <Image 
@@ -86,7 +85,6 @@ export default class Signup extends React.Component{
                         placeholder = "Email"
                         //value={this.state.email}
                         onChangeText={email => this.setState({email: email})}
-                        //underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
                     <Image 
@@ -98,7 +96,6 @@ export default class Signup extends React.Component{
                         placeholder = "Username"
                         //value={this.state.username}
                         onChangeText={username => this.setState({username: username})}
-                        //underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
                     <Image 
@@ -111,14 +108,12 @@ export default class Signup extends React.Component{
                         //value={this.state.password}
                         onChangeText={password => this.setState({password: password})}
                         secureTextEntry = {true}
-                        //underlineColorAndroid = { 'transparent' }
                         autoCapitalize = 'none'
                     />
                     <TouchableOpacity 
                         style = {styles.Button} 
                         onPress = {() => {
                             this.onBottomPress();
-                            //this.props.navigation.navigate('Preference');
                         }}
                     > 
                         <Text style = {styles.buttonText}> Sign Up </Text>
