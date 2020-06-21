@@ -4,26 +4,7 @@ import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import firebase from 'firebase';
 
-const DATA = [
-    /*{
-      id: '1',
-      title: 'Fairprice',
-      data: "Groceries",
-      image: require('../../../../assets/fairprice.jpg'),
-      user: "aerin123 - Paya Lebar",
-      progress: '76% of $79.00',
-      progressIdx: 0.76
-    },
-    {
-      id: '2',
-      title: 'Cold Storage',
-      data: "Groceries",
-      image: require('../../../../assets/coldstorage.jpg'),
-      user: "alyssa123 - Paya Lebar",
-      progress: '76% of $59.00',
-      progressIdx: 0.76
-    },*/
-  ];
+const DATA = [];
 
   function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
     return (
@@ -46,29 +27,16 @@ const DATA = [
   }
 
 const MyOffers = ({navigation}) => {
-        /*const [selected, setSelected] = React.useState(null);
-        const onSelect = (id) => {
-            setSelected(id);
-        }
-        const [selected2, setSelected2] = React.useState(null);
-        const onSelect2 = (id) => {
-            setSelected2(id);
-        }*/
         const isFocused = useIsFocused();
-        const [selected, setSelected] = React.useState(new Map());
-        const onSelect = React.useCallback(
-          id => {
-            const newSelected = new Map(selected);
-            newSelected.set(id, !selected.get(id));
-            setSelected(newSelected);
+        const [selected, setSelected] = React.useState(null);
+        const onSelect = id => {
+            setSelected(id);
             DATA.length = 0; //EMPTY THE LIST
-          },
-          [selected],
-        );
+        };
         var user = firebase.auth().currentUser; 
         DATA.length = 0;
         //entering in DATA from this logged in user
-        firebase.firestore().collection(user.email).get()
+        firebase.firestore().collection("offers").where("user", "==", user.email).get()
         .then(snap => {
             snap.forEach(docs =>{      
                 DATA.push(docs.data())//just push the id

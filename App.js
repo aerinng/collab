@@ -12,6 +12,7 @@ import Signup from './src/scenes/login/Signup';
 import Preference from './src/scenes/login/Preference';
 import Profile from './src/scenes/main/profile/Profile';
 import Groups from './src/scenes/main/groups/Groups';
+import GroupsDetails from './src/scenes/main/groups/GroupsDetails';
 import Search from './src/scenes/main/search/Search';
 import Chat from './src/scenes/main/chat/Chat';
 import ChatRoom from './src/scenes/main/chat/ChatRoom';
@@ -65,11 +66,26 @@ const RootScreen = () => (
   }}
 >    
   <Root.Screen name = "Login" component = {Login} />
-  <Root.Screen name = "Preference" component = {Preference}/> 
   <Root.Screen name = "Tabs" component = {TabNavigator} />
-  <Root.Screen name = "Signup" component = {Signup} />
+  <Root.Screen name = "SignUpScreen" component = {SignUpScreens}/>
 </Root.Navigator>
 );
+
+const SignUpStack = createStackNavigator();
+function SignUpScreens(props) {
+  return (
+    <SignUpStack.Navigator
+      initialRouteName = "Signup"
+      screenOptions = {{
+        gestureEnabled: true,
+        headerShown: false
+      }}
+    >
+      <SignUpStack.Screen name = "Signup" component = {Signup} initialParams={props.route.params}/>
+      <SignUpStack.Screen name = "Preferences" component = {Preference} initialParams={props.route.params}/> 
+    </SignUpStack.Navigator>
+  )
+}
 
 // bottom tabs with Search, Groups, Offer, Chat, Profile
 const Tab = createBottomTabNavigator();
@@ -101,13 +117,30 @@ const TabNavigator = (props) => (
       }}
       >
       <Tab.Screen name = "Search" component = {OfferDetailsScreen} initialParams={props.route.params}/>
-      <Tab.Screen name = "Groups" component = {Groups} initialParams={props.route.params}/>
+      <Tab.Screen name = "Groups" component = {GroupsScreens} initialParams={props.route.params}/>
       <Tab.Screen name = "Offer" component = {Offers} initialParams={props.route.params}/>
       <Tab.Screen name = "Chat" component = {ChatStackScreen} initialParams={props.route.params}/>
       <Tab.Screen name = "Profile" component = {ProfileScreen} initialParams={props.route.params}/>
   </Tab.Navigator>
 );
 //^ initialParams to pass over the docID to these pages 
+
+const GroupsStack = createStackNavigator();
+function GroupsScreens(props) {
+  return (
+    <GroupsStack.Navigator
+      initialRouteName = "GroupsScreen"
+      screenOptions = {{
+        gestureEnabled: true,
+        headerShown: false
+      }}
+    >
+      <GroupsStack.Screen name = "GroupsScreen" component = {Groups} initialParams={props.route.params}/>
+      <GroupsStack.Screen name = "GroupsDetails" component = {GroupsDetails} initialParams={props.route.params}/>
+      <GroupsStack.Screen name = "OfferDetails" component = {OfferDetails} initialParams={props.route.params} />
+    </GroupsStack.Navigator>
+  )
+}
 
 const OffersStack = createStackNavigator();
 function Offers(props) {

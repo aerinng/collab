@@ -1,64 +1,36 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
-import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 import {  Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { useIsFocused } from '@react-navigation/native';
+import { Searchbar } from 'react-native-paper';
 
-const DATA = [
-    /*{
-      id: '1',
-      title: 'Fairprice',
-      data: "Groceries",
-      image: require('../../../../assets/fairprice.jpg'),
-      user: "aerin123 - Paya Lebar",
-      progress: '76% of $79.00',
-      progressIdx: 0.76
-    },
-    {
-      id: '2',
-      title: 'Cold Storage',
-      data: "Groceries",
-      image: require('../../../../assets/coldstorage.jpg'),
-      user: "alyssa123 - Paya Lebar",
-      progress: '76% of $59.00',
-      progressIdx: 0.76
-    },
-    {
-      id: '3',
-      title: 'Sephora',
-      data: "Make Up",
-      image: require('../../../../assets/sephora.jpg'),
-      user: "aabattery123 - Paya Lebar",
-      progress: "50% of $50.00",
-      progressIdx: 0.5
-    },*/
-  ];
+const DATA = [];
 
-  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-            onSelect(id);
-            navigation.navigate('OfferDetails', {orderID:id})
-        }}
-        style={[ styles.item]}
-      >
-        <Text style={styles.users}>{user}</Text>
-        <Text style={styles.detailsTitle}>{title}</Text>
-        <Text style={styles.details}>{data}</Text>
-        <Image source = {image} style = {styles.icons} />
-        <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-        <Text style = {styles.progressText}>{progress}</Text>
-        <Progress.Bar 
-            progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-            color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-            style = {{marginTop: 38, alignSelf: 'center'}} />
-      </TouchableOpacity>
-    );
-  }
+function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+          onSelect(id);
+          navigation.navigate('OfferDetails', {orderID: id})
+      }}
+      style={[ styles.item]}
+    >
+      <Text style={styles.users}>{user}</Text>
+      <Text style={styles.detailsTitle}>{title}</Text>
+      <Text style={styles.details}>{data}</Text>
+      <Image source = {image} style = {styles.icons} />
+      <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+      <Text style = {styles.progressText}>{progress}</Text>
+      <Progress.Bar 
+          progress={progressIdx} width={330} height ={30} borderRadius = {15} 
+          color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
+          style = {{marginTop: 38, alignSelf: 'center'}} />
+    </TouchableOpacity>
+  );
+}
 
 const Search = ({navigation, searchKey}) => {
     const [selected, setSelected] = React.useState(null);
@@ -73,7 +45,7 @@ const Search = ({navigation, searchKey}) => {
 
     var user = firebase.auth().currentUser;
     //entering in DATA from this logged in user
-    firebase.firestore().collection(user.email).get()
+    firebase.firestore().collection("offers").get()
     .then(snap => {
       DATA.length = 0;
         snap.forEach(docs =>{      
@@ -83,21 +55,29 @@ const Search = ({navigation, searchKey}) => {
     })
     return (
         <SafeAreaView style = {styles.container}>
-            <GorgeousHeader
-                title = "Search"
-                subtitle = ""
-                menuImageSource = {require('../../../../assets/store.png')}
-                menuImageOnPress = {() => navigation.navigate('Search')}
-                menuImageStyle = {{resizeMode: 'stretch', width: 30, height: 30, marginLeft: 10, marginTop: 10}}
-                titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
-                searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
-                searchInputStyle ={{marginLeft: 30, marginTop: -20}}
-                onChangeText={(value) => searchKey= value}
+            <Image
+              source = {require('../../../../assets/search.png')}
+              style = {{marginTop: 10, resizeMode: 'stretch', width: 30, height: 30, alignSelf: 'flex-end', marginRight: 25}}
+            />
+            <Text 
+              style = {{fontSize: 30, fontWeight: '600', marginTop: -32, alignSelf: 'center', borderRadius:15}}
+            >
+              Search
+            </Text>
+            <Searchbar 
+              //onChangeText={text => {
+              // setTimeout((text) => searched(text), 1500);
+              //}}
+              placeholder = "Search Stores"
+              style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginVertical: 15}}
+              //value = {query}
+              //theme = {{color: "266E7D"}}
+              // to change cursor colour bc its purple rn 
             />
             <TouchableOpacity style = {styles.selection} 
                 title = "Send Push Notification"
                 onPress = {async () => {
-                    console.log("push notifcation pushed")
+                    console.log("push notification pushed")
                     const response = await fetch('https://exp.host/--/api/v2/push/send', {
                         method: 'POST',
                         headers: {

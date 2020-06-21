@@ -22,10 +22,8 @@ class AddOrder extends React.Component {
     }
 
     changeCategory(item) {
-        this.setState({ 
-            //label: item.label, 
-            value: item.value
-        });
+        this.setState({category: item.value});
+        console.log(this.state.category)
     }
 
     toggleSwitch = (value) => {
@@ -75,17 +73,28 @@ class AddOrder extends React.Component {
                     value = {this.state.location}
                     onChangeText={location => this.setState({location})}   
                     textContentType = {"fullStreetAddress"}
-                    underlineColorAndroid = { 'transparent' } 
                 />
                 <Text style = { styles.titles }> Category </Text>
                 <DropDownPicker 
                     style = {styles.Picker}
+                    placeholder = "Select a Category"
+                    defaultValue = ""
                     items = {[
+                        {label: 'Clothes', value: 'Clothes'},
                         {label: 'Groceries', value: 'Groceries'},
-                        {label: 'Stationeries', value: 'Stationeries'}
+                        {label: 'Make Up', value: 'Make Up'},
+                        {label: 'Shoes', value: 'Shoes'},
+                        {label: 'Stationeries', value: 'Stationeries'},
+                        {label: 'Pet Supplies', value: 'Pet Supplies'},
                     ]}
-                    onChangeItems = {(item) => this.changeCategory(item)}
+                    value = {this.state.category}
+                    onChangeItem = {item => {
+                        this.setState({category: item.value});
+                        console.log(this.state.category);
+                    }}
+                    
                 />
+                
                 <Text style = { styles.titles }> Current Total </Text>
                 <TextInput 
                     style = { styles.TextInput } 
@@ -93,7 +102,6 @@ class AddOrder extends React.Component {
                     placeholder = "Enter Your Current Total"
                     value = {this.state.total}
                     onChangeText={total => this.setState({total})}  
-                    underlineColorAndroid = { 'transparent' } 
                 />
                 <Text style = { styles.autopost }> Auto - Post </Text>
                 <Switch
@@ -122,14 +130,15 @@ class AddOrder extends React.Component {
                     style = { styles.TextInputDesc } 
                     multiline = {true}
                     placeholder = "Enter a Description"
-                    underlineColorAndroid = { 'transparent' } 
                     value = {this.state.desc}
                     onChangeText={desc => this.setState({desc})} 
                 />
                 <TouchableOpacity 
                     style = {styles.Button} 
                     onPress={() =>  {
-                        firebase.firestore().collection(user.email).add({ //add my order id inside
+                        firebase.firestore().collection("offers").add({ //add my order id inside
+                            user: user.email,
+                            userJoined: [],
                             data:data,
                             title:title,
                             location:this.state.location,

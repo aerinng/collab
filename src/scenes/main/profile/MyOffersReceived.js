@@ -1,27 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, FlatList } from "react-native";
 import * as Progress from 'react-native-progress';
+import { useIsFocused } from '@react-navigation/native';
+import firebase from 'firebase';
 
-const DATA = [
-    {
-      id: '1',
-      title: 'Fairprice',
-      data: "Groceries",
-      image: require('../../../../assets/fairprice.jpg'),
-      user: "aerin123 - Paya Lebar",
-      progress: '76% of $79.00',
-      progressIdx: 0.76
-    },
-    {
-      id: '2',
-      title: 'Cold Storage',
-      data: "Groceries",
-      image: require('../../../../assets/coldstorage.jpg'),
-      user: "alyssa123 - Paya Lebar",
-      progress: '76% of $59.00',
-      progressIdx: 0.76
-    },
-  ];
+const DATA = [];
 
   function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
     return (
@@ -44,14 +27,22 @@ const DATA = [
   }
 
 const MyOffersReceived = ({navigation}) => {
+        const isFocused = useIsFocused();
         const [selected, setSelected] = React.useState(null);
-        const onSelect = (id) => {
+        const onSelect = id => {
             setSelected(id);
-        }
-        const [selected2, setSelected2] = React.useState(null);
-        const onSelect2 = (id) => {
-            setSelected2(id);
-        }
+            DATA.length = 0; //EMPTY THE LIST
+        };
+        var user = firebase.auth().currentUser; 
+        DATA.length = 0;
+        //entering in DATA from this logged in user
+        console.log(user.email)
+        firebase.firestore().collection("offers").where("userJoined", "array-contains", user.email).get()
+        .then(snap => {
+            snap.forEach(docs =>{      
+                DATA.push(docs.data())//just push the id
+            })
+        })
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -62,9 +53,9 @@ const MyOffersReceived = ({navigation}) => {
                         title={item.title}
                         data = {item.data}
                         image = {item.image}
-                        progressIdx = {item.progressIdx}
-                        progress = {item.progress}
-                        user = {item.user}
+                        //progressIdx = {item.progressIdx}
+                        //progress = {item.progress}
+                        //user = {item.user}
                         selected={item.id == selected}
                         onSelect={onSelect}
                     />
@@ -77,7 +68,7 @@ const MyOffersReceived = ({navigation}) => {
     
 };
 
-export default class MyOffersReceivedScreen extends React.Component {
+export default class MyOffersScreen extends React.Component {
     render() {
         //const {docID} = this.props.route.params;
         return <MyOffersReceived navigation = {this.props.navigation} />;

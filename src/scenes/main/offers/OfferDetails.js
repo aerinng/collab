@@ -11,7 +11,7 @@ class OfferDetails extends React.Component {
         //trying to update state, but code is gone 
         var user = firebase.auth().currentUser; 
         const {orderID} = this.props.route.params
-        firebase.firestore().collection(user.email).doc(orderID).get()
+        firebase.firestore().collection("offers").doc(orderID).get()
         .then(sth => {
                 const results = []
                 results.push(sth.data())

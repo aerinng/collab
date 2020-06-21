@@ -1,4 +1,5 @@
 import React from 'react';
+import firebase from 'firebase';
 import { StyleSheet, Text, ScrollView, SafeAreaView, Image, FlatList, TouchableOpacity } from "react-native";
 
 const DATA = [
@@ -44,7 +45,7 @@ const DATA = [
       </TouchableOpacity>
     );
   }
-  const Preference = ({navigation}) => {
+const Preference = ({navigation}) => {
     const [selected, setSelected] = React.useState(new Map());
     const onSelect = React.useCallback(
       id => {
@@ -76,7 +77,7 @@ const DATA = [
             />
             <TouchableOpacity 
                 style = {styles.Button} 
-                onPress={navigation.navigate('Login')}
+                onPress={() => navigation.navigate('Login')}
             > 
                 <Text style = {styles.buttonText}> Done </Text>
             </TouchableOpacity>

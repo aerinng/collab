@@ -28,7 +28,7 @@ export default class Login extends React.Component {
     }
 
     onSignUpPress = () => {
-        this.props.navigation.navigate('Signup')
+        this.props.navigation.navigate('SignUpScreen')
     }    
 
     //If logged in successfully, go to 'Tabs'
