@@ -83,9 +83,9 @@ class AddOrder extends React.Component {
                         {label: 'Clothes', value: 'Clothes'},
                         {label: 'Groceries', value: 'Groceries'},
                         {label: 'Make Up', value: 'Make Up'},
+                        {label: 'Pet Supplies', value: 'Pet Supplies'},
                         {label: 'Shoes', value: 'Shoes'},
                         {label: 'Stationeries', value: 'Stationeries'},
-                        {label: 'Pet Supplies', value: 'Pet Supplies'},
                     ]}
                     value = {this.state.category}
                     onChangeItem = {item => {

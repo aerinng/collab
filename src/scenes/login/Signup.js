@@ -45,10 +45,16 @@ export default class Signup extends React.Component{
                     addressLine1: this.state.addressLine1,
                     addressLine2: this.state.addressLine2,
                     name: this.state.name,
-                    username: this.state.username
+                    username: this.state.username,
+                    pushToken: ''
                 })
                 .then(() => {
-                   this.props.navigation.navigate('Preferences');
+                   this.props.navigation.navigate(
+                       'Preferences', 
+                       {email: mail, 
+                        name: this.state.name, 
+                        username: this.state.username
+                    });
                 })
                 .catch(error => {
                     alert(error);
