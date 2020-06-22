@@ -149,7 +149,7 @@ export default class SearchScreen extends React.Component {
           try{
             // POST the token to your backend server from where you can retrieve it to send push notifications.
             firebase.firestore().collection('info').doc(user.email).update({
-                pushToken:token
+                pushToken: token
             })
           }catch(error){
             console.log("error")
@@ -178,14 +178,15 @@ export default class SearchScreen extends React.Component {
         // console.log("Search: render", user.email)
         if (this.props.route.params != null) { //from login page
             const {email} = this.props.route.params
-            const {password} = this.props.route.params
+            //const {password} = this.props.route.params
             const {username} = this.props.route.params
-            const {name} = this.props.route.params; 
+            const {name} = this.props.route.params
+            console.log("welcome: " + name) 
             firebase.firestore().collection('info').doc(user.email).set({ 
                 name: name,
                 email: email, 
-                password: password,
-                username:username,
+                //password: password,
+                username: username,
                 frequency:'', //for Auto-Post frequency, to be updated eventually
                 pushToken:''
             })

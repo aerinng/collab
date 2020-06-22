@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         paddingVertical: 8,
         marginTop: 10,
-        marginBottom: 60,
+        marginBottom: 33,
         backgroundColor: '#000000',
         marginHorizontal: 35
     },

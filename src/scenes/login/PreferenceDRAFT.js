@@ -35,15 +35,16 @@ const DATA = [
         },
 ];
 
-function Item({ id, name, image, email, selected, onSelect, updateCategory, setChosen, setCurr }) {
+function Item({ id, name, image, email, selected, onSelect, updateCategory, setChosen, setID}) {
     return (
         <TouchableOpacity
             onPress={() => {
                 // set selection of group to be true/false
-                onSelect(id, name);
+                //onSelect(id);
+                setID(id)
                 console.log("done")
-                //setCurr(name)
-                //updateCategory(selected, name);
+                updateCategory(selected, name);
+                updateCategory(selected, name);
                 //},1000)
                 // indicate true because user has selected at least 1 group
                 setChosen(true);
@@ -55,43 +56,63 @@ function Item({ id, name, image, email, selected, onSelect, updateCategory, setC
     );
 }
 
-const Preference = ({navigation, email, name, username}) => {
-    const [selected, setSelected] = React.useState(null);
-    const onSelect = (id, itemName) => {
-        setSelected(id);
-        setCategory(itemName)
-        //console.log(name)
-        //console.log("SEE: " + category)
+export default class Preference extends React.Component {
+    email = 'sdf@mail.com'
+    component(props) {
+        this.state = {
+            selected: new Map(),
+            category: [],
+            chosen: false,
+            id: ''
+        };
+    }
+    // to track the selection of groups
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props.selected !== nextProps.selected) {
+            const temp = this.state.selected;
+            const newSelected = new Map(temp);
+            newSelected.set(this.state.id, !temp.get(this.state.id));
+            this.setState({selected: newSelected});
+        }
     }
 
-    // to track the categories that the user has chosen in an array
-    const [category, setCategory] = React.useState('');
+    setID = (id) => {
+        this.setState({id: id})
+    }
 
-    // to determine if user has selected at least 1 group
-    const [chosen, setChosen] = React.useState(false);
+    setChosen = () => {
+        this.setState({chosen: true})
+    }
 
-    //const [bool, setBool] = React.useState(false);
-    const [itemName, setName] = React.useState('');
-
-   const setCurr = (currName) => {
-        setName(currName);
-   }
-
-    React.useEffect(() => {
-        console.log("useeffect test: " + category)
-        
-        //setCategory(name);
-        console.log("TEST: " + name);
-        console.log("TEST2: " + category);
-        //updateCategory(bool, name);
-        //console.log("testeffect: " + category)
-    }, [category])
-
-
+    updateCategory = (bool, name) => {
+        // include category inside array
+        let array = [...this.state.category];
+        if (!bool) {
+            this.setState({category: array});
+        } else { // remove category from array
+            array.splice(array.length - 1, 1);
+            this.setState({category: array});
+        }
+        console.log(bool)
+        console.log("testing: " + name)
+        console.log(this.state.category)
+        // update to firebase
+        firebase.firestore()
+                .collection('info')
+                .doc(email)
+                .update({
+                    category: category
+                })
+                .catch(function(error) {
+                    console.log("Error updating document:", error);
+                });
+    }
+render() {
     return (
         <SafeAreaView style = {styles.container}>
             <Text style = {styles.header}> Discover Groups </Text>
-            <Text style = {styles.title}> Choose 1 Group that interests you! </Text>
+            <Text style = {styles.title}> Choose at least 1 Group that interests you! </Text>
             <FlatList
                 data={DATA}
                 numColumns = {2}
@@ -102,37 +123,38 @@ const Preference = ({navigation, email, name, username}) => {
                     name={item.name}
                     image = {item.image}
                     email = {email}
-                    selected={item.id == selected}
+                    selected={!!this.state.selected.get(item.id)}
                     onSelect={onSelect}
-                    //updateCategory = {updateCategory}
+                    updateCategory = {updateCategory}
                     setChosen = {setChosen}
-                    setCurr = {setCurr}
+                    setID = {setID}
                 />
                 )}
                 keyExtractor={item => item.id}
-                extraData={selected}
+                extraData={this.state.selected}
             />
             <TouchableOpacity 
                 style = {styles.Button} 
                 onPress={() => 
                     chosen 
-                    ? navigation.navigate('Login', {category: category, email: email, name: name, username: username}) 
-                    : alert("Please select 1 Group!")}
+                    ? this.props.navigation.navigate('Login') 
+                    : alert("Please select at least 1 Group!")}
             > 
                 <Text style = {styles.buttonText}> Done </Text>
             </TouchableOpacity>
         </SafeAreaView>
     )
+                }
 };
 
-export default class PrefScreen extends React.Component {
+/*export default class PrefScreen extends React.Component {
+ 
     render() {
-        const {email} = this.props.route.params
-        const {name} = this.props.route.params
-        const {username} = this.props.route.params
-        return <Preference navigation = {this.props.navigation} email = {email} name ={name} username = {username}/>;
+        //const {email} = this.props.route.params;
+        const email = 'sdf@mail.com'
+        return <Preference navigation = {this.props.navigation} email = {email} />;
     }
-}
+}*/
 
 const styles = StyleSheet.create({
     container: {
