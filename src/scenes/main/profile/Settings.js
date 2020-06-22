@@ -4,8 +4,7 @@ import { TextInput, StyleSheet, Text, ScrollView,
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase'; 
-
-// import { useEffect } from 'react';
+// import { Item } from 'react-native-paper/lib/typescript/src/components/List/List';
 
 export default class SettingsScreen extends React.Component {
     state = { 
@@ -15,7 +14,8 @@ export default class SettingsScreen extends React.Component {
         switchValue4: false,
         isDateTimePickerVisible: false, 
         displayTime: "", 
-        frequency:""
+        freq:'',
+        frequency:''
     };
     toggleSwitch1 = (value) => {
         this.setState({switchValue1: value})
@@ -41,17 +41,17 @@ export default class SettingsScreen extends React.Component {
         this.hideDateTimePicker();
         this.setState({displayTime : time});
     };
-    changeFreq(item) {
-        this.setState({ 
-            frequency: item.value
-        });
-    };
+
+    changeFreq = (item) => {
+        this.setState({freq: item.value})
+        console.log("the iem v for setState", item.value);
+    }
 
     onSave = () => {
         var user = firebase.auth().currentUser;
         //Update this into 'info' collection
         firebase.firestore().collection('info').doc(user.email).update({
-            frequency: this.state.frequency
+            frequency: this.state.freq
         })
         this.props.navigation.navigate('Profile')
     }
@@ -77,9 +77,7 @@ export default class SettingsScreen extends React.Component {
                             {label: 'Biweekly', value: 'Biweekly'},
                             {label: 'Monthly', value: 'Monthly'},
                         ]}
-                        onChangeItems = {(item) => {
-                            this.changeFreq(item)
-                            }}
+                        onChangeItem = {this.changeFreq}
                     />
                     <Text style = {styles.title}> Auto-Post Timing</Text>
                     <TouchableOpacity 

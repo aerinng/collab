@@ -37,16 +37,20 @@ const DATA = [
       },
   ];
 
-  function Item({ id, name, image, selected, onSelect }) {
+  function Item({ id, name, image, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
-        onPress={() => onSelect(id)}
+        onPress={() => {
+          onSelect(id);
+          navigation.navigate('GroupsDetails', {name: name});
+        }}
       >
         <Text style={styles.detailsTitle}>{name}</Text>
         <Image source = {image} style = {styles.icons} />
       </TouchableOpacity>
     );
   }
+
   const Groups = ({navigation}) => {
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
@@ -65,6 +69,7 @@ const DATA = [
                     id={item.id}
                     name={item.name}
                     image = {item.image}
+                    navigation = {navigation}
                     selected={item.id == selected}
                     onSelect={onSelect}
                 />
@@ -82,6 +87,7 @@ const DATA = [
                     id={item.id}
                     name={item.name}
                     image = {item.image}
+                    navigation = {navigation}
                     selected={item.id == selected}
                     onSelect={onSelect}
                 />
@@ -95,7 +101,7 @@ const DATA = [
 
 export default class GroupsScreen extends React.Component {
     render() {
-        // const {docID} = this.props.route.params;
+        //const {docID} = this.props.route.params;
         return <Groups navigation = {this.props.navigation} />;
     }
 }

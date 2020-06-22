@@ -1,44 +1,66 @@
 import React from 'react';
-import { View, StatusBar, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity, SafeAreaView } from "react-native";
+import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity, SafeAreaView } from "react-native";
 import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-class Signup extends React.Component{
+export default class Signup extends React.Component{
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
     state = {
         name:'',
         email:'',
+        username: '',
         password:'',
+        addressLine1: '',
+        addressLine2: '',
         error:'',
-        username:''
+        err: ''
     }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
-    onBottomPress = () =>{
-        firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password)
-        .then(this.onSignupSucess)
-        .catch(err => {
-            alert(err.message)
-        })
+    onBottomPress = () => {
+        firebase.auth()
+                .createUserWithEmailAndPassword(this.state.email,this.state.password)
+                .then(this.onSignupSuccess)
+                .catch(err => {
+                    alert(err);
+                })
     }
 
-
     //If successful, no error message shown
-    onSignupSucess =  () =>{
-        this.setState({
-            error:''
-        })
-        this.props.navigation.navigate('Login', 
-        {name: this.state.name, email: this.state.email, password:this.state.password,
-        username:this.state.username})
-    }        
+    onSignupSuccess =  () => {
+        //var cUser = firebase.auth().currentUser.uid; 
+        var mail = this.state.email;
+        firebase.firestore()
+                .collection('info')
+                .doc(mail)
+                .set({
+                    promo:'',
+                    location:'',
+                    category:'',
+                    total:'', 
+                    date:'',
+                    desc:'',
+                    avatar: 'null',
+                    addressLine1: this.state.addressLine1,
+                    addressLine2: this.state.addressLine2,
+                    name: this.state.name,
+                    username: this.state.username
+                })
+                //.then(() => {
+                //    this.props.navigation.navigate('Preference');
+                //})
+                .catch(error => {
+                    alert(error);
+                });
+        this.props.navigation.navigate('Preference');
+    }
 
-    render(){
+    render() {
         return (           
             <SafeAreaView style = {styles.container}>
             <KeyboardAwareScrollView>
                 <View style = {styles.container}>
-                    <Image  
+                    <Image 
                         style = {styles.image}
                         source = {require('../../../assets/collab_transparent.png')}
                     />
@@ -50,9 +72,10 @@ class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Name"
-                        value={this.state.name}
-                        onChangeText={name => this.setState({name})}
-                        underlineColorAndroid = { 'transparent' }
+                        //value={this.state.name}
+                        onChangeText={name => this.setState({name: name})}
+                        //underlineColorAndroid = { 'transparent' }
+                        autoCapitalize = 'none'
                     />
                     <Image 
                         style = {styles.icons4}
@@ -61,9 +84,10 @@ class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Email"
-                        value={this.state.email}
-                        onChangeText={email => this.setState({email})}
-                        underlineColorAndroid = { 'transparent' }
+                        //value={this.state.email}
+                        onChangeText={email => this.setState({email: email})}
+                        //underlineColorAndroid = { 'transparent' }
+                        autoCapitalize = 'none'
                     />
                     <Image 
                         style = {styles.icons}
@@ -72,9 +96,10 @@ class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Username"
-                        value={this.state.username}
-                        onChangeText={username => this.setState({username})}
-                        underlineColorAndroid = { 'transparent' }
+                        //value={this.state.username}
+                        onChangeText={username => this.setState({username: username})}
+                        //underlineColorAndroid = { 'transparent' }
+                        autoCapitalize = 'none'
                     />
                     <Image 
                         style = {styles.icons2}
@@ -83,29 +108,26 @@ class Signup extends React.Component{
                     <TextInput 
                         style = {styles.TextInput}
                         placeholder = "Password"
-                        value={this.state.password}
-                        onChangeText={password => this.setState({password})}
+                        //value={this.state.password}
+                        onChangeText={password => this.setState({password: password})}
                         secureTextEntry = {true}
-                        underlineColorAndroid = { 'transparent' }
+                        //underlineColorAndroid = { 'transparent' }
+                        autoCapitalize = 'none'
                     />
-
-
-                        {/* <TextInput  //TEMPORARY, MOVE TO PREF PAGE
-                        style = {styles.TextInput}
-                        placeholder = "Pref"
-                        value={this.state.pref}
-                        onChangeText={pref => this.setState({pref})}
-                        secureTextEntry = {true}
-                        underlineColorAndroid = { 'transparent' }
-                    /> */}
-                    <TouchableOpacity style = {styles.Button} onPress={this.onBottomPress}> 
+                    <TouchableOpacity 
+                        style = {styles.Button} 
+                        onPress = {() => {
+                            this.onBottomPress();
+                            //this.props.navigation.navigate('Preference');
+                        }}
+                    > 
                         <Text style = {styles.buttonText}> Sign Up </Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
             </SafeAreaView>
         );
-        }
+    }
 }
 
 const styles = StyleSheet.create({
@@ -209,5 +231,3 @@ const styles = StyleSheet.create({
         position: 'absolute'
     }
 });
-
-export default Signup

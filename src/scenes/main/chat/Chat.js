@@ -1,51 +1,179 @@
-import React from 'react';
-import { View, StyleSheet, Text, ScrollView, SafeAreaView, FlatList, TouchableOpacity, Image } from "react-native";
+import React, {useEffect} from 'react';
+import { StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, 
+  Image, Modal, TextInput, View } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
+import firebase from "firebase";
+import { List, Divider } from 'react-native-paper';
 
-const DATA = [
-    {
-      id: '1',
-      name: 'Jane Doe',
-      message: "Thank you! It's a pleasure :D",
-      image: require('../../../../assets/female.png'),
-      time: "9.05pm"
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      message: "Will inform you again :)",
-      image: require('../../../../assets/male.png'),
-      time: "2.45pm"
-    },
-  ];
-
-  function Item({ id, name, message, time, image, selected, onSelect }) {
-    return (
-      <TouchableOpacity
-        onPress={() => onSelect(id)}
-        style={[
-          styles.item,
-          { backgroundColor: selected ? '#77AABA' : '#ffffff' },
-        ]}
-      >
-        <Text style = {styles.detailsTime}>{time}</Text>
-        <Text style={styles.detailsTitle}>{name}</Text>
-        <Text style={styles.details}>{message}</Text>
-        <Image source = {image} style = {styles.icons} />
-      </TouchableOpacity>
-    );
+export default class Chat extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      textInputName: '',
+      modalVisible: false,
+      threads: '',
+      unsubscribe: null,
+      username: '',
+      friendUsername: '',
+      friendEmail: '',
+      gotUser: false
+    };
   }
 
-const Chat = ({navigation}) => {
-    const [selected, setSelected] = React.useState(new Map());
-    const onSelect = React.useCallback(
-      id => {
-        const newSelected = new Map(selected);
-        newSelected.set(id, !selected.get(id));
-        setSelected(newSelected);
-      },
-      [selected],
-    );
+  setModalVisible = (visible) => {
+    this.setState({ modalVisible: visible });
+  }
+
+  setThreads = (thread) => {
+    this.setState({threads: thread});
+  }
+
+  setFriendDetails = (email, user) => {
+    this.setState({friendEmail: email});
+    this.setState({friendUsername: user});
+   //console.log("test1: " + this.state.friendEmail);
+    //console.log("test2: " + this.state.friendUsername)
+  }
+
+  // fetch chats data from Firestore
+  componentDidMount() {
+    this.getChats(firebase.auth().currentUser.email);
+  }
+
+  // stop listening to changes from Firestore
+  componentWillUnmount() {
+    var unsubscribe = this.state.unsubscribe;
+    unsubscribe();
+  }
+
+  // onSnapshot get realtime updates from Firestore
+  getChats = (user) => {
+    this.state.unsubscribe = firebase.firestore()
+                                     .collection('chats: ' + user)
+                                     .orderBy('latestMessage.timeStamp', 'desc')
+                                     .onSnapshot(querySnapshot => {
+                                         const threads = querySnapshot.docs.map(documentSnapshot => {
+                                          //console.log("SUBS: " + documentSnapshot.id)
+                                          const firebaseData = documentSnapshot.data();
+                                          const data = {
+                                            _id: documentSnapshot.id,
+                                            name: '',
+                                            latestMessage: {
+                                              text: ''
+                                            },
+                                            ...firebaseData
+                                          };
+                                          return data;
+                                        });
+                                        this.setThreads(threads);
+                                      });
+  }
+
+  findUsername = () => {
+    firebase.firestore()
+            .collection('info')
+            .where('username', '==', this.state.textInputName)
+            .get()
+            .then(querySnapshot => {
+              var curr = this;
+              const threads = querySnapshot.forEach(function(doc) {
+                var mail = doc.id;
+                var userObtained = doc.data().username;
+                //console.log("firstmail: " + mail)
+                //console.log("firstuser: " + userObtained)
+                curr.setFriendDetails(mail, userObtained);
+                curr.findName(mail);
+                //console.log("text input: " + curr.state.textInputName)
+                //console.log("username found: " + doc.data().username)
+              })
+              //console.log("username updated " + this.state.username)
+              this.setState({gotUser: true})
+            })
+            .catch((error) => {
+              this.setState({gotUser: false})
+              alert("Username cannot be found.");
+              console.log(error)
+            });
+  }
+
+  findName = (email) => {
+    var mail = email;
+    var currU = firebase.auth().currentUser.email;
+    //console.log("curr email: " + currU)
+    //console.log("friendMail: " + mail)
+    var document = firebase.firestore().collection('info').doc(currU);
+
+    document.get()
+            .then(doc => {
+              var curr = this;
+              this.setState({username: doc.data().username})
+              //console.log("name attained11: " + this.state.username)
+              this.addOwnChat(currU, mail);
+              this.addFriendChat(mail, this.state.username, currU);
+            })
+            .catch(function(error) {
+              console.log("Eeeeerror getting document:", error);
+            });
+          //console.log("name attained: " + this.state.username)
+  }
+
+  addOwnChat = (user, friendEmail) => {
+    var docRef = firebase.firestore()
+                         .collection('chats: ' + user)
+                         .doc(friendEmail);
+    docRef.set({
+            name: this.state.textInputName,
+            latestMessage: {
+              timeStamp: new Date().getTime(),
+              text: 'You have created a room.'
+            },
+          })
+          .catch(function(error) {
+            console.error("Error writing document: ", error);
+          });
+
+          //.then(docRef => {
+    docRef.collection('msg')
+          .add({
+            timeStamp: new Date().getTime(),
+            text: 'You have created a room.',
+            system: true
+          })
+            //this.props.navigation.navigate('Chat');
+          //})
+          
+  }
+
+  addFriendChat = (email, name, ownEmail) => {
+    var docRef = firebase.firestore()
+            .collection('chats: ' + email)
+            .doc(ownEmail);
+    docRef.set({
+            name: name,
+            latestMessage: {
+              timeStamp: new Date().getTime(),
+              text: 'You have created a room.'
+            },
+          })
+          .catch(function(error) {
+            console.error("Error writing document: ", error);
+          });
+            //.then(docRef => {
+    docRef.collection('msg')
+          .add({
+            timeStamp: new Date().getTime(),
+            text: 'You have created a room.',
+            system: true
+          })
+              //this.props.navigation.navigate('Chat');
+            //})
+            
+          
+  }
+
+  render() {
+    var user = firebase.auth().currentUser.email;
+    const { modalVisible } = this.state;
     return (
         <SafeAreaView style = {styles.container}>
             <GorgeousHeader
@@ -54,36 +182,92 @@ const Chat = ({navigation}) => {
                 menuImageStyle = {{resizeMode: 'stretch', width: 0, height: 0}}
                 profileImageSource = {require('../../../../assets/edit.png')}
                 profileImageStyle = {{marginTop: -5, resizeMode: 'stretch', width: 25, height: 25}}
-                profileImageOnPress = {() => navigation.navigate('Chat')}
+                profileImageOnPress = {() => {this.setModalVisible(true)}}
                 titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
                 searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
             />
-            <FlatList
-                data={DATA}
-                renderItem={({ item }) => (
-                <Item
-                    id={item.id}
-                    name={item.name}
-                    message = {item.message}
-                    image = {item.image}
-                    time = {item.time}
-                    selected={!!selected.get(item.id)}
-                    onSelect={onSelect}
-                />
-                )}
-                keyExtractor={item => item.id}
-                extraData={selected}
-            />
+            <View style = {[styles.container]}>
+                    <Modal
+                      transparent={true}
+                      style = {{
+                        marginHorizontal: 30,
+                        flex: 1,
+                        backgroundColor: "#266E7D",
+                        borderRadius: 20,
+                        padding: 35,
+                        alignItems: "center",}}
+                      visible = {modalVisible}
+                      animationType="slide"
+                    >
+                      <View style = {styles.container}>
+                        <TouchableOpacity
+                          onPress = {() => this.setModalVisible(!modalVisible)}
+                        >
+                          <Image source = {require('../../../../assets/delete.png')} style = {{resizeMode: 'stretch', width: 15, height: 15, marginTop: 200, marginBottom: -310}}/>
+                        </TouchableOpacity>
+                        <TextInput 
+                          placeholder = "Enter a username to start chatting!"
+                          autoCapitalize = 'none'
+                          onChangeText={(textInputName) => {
+                            this.setState({ textInputName: textInputName })
+                          }}
+                          style ={{backgroundColor: "#fff", marginTop: 250, marginHorizontal: 10, borderRadius: 15, padding: 10}}
+                        />
+                        <TouchableOpacity
+                          style = {{paddingHorizontal: 37, 
+                            paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, 
+                            alignSelf: 'center', borderRadius: 10}}
+                          onPress = {() => {
+                            //console.log("hello " + this.state.textInputName)
+                            this.findUsername();
+                            this.setModalVisible(!modalVisible);
+                            /*if (!this.state.gotUser) {
+                              alert("Username cannot be found!")
+                            }*/
+                            //console.log("after " + this.state.modalVisible);
+                          }}
+                        >
+                            <Text
+                              style = {{textAlign: 'center', fontSize: 18, fontWeight: '600', 
+                              position: 'absolute', marginTop: 3, color: "#fff", marginLeft: 8}}
+                            > 
+                              Create 
+                            </Text>
+                          </TouchableOpacity>
+                          </View>
+                      </Modal>
+                    </View>
+                    <View style = {styles.container2}>
+                      <FlatList
+                        data={this.state.threads}
+                        keyExtractor={(item) => item._id}
+                        ItemSeparatorComponent={() => <Divider />}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            onPress={() => this.props.navigation.navigate(
+                              'ChatRoom', { 
+                                threads: item , 
+                                //friendEmail: this.state.friendEmail, 
+                                //friendUsername: this.state.friendUsername 
+                              })}
+                          >
+                          <List.Item
+                            title={item.name}
+                            description={item.latestMessage.text}
+                            left = {props => <List.Icon {...props} icon="chat" />}
+                            titleNumberOfLines={1}
+                            titleStyle={styles.listTitle}
+                            descriptionStyle={styles.listDescription}
+                            descriptionNumberOfLines={1}
+                          />
+                          </TouchableOpacity>
+                        )}
+                      />
+            </View>
         </SafeAreaView>
     )
-}
-
-export default class ChatScreen extends React.Component {
-    render() {
-        // const {docID} = this.props.route.params;
-        return <Chat navigation = {this.props.navigation} />
-    }
+  }
 }
 
 const styles = StyleSheet.create({
@@ -92,49 +276,15 @@ const styles = StyleSheet.create({
       padding: 35,
       flex: 1
     },
-    header: {
-        fontSize: 30,
-        marginBottom: 18,
-        fontWeight: '600',
-        alignItems: 'center',
-        textAlign: 'center',
+    container2: {
+      paddingHorizontal: 15,
+      flex: 300,
+      marginTop: -90
     },
-    item: {
-        backgroundColor: '#f9c2ff',
-        paddingVertical: 40,
-        marginVertical: 8
+    listTitle: {
+      fontSize: 22,
     },
-    detailsTitle: {
-        marginLeft: 130,
-        marginTop: -10,
-        fontSize: 20,
-        fontWeight: '500',
-        paddingBottom: 5,
-        paddingRight: 30
-    },
-    details: {
-        marginLeft: 130,
-        fontSize: 15,
-        paddingRight: 30,
-        marginTop: 5,
-        color: '#696969'
-    },
-    detailsTime: {
-        fontSize: 15,
-        marginTop: -15,
-        marginRight: 15,
-        alignSelf: 'flex-end',
-        color: '#696969'
-    },
-    icons: {
-        position: 'absolute',
-        width: 100,
-        height: 100,
-        marginTop: 15,
-        paddingLeft: 5,
-        borderColor: '#000000',
-        borderWidth: 1,
-        borderRadius: 50,
-        marginLeft: 15,
+    listDescription: {
+      fontSize: 16,
     },
 });

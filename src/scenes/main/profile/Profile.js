@@ -1,65 +1,108 @@
 import React from 'react';
 import { StyleSheet, Text, SafeAreaView, TouchableOpacity, Image} from "react-native";
 import firebase from 'firebase';
+import { useIsFocused } from '@react-navigation/native';
 
-
-const Profile = ({navigation, username}) => {
-        return (
-        <SafeAreaView style = {styles.container}>
-            <Image source = {require('../../../../assets/userMask.png')} style = {styles.userIcon}/>
-            <Text style = {styles.header}>{username}</Text>
-            <TouchableOpacity 
-                style = {styles.Button}
-                onPress={() => navigation.navigate('EditProfile')}
-            >
-                
-                <Text style = {styles.buttonTexts}> Edit Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style = {styles.item}
-                onPress={() => navigation.navigate('MyOffers')}
-            >
-                <Text style = {styles.detailsTitle}> My Offers</Text>
-                <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style = {styles.item}
-                onPress={() => navigation.navigate('Settings')}
-            >
-                <Text style = {styles.detailsTitle}> Settings</Text>
-                <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-            </TouchableOpacity>
-        </SafeAreaView>
-    )
-};
-
-export default class ProfileScreen extends React.Component {
-    state={
-        username:''
+class Profile extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            userAvatar: 'null',
+            imageChosen: false,
+            unsubscribe: '',
+            username: '',
+        };
     }
-    componentDidMount(){
-        var user = firebase.auth().currentUser; 
-        firebase.firestore().collection("info").where("email", "==", user.email)
-        .get()
-        .then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-                console.log(doc.id, " => ", doc.data());
-                var data = doc.data();
-                this.setState({
-                    username: data.username
-                })
-            });
-            
+
+    onSignOut = () => {
+        firebase.auth().signOut().then(function() {
+            alert("You have signed out successfully.");
+        }).catch(function(error) {
+            alert(error.message);
         })
-        .catch(function(error) {
-            console.log("Error getting documents: ", error);
+        this.props.navigation.navigate('Login');
+    }
+
+    getData = () => {
+        var user = firebase.auth().currentUser.email;
+        var document = firebase.firestore().collection('info').doc(user);
+        this.state.unsubscribe = document.get().then((doc) => {
+            var data = doc.data();
+            this.setState({userAvatar: data.avatar});
+            this.setState({username: data.username});
+            if (this.state.userAvatar !== 'null') {
+                this.setState({imageChosen: true})
+            } else {
+                this.setState({imageChosen: false})
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
         });
     }
 
-    render() {
-        return <Profile navigation = {this.props.navigation} username={this.state.username} />
+    componentDidMount() {
+        this.getData();
     }
-}
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.userAvatar !== prevState.userAvatar ||
+            this.props !== prevProps) {
+            this.getData();
+        }
+      }
+
+    componentWillUnmount() {
+        var unsubscribe = this.state.unsubscribe;
+        unsubscribe;
+    }
+
+    render() {
+        return (
+            <SafeAreaView style = {styles.container}>
+                <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
+                <Image source = {require('../../../../assets/userMask.png')} style = {{width: 150, height: 150, alignSelf: 'center',
+                borderRadius: 100, marginTop: -150, opacity: this.state.imageChosen ? 0 : 1}}/>
+                <Text style = {styles.header}>{ this.state.username }</Text>
+                <TouchableOpacity 
+                    style = {styles.Button}
+                    onPress={() => this.props.navigation.navigate('EditProfile')}
+                >
+                    <Text style = {styles.buttonTexts}> Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {styles.item}
+                    onPress={() => this.props.navigation.navigate('MyOffers')}
+                >
+                    <Text style = {styles.detailsTitle}> My Offers</Text>
+                    <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {styles.item}
+                    onPress={() => this.props.navigation.navigate('Settings')}
+                >
+                    <Text style = {styles.detailsTitle}> Settings</Text>
+                    <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {styles.itemNew}
+                    onPress = {() => this.props.navigation.navigate('ChangePassword')}
+                >
+                    <Text style = {styles.detailsTitleNew}> Change Password</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style = {styles.itemNew2}
+                    onPress = {this.onSignOut}
+                >
+                    <Text style = {styles.detailsTitleNew2}>Log Out</Text>
+                </TouchableOpacity>
+            </SafeAreaView>
+        )
+    }
+};
+
+export default function(props) {
+    return <Profile {... props} />;
+  }
 
 const styles = StyleSheet.create({
     container: {
@@ -70,7 +113,6 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 35,
         marginBottom: 10,
-        marginTop: 10,
         fontWeight: 'bold',
         textAlign: 'center',
     },
@@ -78,14 +120,15 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         alignSelf: 'center',
-        borderRadius: 50,
-        marginTop: 70
+        borderRadius: 100,
+        marginTop: 20,
+        backgroundColor: "#266E7D"
     },
     Button: {
         backgroundColor: "#fff",
         padding: 10,
         marginHorizontal: 135,
-        marginBottom: 20,
+        marginBottom: 10,
         borderRadius: 10,
     },
     buttonTexts: {
@@ -100,7 +143,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff"
     },
     detailsTitle: {
-        marginBottom: 0,
         fontSize: 25,
         fontWeight: '600',
         justifyContent: 'center',
@@ -115,4 +157,155 @@ const styles = StyleSheet.create({
         marginTop: 32,
         zIndex: 1,
     },
+    itemNew: {
+        marginTop: 15,
+        marginLeft: 40,
+        borderRadius: 15,
+        backgroundColor: "#fff",
+        alignSelf: 'flex-start'
+    },
+    detailsTitleNew: {
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
+        zIndex: 1,
+        padding: 10,
+        paddingVertical: 15,
+        color: "#266E7D"
+    },
+    itemNew2: {
+        marginTop: -51,
+        marginRight: 40,
+        borderRadius: 15,
+        backgroundColor: "#fff",
+        alignSelf: 'flex-end'
+    },
+    detailsTitleNew2: {
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
+        zIndex: 1,
+        padding: 15,
+        paddingHorizontal: 20,
+        color: "#266E7D"
+    },
 });
+
+// import React from 'react';
+// import { StyleSheet, Text, SafeAreaView, TouchableOpacity, Image} from "react-native";
+// import firebase from 'firebase';
+
+
+// const Profile = ({navigation, username}) => {
+//         return (
+//         <SafeAreaView style = {styles.container}>
+//             <Image source = {require('../../../../assets/userMask.png')} style = {styles.userIcon}/>
+//             <Text style = {styles.header}>{username}</Text>
+//             <TouchableOpacity 
+//                 style = {styles.Button}
+//                 onPress={() => navigation.navigate('EditProfile')}
+//             >
+                
+//                 <Text style = {styles.buttonTexts}> Edit Profile</Text>
+//             </TouchableOpacity>
+//             <TouchableOpacity 
+//                 style = {styles.item}
+//                 onPress={() => navigation.navigate('MyOffers')}
+//             >
+//                 <Text style = {styles.detailsTitle}> My Offers</Text>
+//                 <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+//             </TouchableOpacity>
+//             <TouchableOpacity 
+//                 style = {styles.item}
+//                 onPress={() => navigation.navigate('Settings')}
+//             >
+//                 <Text style = {styles.detailsTitle}> Settings</Text>
+//                 <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+//             </TouchableOpacity>
+//         </SafeAreaView>
+//     )
+// };
+
+// export default class ProfileScreen extends React.Component {
+//     state={
+//         username:''
+//     }
+//     componentDidMount(){
+//         var user = firebase.auth().currentUser; 
+//         firebase.firestore().collection("info").where("email", "==", user.email)
+//         .get()
+//         .then(querySnapshot => {
+//             querySnapshot.forEach(doc => {
+//                 console.log(doc.id, " => ", doc.data());
+//                 var data = doc.data();
+//                 this.setState({
+//                     username: data.username
+//                 })
+//             });
+            
+//         })
+//         .catch(function(error) {
+//             console.log("Error getting documents: ", error);
+//         });
+//     }
+
+//     render() {
+//         return <Profile navigation = {this.props.navigation} username={this.state.username} />
+//     }
+// }
+
+// const styles = StyleSheet.create({
+//     container: {
+//       alignSelf: 'stretch',
+//       padding: 35,
+//       flex: 1,
+//     },
+//     header: {
+//         fontSize: 35,
+//         marginBottom: 10,
+//         marginTop: 10,
+//         fontWeight: 'bold',
+//         textAlign: 'center',
+//     },
+//     userIcon: {
+//         width: 150,
+//         height: 150,
+//         alignSelf: 'center',
+//         borderRadius: 50,
+//         marginTop: 70
+//     },
+//     Button: {
+//         backgroundColor: "#fff",
+//         padding: 10,
+//         marginHorizontal: 135,
+//         marginBottom: 20,
+//         borderRadius: 10,
+//     },
+//     buttonTexts: {
+//         fontSize: 15,
+//         fontWeight: '500',
+//         textAlign: 'center'
+//     },
+//     item: {
+//         marginVertical: 10,
+//         marginHorizontal: 40,
+//         borderRadius: 15,
+//         backgroundColor: "#fff"
+//     },
+//     detailsTitle: {
+//         marginBottom: 0,
+//         fontSize: 25,
+//         fontWeight: '600',
+//         justifyContent: 'center',
+//         zIndex: 1,
+//         padding: 25
+//     },
+//     arrow: {
+//         width: 20,
+//         height: 20,
+//         position: 'absolute',
+//         alignSelf: 'flex-end',
+//         marginTop: 32,
+//         zIndex: 1,
+//     },
+// });
