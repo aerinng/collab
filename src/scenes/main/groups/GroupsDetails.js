@@ -44,15 +44,19 @@ const GroupsDetails = ({name, navigation}) => {
     const isFocused = useIsFocused();
 
     var user = firebase.auth().currentUser;
+    var currName = name;
     //entering in DATA from this logged in user
-    firebase.firestore().collection("offers").where("category", "==", name).get()
-    .then(snap => {
-      DATA.length = 0;
-        snap.forEach(docs =>{      
-            DATA.push(docs.data())
-        })
-        console.log("Data [search] ", DATA)
-    })
+    firebase.firestore()
+            .collection("offers")
+            .where("category", "==", currName)
+            .get()
+            .then(snap => {
+                DATA.length = 0;
+                snap.forEach(docs =>{      
+                    DATA.push(docs.data())
+                })
+                console.log("Data [search] ", DATA)
+            })
     return (
         <SafeAreaView style = {styles.container}>
             <TouchableOpacity onPress = {() => navigation.goBack()} >

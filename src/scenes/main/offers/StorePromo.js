@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList, ActivityIndicator, Linking } from "react-native";
 import firebase from 'firebase'; 
 import { Searchbar } from 'react-native-paper';
 
@@ -35,23 +35,15 @@ const StorePromo = ({navigation}) => {
   const [selected, setSelected] = React.useState(null);
   const onSelect = (id) => {
       setSelected(id);
-      console.log(id);
+      //console.log(id);
   }
-  
-  DATA.length = 0;
 
-  // FROM HERE: SEARCH BAR DRAFT
-  // it's not working yet LOL
+  // FROM HERE: SEARCH BAR
   const [query, setQuery] = React.useState('');
-
-  // only call search after 1.5 seconds after user has finish typing
-  //const timer = setTimeout(() => searchFilterFunction(query), 1500);
   const [typingTimeout, setTypingTimeout] = React.useState(0);
 
   const searched = (text) => {
-    console.log("before: " + query)
     setQuery(text);
-    console.log("after: " + query)
 
     if (typingTimeout) {
       clearTimeout(typingTimeout);
@@ -59,24 +51,21 @@ const StorePromo = ({navigation}) => {
 
     setTypingTimeout(setTimeout(function() {
         searchFilterFunction(text);
-      }, 5000))
+      }, 500))
   }
 
   const searchFilterFunction = text => {
     const newData = (DATA.filter(function(item) {
-      const itemData = item.title ? item.title : '';
-      return itemData.indexOf(text) > -1;
+      return item.title.indexOf(text) > -1;
     }));
-    console.log("before: " + DATA.length)
-    DATA.length = 0;
-    setDATA(DATA => [...DATA, newData]);
-    console.log("after: " + DATA.length)
+    setDATA(newData);
   };
-// UNTIL HERE: SEARCH BAR DRAFT
+// UNTIL HERE: SEARCH BAR
 
   useEffect(() => {
+    DATA.length = 0;
     fetchData();
-  })
+  }, [DATA])
 
   const fetchData = () => {
     //just for fairprice...
@@ -102,7 +91,6 @@ const StorePromo = ({navigation}) => {
         //console.log("Data", DATA)
     })
 
-
     firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
     .then(snap => { 
         snap.forEach(docs =>{
@@ -115,7 +103,6 @@ const StorePromo = ({navigation}) => {
         //console.log(" Data in SP", DATA)
     })
   }
-
     return (
         <SafeAreaView style = {styles.container}>
             <TouchableOpacity onPress = {() => navigation.navigate('Search')} >
@@ -134,14 +121,10 @@ const StorePromo = ({navigation}) => {
               Store Promotions
             </Text>
             <Searchbar 
-              onChangeText={text => {
-                setTimeout((text) => searched(text), 1500);
-              }}
+              onChangeText={text => {searched(text)}}
               placeholder = "Search Stores"
               style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginVertical: 15}}
               value = {query}
-              //theme = {{color: "266E7D"}}
-              // to change cursor colour bc its purple rn 
             />
             
            <FlatList
@@ -160,6 +143,11 @@ const StorePromo = ({navigation}) => {
                 )}
                 keyExtractor={item => item.id}
                 extraData={selected}
+                // optimisation, length number is a random number,
+                // doesn't seem to affect anything
+                getItemLayout={(data, index) => (
+                  {length: 15, offset: 15 * index, index}
+                )}
             />
         </SafeAreaView>  
     )
