@@ -158,7 +158,7 @@ Auto-Retrieval of Data from Websites Function | Reach out to relevant stores to 
 Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July) | :negative_squared_cross_mark:
 Messaging Function | Research the technologies and languages used on other similar chatting applications. | Mid July (17th July) | :negative_squared_cross_mark:
 Groups Function | Program the application such that it identifies each user’s favourites. | Mid July (17th July) | :negative_squared_cross_mark:
-Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon successful implementations. | Ongoing
+Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon successful implementations. | Ongoing | Ongoing
 
 ## System Testing Log
 No. | Issue | Solution | Fixed?
@@ -175,6 +175,8 @@ No. | Issue | Solution | Fixed?
 10 | Profile Page: Doesn't auto update user's picture or username after changing them on Edit Profile Page | Use componentDidUpdate from React Lifecycle Components and compared props so data would be fetched from firebase, hence displaying the latest user data on profile page | :white_check_mark:
 11 | Preference Page: Page is bypassed despite being inserted in the navigations | Used firebase then() function to return a new Promise and navigate to Preference page | :white_check_mark:
 12 | Chat Page: Could not find the opposing user's username and email when passed as parameters to another function from Chat to Chat Room, hence received an error due to passing an empty object to firebase | Define the parameters inside an object in Chats then pass the entire object to Chat Room | :white_check_mark:
+13 | Notifications: Unable to navigate users to intended page after clicking on notification | Work In Progress! | :negative_squared_cross_mark:
+14 | Preference Page: Unable to add into array via multiple selection of items with the first click, requires a second click | Since useState hook is not async, tried useEffect hook to re-render after change in array and it didn't work. Hence, changed to single selection instead of multiple selection in order to create a MVP first. Will be incorporating this fix into milestone 3. | :negative_squared_cross_mark:
 
 ## Security Features
 1) Authentication: Only registered users in Collab can gain access to the application
@@ -185,7 +187,7 @@ No. | Issue | Solution | Fixed?
 ## Challenges Encountered
 1) We tried to contact stores to obtain their APIs for easy retrieval of promotions data, but there was no response received. Hence, we will store the data in our database and fetch the data from there.
 2) Authenticating with Google can be quite challenging, hence we will implement this at a later phase during Milestone 3, when most of our features are ready.
-3) Store Promotions page takes a really long loading time or requires a scroll before items can render. We will attempt to optimise the loading time of our screens in Milestone 3.
+3) Some pages takes a really long loading time or requires a scroll before items can render. We will attempt to optimise the loading time of our screens in Milestone 3.
 4) When searching for usernames to create a Chat Room with, user must type in the entire username in order to search for the user. We will attempt to implement realtime searching in Milestone 3 if time permits.
 5) Connection to Firebase while running simulator: Quota limits are hit sometimes even though database does not reflect that limit was hit. We are not sure why does this happen but so far it is not a big issue as it only affected us a few times.
 
@@ -200,3 +202,4 @@ No. | Issue | Solution | Fixed?
 8) Search Bars: Realtime searching from database
 9) Additional Security Features: Encryption, Logging
 10) Enable Google Analytics on Firebase
+11) Allow multiple addition into My Groups
