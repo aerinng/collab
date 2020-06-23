@@ -9,28 +9,34 @@ Ng Shi Xuan, Aerin & Alyssa Nah Xiao Ting
 AA Battery
 
 ## Table of Contents
+### What is Collab
 - [App Description](https://github.com/aerinng/collab#app-description)
+### Inspiration behind Collab
 - [Problem Research](https://github.com/aerinng/collab#problem-research)
 - [Motivation](https://github.com/aerinng/collab#motivation)
 - [Aim](https://github.com/aerinng/collab#aim)
 - [User Stories](https://github.com/aerinng/collab#user-stories)
+### About Collab
 - [App Features](https://github.com/aerinng/collab#app-features)
 - [Program Flow](https://github.com/aerinng/collab#program-flow)
 - [How Collab Works](https://github.com/aerinng/collab#how-collab-works)
 - [Tech Stack](https://github.com/aerinng/collab#tech-stack)
 - [What Makes Collab Unique](https://github.com/aerinng/collab#what-makes-collab-unique)
-- [Challenges Encountered](https://github.com/aerinng/collab#challenges-encountered)
-- [Possible Improvements](https://github.com/aerinng/collab#possible-improvements)
-- [System Testing Log](https://github.com/aerinng/collab#system-testing-log)
-- [Development Plan](https://github.com/aerinng/collab#development-plan)
+### Development of Collab
 - [Project Logs](https://github.com/aerinng/collab#project-logs)
 - [User Guide](https://github.com/aerinng/collab#user-guide)
+- [Development Plan](https://github.com/aerinng/collab#development-plan)
+- [System Testing Log](https://github.com/aerinng/collab#system-testing-log)
+- [Security Features](https://github.com/aerinng/collab#security-features)
+- [Challenges Encountered](https://github.com/aerinng/collab#challenges-encountered)
+- [Possible Enhancements for Milestone 3](https://github.com/aerinng/collab#possible-enhancements-for-milestone-3)
+
 
 ## App Description
 
 Collab is an application serving as a communication platform to facilitate buyers to collaborate and collate items for a bigger order to achieve higher savings. Collab allows users to list the orders they will be making in order to find other buyers to combine orders with. 
 
-Collab will not be responsible for any payment to be made between buyers or orders to be made in external stores and is simply a platform to reach out to potential collaborators.
+Collab will not be responsible for any payment to be made between buyers or orders to be made in external stores and is simply a platform to reach out to potential collaborators. There is also no platform fee incurred to list an offer on Collab.
 
 <p align="center">
    <img src="https://i.imgur.com/V5yb6Li.png" width="600">
@@ -136,6 +142,46 @@ Range of items showcased | Tentatively, local major stores in Singapore | Grocer
 Watchlist to keep track of favourite item’s promotion | No | Yes | No
 Additional Features | ‘Groups’ page which users can join communities who have bought similar items | Calculate how much savings you will accumulate during a promotion | ‘Coupons’ page with promotional codes and coupons (stores include FoodPanda, Zalora etc)
 
+## Project Logs
+1) [Milestone 1](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing): Creation of Prototype
+2) [Milestone 2]() (Coming to you on 29 June!): Creation of MVP
+3) [Milestone 3]() (Coming to you on 27 July!): Final Product
+
+## User Guide
+Coming to you on 29 June!
+
+## Development Plan
+Target | Actions to reach target | Target Date (Tentative) | Status
+-------| ------------------------| ------------------------|--------
+Notification Pop-ups | Understand how to use API calls to send notifications to users | Mid June (17th June) | :white_check_mark:
+Auto-Retrieval of Data from Websites Function | Reach out to relevant stores to request utilizing their APIs. Understand how APIs work (to request, passing the authentication etc). Since we are unable to obtain APIs, we will store promotion data in database and fetch from there. | End June (30th June) | :white_check_mark:
+Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July) | :negative_squared_cross_mark:
+Messaging Function | Research the technologies and languages used on other similar chatting applications. | Mid July (17th July) | :negative_squared_cross_mark:
+Groups Function | Program the application such that it identifies each user’s favourites. | Mid July (17th July) | :negative_squared_cross_mark:
+Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon successful implementations. | Ongoing
+
+## System Testing Log
+No. | Issue | Solution | Fixed?
+----|-------|----------|-------
+1 | Auto-Post Function: Couldn't call methods based on time intervals | Imported and used 'moment' libraries to use their date features | :white_check_mark:
+2 | Notification Function: react-native-push-token doesn't generate push tokens properly | Had to import permissions + notifications from expo | :white_check_mark:
+3 | Search Page: Data couldn't be retrieved properly because page doesn't re-render between the tab navigations | Used useIsFocused hook from @react-navigation/native. As long as pages between tabs are changed, it will cause a re-render | :white_check_mark:
+4 | Sign Up Page: Upon creating new user, firebase reflects that the newly created user is signed in. However upon running code, the current signed-in user is another user | Changed workflow of the app to navigate from Signup page to Login page. Doing so make sures the current signed in user is correct. | :white_check_mark:
+5 | Profile Page: Infinite loop of fetching data from firebase | Use componentWillUnmount from React Lifecycle Components to clean up any subscriptions | :white_check_mark:
+6 | Edit Profile Page: Multiline placeholder text input not displayed upon rendering of page | Split address inputs into different text input field lines so each address line would be short and able to be displayed properly | :white_check_mark:
+7 | Chat Page: Individual chatroom's preview latest message not displayed properly | Update firebase document field to be the latest message while simultaneously adding the message into subcollection | :white_check_mark:
+8 | Edit Profile Page: Receives error of Maximum update depth exceeded due to too many setStates | Redesigned the UI/UX so editing profile doesn't require modals and Change password, Log out buttons are on Profile Page instead | :white_check_mark:
+9 | React Native text input auto-capitalisation of the first letter resulted in different database fetched from firebase despite having the same email/uid string | Turn off auto-capitalisation for all text inputs in our app | :white_check_mark:
+10 | Profile Page: Doesn't auto update user's picture or username after changing them on Edit Profile Page | Use componentDidUpdate from React Lifecycle Components and compared props so data would be fetched from firebase, hence displaying the latest user data on profile page | :white_check_mark:
+11 | Preference Page: Page is bypassed despite being inserted in the navigations | Used firebase then() function to return a new Promise and navigate to Preference page | :white_check_mark:
+12 | Chat Page: Could not find the opposing user's username and email when passed as parameters to another function from Chat to Chat Room, hence received an error due to passing an empty object to firebase | Define the parameters inside an object in Chats then pass the entire object to Chat Room | :white_check_mark:
+
+## Security Features
+1) Authentication: Only registered users in Collab can gain access to the application
+2) Authorisation: Only registered users in Collab's database will be able to login successfully
+3) Permission: Permission must be granted by the user before Collab is able to access user's camera roll or send notification to users
+4) Tokenisation: Usage of tokens for login and notifications unique per user device
+
 ## Challenges Encountered
 1) We tried to contact stores to obtain their APIs for easy retrieval of promotions data, but there was no response received. Hence, we will store the data in our database and fetch the data from there.
 2) Authenticating with Google can be quite challenging, hence we will implement this at a later phase during Milestone 3, when most of our features are ready.
@@ -152,37 +198,5 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 6) Display alert if no username is found when searching for username on Chat page
 7) Optimisation of loading time
 8) Search Bars: Realtime searching from database
-
-## System Testing Log
-No. | Issue | Solution | Fixed?
-----|-------|----------|-------
-1 | Auto-Post Function: Couldn't call methods based on time intervals | Imported and used 'moment' libraries to use their date features | :white_check_mark:
-2 | Notification Function: react-native-push-token doesn't generate push tokens properly | Had to import permissions + notifications from expo | :white_check_mark:
-3 | Search Page: Data couldn't be retrieved properly because page doesn't re-render between the tab navigations | Used useIsFocused hook from @react-navigation/native. As long as pages between tabs are changed, it will cause a re-render | :white_check_mark:
-4 | Sign Up Page: Upon creating new user, firebase reflects that the newly created user is signed in. However upon running code, the current signed-in user is another user | Changed workflow of the app to navigate from Signup page to Login page. Doing so make sures the current signed in user is correct. | :white_check_mark:
-5 | Profile Page: Infinite loop of fetching data from firebase | Use componentWillUnmount from React Lifecycle Components to clean up any subscriptions | :white_check_mark:
-6 | Edit Profile Page: Multiline placeholder text input not displayed upon rendering of page | Split address inputs into different text input field lines so each address line would be short and able to be displayed properly | :white_check_mark:
-7 | Chat Page: Individual chatroom's preview latest message not displayed properly | Update firebase document field to be the latest message while simultaneously adding the message into subcollection | :white_check_mark:
-8 | Edit Profile Page: Receives error of Maximum update depth exceeded due to too many setStates | Redesigned the UI/UX so editing profile doesn't require modals and Change password, Log out buttons are on Profile Page instead | :white_check_mark:
-9 | React Native text input auto-capitalisation of the first letter resulted in different database fetched from firebase despite having the same email/uid string | Turn off auto-capitalisation for all text inputs in our app | :white_check_mark:
-10 | Profile Page: Doesn't auto update user's picture or username after changing them on Edit Profile Page | Use componentDidUpdate from React Lifecycle Components and compared props so data would be fetched from firebase, hence displaying the latest user data on profile page | :white_check_mark:
-11 | Preference Page: Page is bypassed despite being inserted in the navigations | Work in Progress! | :negative_squared_cross_mark:
-12 | Chat Page: Could not find the opposing user's username and email when passed as parameters to another function from Chat to Chat Room, hence received an error due to passing an empty object to firebase | Define the parameters inside an object in Chats then pass the entire object to Chat Room | :white_check_mark:
-
-## Development Plan
-Target | Actions to reach target | Target Date (Tentative)
--------| ------------------------| ---------------------- 
-Notification Pop-ups | Understand how ‘react-native-push-notification’ works | Mid June (17th June)
-Auto-Retrieval of Data from Websites Function | Reach out to relevant stores to request utilizing their APIs. Understand how APIs work (to request, passing the authentication etc). If unable to obtain APIs, will store data in database and fetch from there. | End June (30th June)
-Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July)
-Messaging Function | Research the technologies and languages used on other similar chatting applications. | Mid July (17th July)
-Groups Function | Program the application such that it identifies each user’s favourites. | Mid July (17th July)
-Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon successful implementations. | Ongoing
-
-## Project Logs
-1) [Milestone 1](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing)
-2) [Milestone 2]() (Coming to you on 29 June!)
-3) [Milestone 3]() (Coming to you on 27 July!)
-
-## User Guide
-Coming to you on 29 June!
+9) Additional Security Features: Encryption, Logging
+10) Enable Google Analytics on Firebase
