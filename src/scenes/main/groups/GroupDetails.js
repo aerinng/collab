@@ -37,6 +37,9 @@ const GroupsDetails = ({name, navigation}) => {
     const onSelect = (id) => {
         setSelected(id);
     }
+    /*const filteredData = DATA.filter((item)=> {
+        return item.title.indexOf(searchKey) >=0
+    })*/
 
     const isFocused = useIsFocused();
 

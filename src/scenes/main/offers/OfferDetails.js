@@ -35,10 +35,9 @@ class OfferDetails extends React.Component{
                 <>
                 <TouchableOpacity  
                         style = {styles.backbutton}
-                        onPress={() => {this.props.navigation.goBack()
-                    }}
+                        onPress={() => {this.props.navigation.goBack()}}
                     >     
-                         <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
+                    <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
                     </TouchableOpacity>
                     <Text style = {styles.header} > Offer Details </Text>
                     </>

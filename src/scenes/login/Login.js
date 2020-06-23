@@ -4,15 +4,13 @@ import { View, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, Touchab
 //import { render } from 'react-dom';
 //import { withFormik } from 'formik';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
-
 export default class Login extends React.Component {
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
-    state ={        
+    state = {        
             email:'',
             password:'',
             error:''
-    }    
+    } 
 
     //Sign In users with the given email and password (FOR AUTHENTICATION)
     onBottomPress = () =>{
@@ -29,28 +27,47 @@ export default class Login extends React.Component {
     
     }
 
-    onSignUpPress = () =>{
-        this.props.navigation.navigate('Signup')
+    onSignUpPress = () => {
+        this.props.navigation.navigate('SignUpScreen')
     }    
 
     //If logged in successfully, go to 'Tabs'
-    onLoginSuccess =  () =>{
+    onLoginSuccess =  () => {
         this.setState({
             error:''
         })
         try{
             const {name} = this.props.route.params
             const {email} = this.props.route.params
-            const {password} = this.props.route.params
+            //const {password} = this.props.route.params
             const {username} = this.props.route.params
             console.log("Login: first tab ", password)
-            this.props.navigation.navigate('Tabs', {name:name, email:email, password:password,username:username})
+            this.props.navigation.navigate('Tabs', {name:name, email:email,username:username}) // removed password, if you need please add it back in!!
         }catch{
             this.props.navigation.navigate('Tabs')
         }   
     }
 
+    updateCategory = (category, email) => {
+        firebase.firestore()
+                .collection('info')
+                .doc(email)
+                .update({
+                    category: category
+                })
+                .catch(function(error) {
+                    console.log("Error updating document:", error);
+                });
+    }
+
     render(){
+        if (this.props.route.params != null) {
+            const {category} = this.props.route.params;
+            const {email} = this.props.route.params;
+            this.updateCategory(category, email)
+        }
+        //const {name} = this.props.route.params
+        //const {username} = this.props.route.params
         return(
             <KeyboardAwareScrollView>
             <View style = {styles.container}>
@@ -69,6 +86,7 @@ export default class Login extends React.Component {
                     placeholder = "Email"
                     value = {this.state.email}
                     underlineColorAndroid = { 'transparent' }
+                    autoCapitalize = 'none'
                 />
                 <Image 
                     style = {styles.icons2}
@@ -81,8 +99,12 @@ export default class Login extends React.Component {
                     placeholder = "Password"
                     secureTextEntry = {true}
                     underlineColorAndroid = { 'transparent' }
+                    autoCapitalize = 'none'
                 />
-                <TouchableOpacity style = {styles.Button} onPress = {this.onBottomPress}>
+                <TouchableOpacity style = {styles.Button} onPress = {() => {
+                   
+                    this.onBottomPress();
+                }}>
                     <Text style = {styles.buttonText}> Sign In </Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
@@ -181,3 +203,27 @@ const styles = StyleSheet.create({
     }
 });
 
+// export default withFormik({
+//     mapPropsToValues: ({details}) => ({
+//       email: details.email,
+//       password: details.password,
+//     }),
+//     enableReinitialize: true,
+//     validationSchema: (props) => yup.object().shape({
+//       email: yup.string().max(30).required(),
+//       password: yup.string().max(15).required()
+//     }),
+//     handleSubmit: (values, { props }) => {
+//       console.log(props);
+//       console.log(values);
+  
+//       addFood(values);
+//     //   if (props.details.id) {
+//     //     values.id = props.details.id;
+//     //     values.createdAt = props.details.createdAt;
+//     //     uploadFood(values, props.onFoodUpdated);
+//     //   } else {
+//     //     uploadFood(values, props.onFoodAdded);
+//     //   }
+//     },
+//   })(Login);

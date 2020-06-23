@@ -6,14 +6,10 @@ import firebase from 'firebase';
 
 const DATA = [];
 
-  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation}) {
+  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
     return (
       <TouchableOpacity
-        onPress={() => {
-            onSelect(id)
-            navigation.navigate('MyOffersDetails', {docID: id})
-        
-        }}
+        onPress={() => onSelect(id)}
         style={[ styles.item ]}
       >
         <Text style={styles.users}>{user}</Text>
@@ -35,17 +31,16 @@ const MyOffers = ({navigation}) => {
         const [selected, setSelected] = React.useState(null);
         const onSelect = id => {
             setSelected(id);
+            DATA.length = 0; //EMPTY THE LIST
         };
         var user = firebase.auth().currentUser; 
         DATA.length = 0;
         //entering in DATA from this logged in user
         firebase.firestore().collection("offers").where("user", "==", user.email).get()
         .then(snap => {
-            DATA.length = 0; 
             snap.forEach(docs =>{      
-                DATA.push(docs.data())
+                DATA.push(docs.data())//just push the id
             })
-            console.log("DATA [MyOffers]", DATA)
         })
         return (
             <SafeAreaView style = {styles.container}>
@@ -62,7 +57,6 @@ const MyOffers = ({navigation}) => {
                         //user = {item.user}
                         selected={item.id == selected}
                         onSelect={onSelect}
-                        navigation={navigation}
                     />
                     )}
                     keyExtractor={item => item.id}
@@ -75,7 +69,7 @@ const MyOffers = ({navigation}) => {
 
 export default class MyOffersScreen extends React.Component {
     render() {
-        DATA.length = 0; 
+        //const {docID} = this.props.route.params;
         return <MyOffers navigation = {this.props.navigation} />;
     }
 }

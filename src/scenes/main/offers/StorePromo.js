@@ -1,9 +1,6 @@
-//aerin's
 import React, {useState, useRef, useEffect} from 'react';
 import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
-//import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import firebase from 'firebase'; 
-//import { SearchBar } from 'react-native-elements';
 import { Searchbar } from 'react-native-paper';
 
 //const DATA = [];
@@ -43,6 +40,7 @@ const StorePromo = ({navigation}) => {
   
   DATA.length = 0;
 
+  // FROM HERE: SEARCH BAR DRAFT
   // it's not working yet LOL
   const [query, setQuery] = React.useState('');
 
@@ -74,6 +72,7 @@ const StorePromo = ({navigation}) => {
     setDATA(DATA => [...DATA, newData]);
     console.log("after: " + DATA.length)
   };
+// UNTIL HERE: SEARCH BAR DRAFT
 
   useEffect(() => {
     fetchData();
@@ -89,6 +88,7 @@ const StorePromo = ({navigation}) => {
             })
             DATA.push(docs.data()) //from firebase
           })
+          // console.log("Data", DATA)
       })
 
     firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
