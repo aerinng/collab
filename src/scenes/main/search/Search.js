@@ -14,7 +14,7 @@ function Item({ id, title, data, image, user, progress, progressIdx, selected, o
     <TouchableOpacity
       onPress={() => {
           onSelect(id);
-          navigation.navigate('OfferDetails', {orderID: id})
+          navigation.navigate('OfferDetails', {docID: id})
       }}
       style={[ styles.item]}
     >
@@ -103,28 +103,7 @@ const Search = ({navigation, searchKey}) => {
               //theme = {{color: "266E7D"}}
               // to change cursor colour bc its purple rn 
             />
-            <TouchableOpacity style = {styles.selection} 
-                title = "Send Push Notification"
-                onPress = {async () => {
-                    console.log("push notification pushed")
-                    const response = await fetch('https://exp.host/--/api/v2/push/send', {
-                        method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Accept-encoding': 'gzip, deflate',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            to: 'ExponentPushToken[E3h9-HK9lNgzpMQTG5TyYa]', //this one needa change
-                            sound: 'default',
-                            title: 'Demo',
-                            body: 'testing',
-                            _displayInForeground: true,
-                        })
-                    });
-                }}
-            />
-           <FlatList
+          <FlatList
                 data={DATA}
                 renderItem={({ item }) => (
                 <Item
@@ -337,16 +316,45 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     }
 });
+
 // import React from 'react';
 // import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
-// import { Searchbar } from 'react-native-paper';
+// import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 // import * as Progress from 'react-native-progress';
 // import firebase from 'firebase';
 // import {  Notifications } from 'expo';
 // import * as Permissions from 'expo-permissions';
 // import { useIsFocused } from '@react-navigation/native';
 
-// const DATA = [];
+// const DATA = [
+//     /*{
+//       id: '1',
+//       title: 'Fairprice',
+//       data: "Groceries",
+//       image: require('../../../../assets/fairprice.jpg'),
+//       user: "aerin123 - Paya Lebar",
+//       progress: '76% of $79.00',
+//       progressIdx: 0.76
+//     },
+//     {
+//       id: '2',
+//       title: 'Cold Storage',
+//       data: "Groceries",
+//       image: require('../../../../assets/coldstorage.jpg'),
+//       user: "alyssa123 - Paya Lebar",
+//       progress: '76% of $59.00',
+//       progressIdx: 0.76
+//     },
+//     {
+//       id: '3',
+//       title: 'Sephora',
+//       data: "Make Up",
+//       image: require('../../../../assets/sephora.jpg'),
+//       user: "aabattery123 - Paya Lebar",
+//       progress: "50% of $50.00",
+//       progressIdx: 0.5
+//     },*/
+//   ];
 
 //   function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
 //     return (
@@ -381,8 +389,9 @@ const styles = StyleSheet.create({
 //     })
 
 //     const isFocused = useIsFocused();
-//     var user = firebase.auth().currentUser;  
-//     //Updating the pictures for each title respectively
+//     var user = firebase.auth().currentUser;
+    
+//     //Updating the pictures for each title respecti
 //     firebase.firestore().collection('offers').where("title", "==", 'Sephora')
 //     .get()
 //     .then(querySnapshot => {
@@ -423,46 +432,17 @@ const styles = StyleSheet.create({
 //     })
 //     return (
 //         <SafeAreaView style = {styles.container}>
-//             <Image
-//               source = {require('../../../../assets/search.png')}
-//               style = {{marginTop: 10, resizeMode: 'stretch', width: 30, height: 30, alignSelf: 'flex-end', marginRight: 25}}
+//             <GorgeousHeader
+//                 title = "Search"
+//                 subtitle = ""
+//                 menuImageSource = {require('../../../../assets/store.png')}
+//                 menuImageOnPress = {() => navigation.navigate('Search')}
+//                 menuImageStyle = {{resizeMode: 'stretch', width: 30, height: 30, marginLeft: 10, marginTop: 10}}
+//                 titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
+//                 searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
+//                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
+//                 onChangeText={(value) => searchKey= value}
 //             />
-//             <Text 
-//               style = {{fontSize: 30, fontWeight: '600', marginTop: -32, alignSelf: 'center', borderRadius:15}}
-//             >
-//               Search
-//             </Text>
-//             <Searchbar 
-//               //onChangeText={text => {
-//               // setTimeout((text) => searched(text), 1500);
-//               //}}
-//               placeholder = "Search Stores"
-//               style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginVertical: 15}}
-//               //value = {query}
-//               //theme = {{color: "266E7D"}}
-//               // to change cursor colour bc its purple rn 
-//             />
-//             <TouchableOpacity style = {styles.selection} 
-//                 title = "Send Push Notification"
-//                 onPress = {async () => {
-//                     console.log("push notification pushed")
-//                     const response = await fetch('https://exp.host/--/api/v2/push/send', {
-//                         method: 'POST',
-//                         headers: {
-//                             Accept: 'application/json',
-//                             'Accept-encoding': 'gzip, deflate',
-//                             'Content-Type': 'application/json'
-//                         },
-//                         body: JSON.stringify({
-//                             to: 'ExponentPushToken[E3h9-HK9lNgzpMQTG5TyYa]', //this one needa change
-//                             sound: 'default',
-//                             title: 'Demo',
-//                             body: 'testing',
-//                             _displayInForeground: true,
-//                         })
-//                     });
-//                 }}
-//                 />
 //            <FlatList
 //                 data={DATA}
 //                 renderItem={({ item }) => (
