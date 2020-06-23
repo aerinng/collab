@@ -70,9 +70,8 @@ const Search = ({navigation, searchKey}) => {
     })
 
     const isFocused = useIsFocused();
-    var user = firebase.auth().currentUser;
-    
-    //updating the pictures
+    var user = firebase.auth().currentUser;  
+    //Updating the pictures for each title respectively
     firebase.firestore().collection('offers').where("title", "==", 'Sephora')
     .get()
     .then(querySnapshot => {
@@ -101,7 +100,7 @@ const Search = ({navigation, searchKey}) => {
         });  
     })
     
-    //entering in DATA from this logged in user
+    //Pushing data from logged in user. 
     console.log("printing out search")
     firebase.firestore().collection("offers").get()
     .then(snap => {
@@ -132,9 +131,6 @@ const Search = ({navigation, searchKey}) => {
                     title={item.title}
                     data = {item.data}
                     image = {item.image}
-                    //progressIdx = {item.progressIdx}
-                    //progress = {item.progress}
-                    //user = {item.user}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
@@ -202,8 +198,8 @@ export default class SearchScreen extends React.Component {
     }     
 
     render(){       
+
         DATA.length = 0; 
-        console.log("search update pictures")
         firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
         .then(snap => { 
             snap.forEach(docs =>{
@@ -220,7 +216,6 @@ export default class SearchScreen extends React.Component {
                 image: require('../../../../assets/sephora.jpg')
               })
             })
-            // console.log("Data", DATA)
         })
     
     
