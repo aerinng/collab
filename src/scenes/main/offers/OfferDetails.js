@@ -67,7 +67,7 @@ class OfferDetails extends React.Component {
                         </View>
                     )}
                     style={styles.container}
-                    keyExtractor={item => item} 
+                    keyExtractor={item => item.toString()} 
                 /> 
                 <TouchableOpacity style = {styles.Button}>
                     <Text style = {styles.buttonText}> Edit </Text>

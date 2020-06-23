@@ -33,13 +33,14 @@ function Item({ id, title, data, image, user, progress, progressIdx, selected, o
 }
 
 const Search = ({navigation, searchKey}) => {
+    const [DATA, setDATA] = React.useState([]);
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
-    const filteredData = DATA.filter((item)=> {
+    /*const filteredData = DATA.filter((item)=> {
         return item.title.indexOf(searchKey) >=0
-    })
+    })*/
 
     const isFocused = useIsFocused();
 
@@ -51,8 +52,58 @@ const Search = ({navigation, searchKey}) => {
         snap.forEach(docs =>{      
             DATA.push(docs.data())
         })
-        console.log("Data [search] ", DATA)
+        //console.log("Data [search] ", DATA)
     })
+    firebase.firestore().collection('offers').where("title", "==", 'Sephora')
+    .get()
+    .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          firebase.firestore().collection("offers").doc(doc.id).update({
+            image: require('../../../../assets/sephora.jpg')
+          })
+        });  
+    })
+    firebase.firestore().collection("offers").where("title", "==", 'Cold Storage')
+    .get()
+    .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          firebase.firestore().collection("offers").doc(doc.id).update({
+            image: require('../../../../assets/coldstorage.jpg')
+          })
+        });  
+    })    
+    firebase.firestore().collection("offers").where("title", "==", 'Fairprice')
+    .get()
+    .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          firebase.firestore().collection("offers").doc(doc.id).update({
+            image: require('../../../../assets/fairprice.jpg')
+          })
+        });  
+    })
+
+  // FROM HERE: SEARCH BAR 
+  const [query, setQuery] = React.useState('');
+  const [typingTimeout, setTypingTimeout] = React.useState(0);
+
+  const searched = (text) => {
+    setQuery(text);
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+   }
+    setTypingTimeout(setTimeout(function() {
+        searchFilterFunction(text);
+      }, 500))
+  }
+
+  const searchFilterFunction = text => {
+    const newData = (DATA.filter(function(item) {
+      return item.title.indexOf(text) > -1;
+    }));
+    DATA.length = 0;
+    DATA.push(...newData);
+  };
+// UNTIL HERE: SEARCH BAR 
     return (
         <SafeAreaView style = {styles.container}>
             <Image
@@ -65,14 +116,10 @@ const Search = ({navigation, searchKey}) => {
               Search
             </Text>
             <Searchbar 
-              //onChangeText={text => {
-              // setTimeout((text) => searched(text), 1500);
-              //}}
+              onChangeText={text => {searched(text)}}
               placeholder = "Search Stores"
               style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginVertical: 15}}
-              //value = {query}
-              //theme = {{color: "266E7D"}}
-              // to change cursor colour bc its purple rn 
+              value = {query}
             />
             <TouchableOpacity style = {styles.selection} 
                 title = "Send Push Notification"
@@ -113,6 +160,11 @@ const Search = ({navigation, searchKey}) => {
                 )}
                 keyExtractor={item => item.id}
                 extraData={selected}
+                // optimisation, length number is a random number,
+                // doesn't seem to affect anything
+                getItemLayout={(data, index) => (
+                  {length: 15, offset: 15 * index, index}
+                )}
             />
         </SafeAreaView>  
     )
@@ -169,11 +221,39 @@ export default class SearchScreen extends React.Component {
     };            
 
     async componentDidMount() {
-        console.log("going to register")
+        //console.log("going to register")
         await this.registerForPushNotificationsAsync();
     }     
 
-    render(){       
+    render(){      
+      DATA.length = 0;
+      firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
+      .then(snap => { 
+          snap.forEach(docs =>{
+            firebase.firestore().collection('promotion').doc(docs.id).update({
+              image: require('../../../../assets/fairprice.jpg')
+            })
+          })
+      })
+  
+      firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
+      .then(snap => { 
+          snap.forEach(docs =>{
+            firebase.firestore().collection('promotion').doc(docs.id).update({
+              image: require('../../../../assets/sephora.jpg')
+            })
+          })
+      })
+  
+  
+      firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
+      .then(snap => { 
+          snap.forEach(docs =>{
+            firebase.firestore().collection('promotion').doc(docs.id).update({
+              image: require('../../../../assets/coldstorage.jpg')
+            })
+          })
+      })
         var user = firebase.auth().currentUser; 
         // console.log("Search: render", user.email)
         if (this.props.route.params != null) { //from login page
@@ -181,7 +261,7 @@ export default class SearchScreen extends React.Component {
             //const {password} = this.props.route.params
             const {username} = this.props.route.params
             const {name} = this.props.route.params
-            console.log("welcome: " + name) 
+            //console.log("welcome: " + name) 
             firebase.firestore().collection('info').doc(user.email).set({ 
                 name: name,
                 email: email, 

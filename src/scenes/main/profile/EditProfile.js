@@ -108,7 +108,7 @@ class EditProfile extends React.Component{
     askPermission = async () => {
         if (Constants.platform.ios) {
           const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
-          console.log(status)
+          //console.log(status)
           if (status !== 'granted') {
             alert('Oops, we need camera roll permission :")');
           } else if (status == 'granted'){
@@ -125,7 +125,7 @@ class EditProfile extends React.Component{
             quality: 1,
           });
       
-          console.log(result);
+          //console.log(result);
       
           if (!result.cancelled) {
             this.setState({userAvatar: result.uri});
