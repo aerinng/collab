@@ -20,9 +20,14 @@ import StorePromo from './src/scenes/main/offers/StorePromo'
 import AddOrder from './src/scenes/main/offers/AddOrder'
 import Splash from './src/components/Splash';
 import OfferDetails from './src/scenes/main/offers/OfferDetails';
+import EditOffer from './src/scenes/main/offers/EditOffer';
+import OfferDetailsJoin from './src/scenes/main/offers/OfferDetailsJoin';
+import JoinOffer from './src/scenes/main/offers/JoinOffer';
 import EditProfile from './src/scenes/main/profile/EditProfile';
 import MyOffers from './src/scenes/main/profile/MyOffers';
 import MyOffersReceived from './src/scenes/main/profile/MyOffersReceived';
+import OfferDetailsCancel from './src/scenes/main/profile/OfferDetailsCancel';
+import OfferDetailsReceived from './src/scenes/main/profile/OfferDetailsReceived';
 import Settings from './src/scenes/main/profile/Settings';
 import ChangePassword from './src/scenes/main/profile/ChangePassword';
 
@@ -138,6 +143,9 @@ function GroupsScreens(props) {
       <GroupsStack.Screen name = "GroupsScreen" component = {Groups} initialParams={props.route.params}/>
       <GroupsStack.Screen name = "GroupsDetails" component = {GroupsDetails} initialParams={props.route.params}/>
       <GroupsStack.Screen name = "OfferDetails" component = {OfferDetails} initialParams={props.route.params} />
+      <GroupsStack.Screen name = "EditOffer" component = {EditOffer} initialParams={props.route.params} />
+      <GroupsStack.Screen name = "OfferDetailsJoin" component = {OfferDetailsJoin} initialParams={props.route.params} />
+      <GroupsStack.Screen name = "JoinOffer" component = {JoinOffer} initialParams={props.route.params} />
     </GroupsStack.Navigator>
   )
 }
@@ -169,6 +177,9 @@ const OfferDetailsScreen = (props) => (
   >
     <OfferDetailsStack.Screen name = "Landing" component = {Search} initialParams={props.route.params} />
     <OfferDetailsStack.Screen name = "OfferDetails" component = {OfferDetails} initialParams={props.route.params} />
+    <OfferDetailsStack.Screen name = "EditOffer" component = {EditOffer} initialParams={props.route.params} />
+    <OfferDetailsStack.Screen name = "OfferDetailsJoin" component = {OfferDetailsJoin} initialParams={props.route.params} />
+    <OfferDetailsStack.Screen name = "JoinOffer" component = {JoinOffer} initialParams={props.route.params} />
   </OfferDetailsStack.Navigator>
 );
 
@@ -187,6 +198,8 @@ function ProfileScreen(props) {
         options = {{title: "My Offers", headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, headerTintColor: "#000"}} 
         initialParams={props.route.params}
       />
+      <ProfileScreenStack.Screen name = "OfferDetailsCancel" component = {OfferDetailsCancel} options = {{headerShown: false}} initialParams={props.route.params}/>
+      <ProfileScreenStack.Screen name = "OfferDetailsReceived" component = {OfferDetailsReceived} options = {{headerShown: false}} initialParams={props.route.params}/>
       <ProfileScreenStack.Screen name = "Settings" component = {Settings} options = {{headerShown: false}} initialParams={props.route.params}/>
       <ProfileScreenStack.Screen name = "ChangePassword" component = {ChangePassword} options = {{headerShown: false}} initialParams={props.route.params}/>
     </ProfileScreenStack.Navigator>

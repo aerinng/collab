@@ -3,15 +3,16 @@ import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View, SafeAreaView
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 
-class OfferDetails extends React.Component {
+class OfferDetailsJoin extends React.Component {
     state = {
         users:null,
         unsubscribe:''
     }
+
     componentDidMount() {
         //trying to update state, but code is gone 
         var user = firebase.auth().currentUser; 
-        const {orderID} = this.props.route.params
+        const {orderID} = this.props.route.params;
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
                                          .doc(orderID)
@@ -34,6 +35,7 @@ class OfferDetails extends React.Component {
 
     render(){
         //console.log("Offer Details: render"); 
+        const {orderID} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -52,7 +54,6 @@ class OfferDetails extends React.Component {
                     renderItem={({item}) => (
                         <View style={styles.itemContainer}>
                             <Text style = { styles.titles }> Store Promotion </Text>
-                            {/* <Text style = { styles.data }>Fairprice - Free delivery with purchase above $79</Text> */}
                             <Text style = { styles.data }>{item.data}</Text>
                             <Text style = { styles.titles }> My Location </Text>
                             <Text style ={ styles.data}>{item.location}</Text>  
@@ -77,51 +78,16 @@ class OfferDetails extends React.Component {
                 /> 
                 <TouchableOpacity 
                     style = {styles.Button}
+                    onPress = {() => this.props.navigation.navigate('JoinOffer', {orderID: orderID})}
                 >
-                    <Text style = {styles.buttonText}> Edit </Text>
+                    <Text style = {styles.buttonText}> Join </Text>
                 </TouchableOpacity>
             </SafeAreaView>
         );
-        // Did this commented out code without backend
-        /*return (
-            <SafeAreaView style = {styles.container}>
-                <ScrollView style={styles.scrollView}>
-                    <TouchableOpacity  
-                        style = {styles.backbutton}
-                        onPress={() => this.props.navigation.goBack()}
-                    >
-                        <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
-                    </TouchableOpacity>
-                    <Text style = {styles.header}> Offer Details </Text>
-                    <Text style = { styles.titles }> Store Promotion </Text>
-                    <Text style = { styles.data }>Fairprice - Free delivery with purchase above $79</Text>
-                    <Text style = { styles.titles }> My Location </Text>
-                    <Text style = { styles.data }>Block 123 Choa Chu Kang Avenue 10 S123456 </Text>
-                    <Text style = { styles.titles }> Category </Text>
-                    <Text style = { styles.data }>Groceries</Text>
-                    <Text style = { styles.titles }> Current Total </Text>
-                    <Text style = { styles.data }>$10</Text>
-                    <Text style = { styles.titles }> Progress </Text>
-                    <Text style = {styles.progressText}>33% of $79.00</Text>
-                    <Progress.Bar 
-                        progress={0.33} width={330} height ={30} borderRadius = {15} 
-                        color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-                        style = {{marginBottom: 15, alignSelf: 'center'}}
-                    />
-                    <Text style = { styles.titles }> Estimated Order Date </Text>
-                    <Text style = { styles.data }>20 July 2020</Text>
-                    <Text style = { styles.titles }> Description </Text>
-                    <Text style = { styles.data }>Will be buying very soon!</Text>
-                    <TouchableOpacity style = {styles.Button}>
-                        <Text style = {styles.buttonText}> Edit </Text>
-                    </TouchableOpacity>
-                </ScrollView>
-            </SafeAreaView>
-        )*/
     }
 };
 
-export default OfferDetails;
+export default OfferDetailsJoin;
 
 const styles = StyleSheet.create({
     container: {
@@ -131,7 +97,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         padding: 30,
-        marginVertical: 10,
+        marginVertical: 10
     },
     header: {
         fontSize: 24,

@@ -11,14 +11,17 @@ class AddOrder extends React.Component {
     state = {
         promo:'', 
         location:'', 
-        total:'',
+        total: 0,
         category:'', 
         date:'',
         desc:'',
         switchValue:false, 
         isDateTimePickerVisible: false, 
         displayDate: '', 
-        item: null
+        item: null,
+        username: '',
+        user: '',
+        data: ''
     }
 
     changeCategory(item) {
@@ -43,14 +46,66 @@ class AddOrder extends React.Component {
         this.setState({displayDate : date});
     };
 
+    componentDidMount() {
+        this.state.user = firebase.auth().currentUser; 
+        this.state.unsubsribe = firebase.firestore()
+                                        .collection('info')
+                                        .doc(this.state.user.email)
+                                        .get()
+                                        .then(doc => {
+                                            this.setState({username: doc.data().username})
+                                        })
+                                        .catch(function(error) {
+                                            console.log("Eeeeerror getting document:", error);
+                                        });
+    }
+
+    componentWillUnmount() {
+        var unsubscribe = this.state.unsubscribe;
+        unsubscribe;
+    }
+
+    addToDB = (data, title, image) => {
+        firebase.firestore()
+                .collection("offers")
+                .add({ //add my order id inside
+                    user: this.state.user.email,
+                    username: this.state.username,
+                    userJoined: [],
+                    data: data,
+                    title: title,
+                    location: this.state.location,
+                    total: this.state.total, 
+                    category: this.state.category, 
+                    date: this.state.displayDate.toString(),
+                    desc: this.state.desc,
+                    image: image,
+                    switch: this.state.switchValue
+                }).then((snapshot) => { //all asynchronous
+                    //console.log("already added"); 
+                    snapshot.update({
+                        id:snapshot.id
+                    })
+                    /*this.setState({
+                        promo:'',
+                        location:'', 
+                        total:0, 
+                        date:'',
+                        desc:''                            
+                    })*/
+                    if (this.state.switchValue){
+                        daily(snapshot.id, this.state.user.email)
+                    }
+                    alert("Added Successfully"); 
+                })
+    }
+
     render() {
         //these things are carried over from Store Promo.
         const {data} = this.props.route.params
         const {title} = this.props.route.params
         const {Pid} = this.props.route.params
         const {image} = this.props.route.params
-
-        var user = firebase.auth().currentUser; 
         const orderDate = this.state.displayDate.toString().substring(4,16);
         return (
         <SafeAreaView style = {styles.container}>
@@ -66,7 +121,7 @@ class AddOrder extends React.Component {
                 <Text value = {this.state.promo} style = {{paddingBottom: 10, paddingLeft: 2}}>
                     {title}: {data}
                 </Text>
-                <Text style = { styles.titles }> My Location </Text>
+                <Text style = { styles.titles }> My Location * </Text>
                 <TextInput 
                     style = { styles.TextInput } 
                     placeholder = "Enter Your Location"
@@ -74,7 +129,7 @@ class AddOrder extends React.Component {
                     onChangeText={location => this.setState({location})}   
                     textContentType = {"fullStreetAddress"}
                 />
-                <Text style = { styles.titles }> Category </Text>
+                <Text style = { styles.titles }> Category *</Text>
                 <DropDownPicker 
                     style = {styles.Picker}
                     placeholder = "Select a Category"
@@ -90,12 +145,10 @@ class AddOrder extends React.Component {
                     value = {this.state.category}
                     onChangeItem = {item => {
                         this.setState({category: item.value});
-                        console.log(this.state.category);
+                        //console.log(this.state.category);
                     }}
-                    
                 />
-                
-                <Text style = { styles.titles }> Current Total </Text>
+                <Text style = { styles.titles }> Current Total *</Text>
                 <TextInput 
                     style = { styles.TextInput } 
                     keyboardType = {'numeric'}
@@ -112,7 +165,7 @@ class AddOrder extends React.Component {
                     value = {this.state.switchValue}
                 />
                 <Text style = { {marginBottom: 5} }> </Text>
-                <Text style = { styles.titles }> Estimated Order Date </Text>
+                <Text style = { styles.titles }> Estimated Order Date *</Text>
                 <Text style = {styles.date}>{orderDate}</Text>
                 <TouchableOpacity 
                     style = {styles.datepicker} 
@@ -136,36 +189,14 @@ class AddOrder extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button} 
                     onPress={() =>  {
-                        firebase.firestore().collection("offers").add({ //add my order id inside
-                            user: user.email,
-                            userJoined: [],
-                            data:data,
-                            title:title,
-                            location:this.state.location,
-                            total:this.state.total, 
-                            category: this.state.category, 
-                            date:this.state.displayDate.toString(),
-                            desc:this.state.desc,
-                            image:image,
-                            switch: this.state.switchValue
-                        }).then( (snapshot) => { //all asynchronous.....
-                            console.log("already added"); 
-                            snapshot.update({
-                                id:snapshot.id
-                            })
-                            this.setState({
-                                promo:'',
-                                location:'', 
-                                total:'', 
-                                date:'',
-                                desc:''                            
-                            })
-                            if (this.state.switchValue){
-                                daily(snapshot.id, user.email)
-                            }
-                        // this.props.navigation.navigate('Search');
-                        alert("Added Successfully"); 
-                        })
+                        if (this.state.location != '' &&
+                            this.state.category != '' &&
+                            this.state.total != '' &&
+                            this.state.date != '') {
+                            this.addToDB(data, title, image)
+                        } else {
+                            alert("Please fill in all mandatory fields!")
+                        }
                     }}
                 >
                     <Text style = {styles.buttonText}>Post</Text>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, FlatList } from "react-native";
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
@@ -6,13 +6,16 @@ import firebase from 'firebase';
 
 const DATA = [];
 
-  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
+  function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
-        onPress={() => onSelect(id)}
+        onPress={() => {
+            onSelect(id);
+            navigation.navigate('OfferDetailsCancel', {orderID: id})
+        }}
         style={[ styles.item ]}
       >
-        <Text style={styles.users}>{user}</Text>
+        <Text style={styles.users}>{username}</Text>
         <Text style={styles.detailsTitle}>{title}</Text>
         <Text style={styles.details}>{data}</Text>
         <Image source = {image} style = {styles.icons} />
@@ -31,17 +34,27 @@ const MyOffers = ({navigation}) => {
         const [selected, setSelected] = React.useState(null);
         const onSelect = id => {
             setSelected(id);
-            DATA.length = 0; //EMPTY THE LIST
         };
         var user = firebase.auth().currentUser; 
-        DATA.length = 0;
         //entering in DATA from this logged in user
-        firebase.firestore().collection("offers").where("user", "==", user.email).get()
-        .then(snap => {
-            snap.forEach(docs =>{      
-                DATA.push(docs.data())//just push the id
-            })
-        })
+        useEffect(() => {
+            getData()
+        },[]);
+
+        const getData = () => {
+            firebase.firestore()
+                    .collection("offers")
+                    .where("user", "==", user.email)
+                    .get()
+                    .then(snap => {
+                        snap.forEach(docs =>{      
+                            DATA.push(docs.data())//just push the id
+                        })
+                    }).catch(function(error) {
+                        console.log("Error getting document:", error);
+                    });
+
+        }
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -54,9 +67,11 @@ const MyOffers = ({navigation}) => {
                         image = {item.image}
                         //progressIdx = {item.progressIdx}
                         //progress = {item.progress}
-                        //user = {item.user}
+                        user = {item.user}
+                        username = {item.username}
                         selected={item.id == selected}
                         onSelect={onSelect}
+                        navigation = {navigation}
                     />
                     )}
                     keyExtractor={item => item.id}
@@ -64,12 +79,9 @@ const MyOffers = ({navigation}) => {
                 />
             </SafeAreaView>
         )
-    
 };
-
 export default class MyOffersScreen extends React.Component {
     render() {
-        //const {docID} = this.props.route.params;
         return <MyOffers navigation = {this.props.navigation} />;
     }
 }
