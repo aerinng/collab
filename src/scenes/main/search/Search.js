@@ -9,16 +9,22 @@ import { Searchbar } from 'react-native-paper';
 
 const DATA = [];
 
-function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
+function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
   return (
     <TouchableOpacity
       onPress={() => {
           onSelect(id);
-          navigation.navigate('OfferDetails', {orderID: id})
+          //console.log(user)
+          //console.log(firebase.auth().currentUser.email)
+          if (user === firebase.auth().currentUser.email) {
+            navigation.navigate('OfferDetails',  {orderID: id})
+          } else {
+            navigation.navigate('OfferDetailsJoin',  {orderID: id})
+          }
       }}
       style={[ styles.item]}
     >
-      <Text style={styles.users}>{user}</Text>
+      <Text style={styles.users}>{username}</Text>
       <Text style={styles.detailsTitle}>{title}</Text>
       <Text style={styles.details}>{data}</Text>
       <Image source = {image} style = {styles.icons} />
@@ -38,9 +44,6 @@ const Search = ({navigation, searchKey}) => {
     const onSelect = (id) => {
         setSelected(id);
     }
-    /*const filteredData = DATA.filter((item)=> {
-        return item.title.indexOf(searchKey) >=0
-    })*/
 
     const isFocused = useIsFocused();
 
@@ -152,7 +155,8 @@ const Search = ({navigation, searchKey}) => {
                     image = {item.image}
                     //progressIdx = {item.progressIdx}
                     //progress = {item.progress}
-                    //user = {item.user}
+                    user = {item.user}
+                    username = {item.username}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}

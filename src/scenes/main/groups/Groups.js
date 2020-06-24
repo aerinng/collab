@@ -42,6 +42,7 @@ const DATAdiscover = [
       <TouchableOpacity
         onPress={() => {
           onSelect(id);
+          //console.log("test: " + name)
           navigation.navigate('GroupsDetails', {name: name});
         }}
       >
@@ -61,7 +62,6 @@ const DATAdiscover = [
     // then display the UI of the collection names,
     // then only when its clicked, 
     // then i will call to fetch order data aka filter from offers
-    // CHANGEEEEE  
     var user = firebase.auth().currentUser;
     firebase.firestore()
             .collection("info")
@@ -88,15 +88,11 @@ const DATAdiscover = [
                 name: cat,
                 image: img
               })
-              console.log("Data [search] ", DATA)
+              //console.log("Data [search] ", DATA)
             })
             .catch(err => {
               console.log(err);
           })
-
-    const setImages = () => {
-
-    }
 
     return (
         <SafeAreaView style = {styles.container}>
@@ -119,7 +115,7 @@ const DATAdiscover = [
                 keyExtractor={item => item.id}
                 extraData={selected}
                 getItemLayout={(data, index) => (
-                  {length: 15, offset: 15 * index, index}
+                  {length: 40, offset: 40 * index, index}
                 )}
             />
             <Text style = {styles.title}> Discover Groups </Text>
@@ -151,7 +147,6 @@ const DATAdiscover = [
 
 export default class GroupsScreen extends React.Component {
     render() {
-        //const {docID} = this.props.route.params;
         return <Groups navigation = {this.props.navigation} />;
     }
 }
