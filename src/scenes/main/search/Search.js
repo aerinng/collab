@@ -9,16 +9,22 @@ import { Searchbar } from 'react-native-paper';
 
 const DATA = [];
 
-function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
+function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
   return (
     <TouchableOpacity
       onPress={() => {
           onSelect(id);
-          navigation.navigate('OfferDetails', {docID: id})
+          //console.log(user)
+          //console.log(firebase.auth().currentUser.email)
+          if (user === firebase.auth().currentUser.email) {
+            navigation.navigate('OfferDetails',  {docID: id})
+          } else {
+            navigation.navigate('OfferDetailsJoin',  {docID: id})
+          }
       }}
       style={[ styles.item]}
     >
-      <Text style={styles.users}>{user}</Text>
+      <Text style={styles.users}>{username}</Text>
       <Text style={styles.detailsTitle}>{title}</Text>
       <Text style={styles.details}>{data}</Text>
       <Image source = {image} style = {styles.icons} />
@@ -33,18 +39,24 @@ function Item({ id, title, data, image, user, progress, progressIdx, selected, o
 }
 
 const Search = ({navigation, searchKey}) => {
+    const [DATA, setDATA] = React.useState([]);
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
-    const filteredData = DATA.filter((item)=> {
-        return item.title.indexOf(searchKey) >=0
-    })
 
     const isFocused = useIsFocused();
-    var user = firebase.auth().currentUser;
 
-//Updating the pictures for each title respectively
+    var user = firebase.auth().currentUser;
+    //entering in DATA from this logged in user
+    firebase.firestore().collection("offers").get()
+    .then(snap => {
+      DATA.length = 0;
+        snap.forEach(docs =>{      
+            DATA.push(docs.data())
+        })
+        //console.log("Data [search] ", DATA)
+    })
     firebase.firestore().collection('offers').where("title", "==", 'Sephora')
     .get()
     .then(querySnapshot => {
@@ -73,15 +85,28 @@ const Search = ({navigation, searchKey}) => {
         });  
     })
 
-    //entering in DATA from this logged in user
-    firebase.firestore().collection("offers").get()
-    .then(snap => {
-      DATA.length = 0;
-        snap.forEach(docs =>{      
-            DATA.push(docs.data())
-        })
-        console.log("Data [search] ", DATA)
-    })
+  // FROM HERE: SEARCH BAR 
+  const [query, setQuery] = React.useState('');
+  const [typingTimeout, setTypingTimeout] = React.useState(0);
+
+  const searched = (text) => {
+    setQuery(text);
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+   }
+    setTypingTimeout(setTimeout(function() {
+        searchFilterFunction(text);
+      }, 500))
+  }
+
+  const searchFilterFunction = text => {
+    const newData = (DATA.filter(function(item) {
+      return item.title.indexOf(text) > -1;
+    }));
+    DATA.length = 0;
+    DATA.push(...newData);
+  };
+// UNTIL HERE: SEARCH BAR 
     return (
         <SafeAreaView style = {styles.container}>
             <Image
@@ -94,16 +119,12 @@ const Search = ({navigation, searchKey}) => {
               Search
             </Text>
             <Searchbar 
-              //onChangeText={text => {
-              // setTimeout((text) => searched(text), 1500);
-              //}}
+              onChangeText={text => {searched(text)}}
               placeholder = "Search Stores"
               style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginVertical: 15}}
-              //value = {query}
-              //theme = {{color: "266E7D"}}
-              // to change cursor colour bc its purple rn 
+              value = {query}
             />
-          <FlatList
+           <FlatList
                 data={DATA}
                 renderItem={({ item }) => (
                 <Item
@@ -113,7 +134,8 @@ const Search = ({navigation, searchKey}) => {
                     image = {item.image}
                     //progressIdx = {item.progressIdx}
                     //progress = {item.progress}
-                    //user = {item.user}
+                    user = {item.user}
+                    username = {item.username}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
@@ -121,6 +143,11 @@ const Search = ({navigation, searchKey}) => {
                 )}
                 keyExtractor={item => item.id}
                 extraData={selected}
+                // optimisation, length number is a random number,
+                // doesn't seem to affect anything
+                getItemLayout={(data, index) => (
+                  {length: 15, offset: 15 * index, index}
+                )}
             />
         </SafeAreaView>  
     )
@@ -177,12 +204,12 @@ export default class SearchScreen extends React.Component {
     };            
 
     async componentDidMount() {
-        console.log("going to register")
+        //console.log("going to register")
         await this.registerForPushNotificationsAsync();
     }     
 
-    render(){     
-      DATA.length = 0; 
+    render(){      
+      DATA.length = 0;
       firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
       .then(snap => { 
           snap.forEach(docs =>{
@@ -210,13 +237,14 @@ export default class SearchScreen extends React.Component {
             })
           })
       })
-      var user = firebase.auth().currentUser;         // console.log("Search: render", user.email)
+        var user = firebase.auth().currentUser; 
+        // console.log("Search: render", user.email)
         if (this.props.route.params != null) { //from login page
             const {email} = this.props.route.params
             //const {password} = this.props.route.params
             const {username} = this.props.route.params
             const {name} = this.props.route.params
-            console.log("welcome: " + name) 
+            //console.log("welcome: " + name) 
             firebase.firestore().collection('info').doc(user.email).set({ 
                 name: name,
                 email: email, 
@@ -316,68 +344,39 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     }
 });
-
 // import React from 'react';
 // import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
-// import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 // import * as Progress from 'react-native-progress';
 // import firebase from 'firebase';
 // import {  Notifications } from 'expo';
 // import * as Permissions from 'expo-permissions';
 // import { useIsFocused } from '@react-navigation/native';
+// import { Searchbar } from 'react-native-paper';
 
-// const DATA = [
-//     /*{
-//       id: '1',
-//       title: 'Fairprice',
-//       data: "Groceries",
-//       image: require('../../../../assets/fairprice.jpg'),
-//       user: "aerin123 - Paya Lebar",
-//       progress: '76% of $79.00',
-//       progressIdx: 0.76
-//     },
-//     {
-//       id: '2',
-//       title: 'Cold Storage',
-//       data: "Groceries",
-//       image: require('../../../../assets/coldstorage.jpg'),
-//       user: "alyssa123 - Paya Lebar",
-//       progress: '76% of $59.00',
-//       progressIdx: 0.76
-//     },
-//     {
-//       id: '3',
-//       title: 'Sephora',
-//       data: "Make Up",
-//       image: require('../../../../assets/sephora.jpg'),
-//       user: "aabattery123 - Paya Lebar",
-//       progress: "50% of $50.00",
-//       progressIdx: 0.5
-//     },*/
-//   ];
+// const DATA = [];
 
-//   function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
-//     return (
-//       <TouchableOpacity
-//         onPress={() => {
-//             onSelect(id);
-//             navigation.navigate('OfferDetails', {docID: id})
-//         }}
-//         style={[ styles.item]}
-//       >
-//         <Text style={styles.users}>{user}</Text>
-//         <Text style={styles.detailsTitle}>{title}</Text>
-//         <Text style={styles.details}>{data}</Text>
-//         <Image source = {image} style = {styles.icons} />
-//         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-//         <Text style = {styles.progressText}>{progress}</Text>
-//         <Progress.Bar 
-//             progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-//             color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-//             style = {{marginTop: 38, alignSelf: 'center'}} />
-//       </TouchableOpacity>
-//     );
-//   }
+// function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
+//   return (
+//     <TouchableOpacity
+//       onPress={() => {
+//           onSelect(id);
+//           navigation.navigate('OfferDetails', {docID: id})
+//       }}
+//       style={[ styles.item]}
+//     >
+//       <Text style={styles.users}>{user}</Text>
+//       <Text style={styles.detailsTitle}>{title}</Text>
+//       <Text style={styles.details}>{data}</Text>
+//       <Image source = {image} style = {styles.icons} />
+//       <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+//       <Text style = {styles.progressText}>{progress}</Text>
+//       <Progress.Bar 
+//           progress={progressIdx} width={330} height ={30} borderRadius = {15} 
+//           color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
+//           style = {{marginTop: 38, alignSelf: 'center'}} />
+//     </TouchableOpacity>
+//   );
+// }
 
 // const Search = ({navigation, searchKey}) => {
 //     const [selected, setSelected] = React.useState(null);
@@ -390,8 +389,8 @@ const styles = StyleSheet.create({
 
 //     const isFocused = useIsFocused();
 //     var user = firebase.auth().currentUser;
-    
-//     //Updating the pictures for each title respecti
+
+// //Updating the pictures for each title respectively
 //     firebase.firestore().collection('offers').where("title", "==", 'Sephora')
 //     .get()
 //     .then(querySnapshot => {
@@ -419,9 +418,8 @@ const styles = StyleSheet.create({
 //           })
 //         });  
 //     })
-    
-//     //Pushing data from logged in user. 
-//     console.log("printing out search")
+
+//     //entering in DATA from this logged in user
 //     firebase.firestore().collection("offers").get()
 //     .then(snap => {
 //       DATA.length = 0;
@@ -432,18 +430,26 @@ const styles = StyleSheet.create({
 //     })
 //     return (
 //         <SafeAreaView style = {styles.container}>
-//             <GorgeousHeader
-//                 title = "Search"
-//                 subtitle = ""
-//                 menuImageSource = {require('../../../../assets/store.png')}
-//                 menuImageOnPress = {() => navigation.navigate('Search')}
-//                 menuImageStyle = {{resizeMode: 'stretch', width: 30, height: 30, marginLeft: 10, marginTop: 10}}
-//                 titleTextStyle = {{fontSize: 30, fontWeight: '600', marginTop: -55, alignSelf: 'center', borderRadius:15}}
-//                 searchBarStyle = {{backgroundColor: '#ffffff', borderRadius: 15, padding: 10}}
-//                 searchInputStyle ={{marginLeft: 30, marginTop: -20}}
-//                 onChangeText={(value) => searchKey= value}
+//             <Image
+//               source = {require('../../../../assets/search.png')}
+//               style = {{marginTop: 10, resizeMode: 'stretch', width: 30, height: 30, alignSelf: 'flex-end', marginRight: 25}}
 //             />
-//            <FlatList
+//             <Text 
+//               style = {{fontSize: 30, fontWeight: '600', marginTop: -32, alignSelf: 'center', borderRadius:15}}
+//             >
+//               Search
+//             </Text>
+//             <Searchbar 
+//               //onChangeText={text => {
+//               // setTimeout((text) => searched(text), 1500);
+//               //}}
+//               placeholder = "Search Stores"
+//               style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginVertical: 15}}
+//               //value = {query}
+//               //theme = {{color: "266E7D"}}
+//               // to change cursor colour bc its purple rn 
+//             />
+//           <FlatList
 //                 data={DATA}
 //                 renderItem={({ item }) => (
 //                 <Item
@@ -451,6 +457,9 @@ const styles = StyleSheet.create({
 //                     title={item.title}
 //                     data = {item.data}
 //                     image = {item.image}
+//                     //progressIdx = {item.progressIdx}
+//                     //progress = {item.progress}
+//                     //user = {item.user}
 //                     selected={item.id == selected}
 //                     onSelect={onSelect}
 //                     navigation={navigation}
@@ -494,7 +503,7 @@ const styles = StyleSheet.create({
 //           try{
 //             // POST the token to your backend server from where you can retrieve it to send push notifications.
 //             firebase.firestore().collection('info').doc(user.email).update({
-//                 pushToken:token
+//                 pushToken: token
 //             })
 //           }catch(error){
 //             console.log("error")
@@ -514,51 +523,51 @@ const styles = StyleSheet.create({
 //     };            
 
 //     async componentDidMount() {
+//         console.log("going to register")
 //         await this.registerForPushNotificationsAsync();
 //     }     
 
-//     render(){       
-
-//         DATA.length = 0; 
-//         firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
-//         .then(snap => { 
-//             snap.forEach(docs =>{
-//               firebase.firestore().collection('promotion').doc(docs.id).update({
-//                 image: require('../../../../assets/fairprice.jpg')
-//               })
+//     render(){     
+//       DATA.length = 0; 
+//       firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
+//       .then(snap => { 
+//           snap.forEach(docs =>{
+//             firebase.firestore().collection('promotion').doc(docs.id).update({
+//               image: require('../../../../assets/fairprice.jpg')
 //             })
-//         })
-    
-//         firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
-//         .then(snap => { 
-//             snap.forEach(docs =>{
-//               firebase.firestore().collection('promotion').doc(docs.id).update({
-//                 image: require('../../../../assets/sephora.jpg')
-//               })
+//           })
+//       })
+  
+//       firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
+//       .then(snap => { 
+//           snap.forEach(docs =>{
+//             firebase.firestore().collection('promotion').doc(docs.id).update({
+//               image: require('../../../../assets/sephora.jpg')
 //             })
-//         })
-    
-    
-//         firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
-//         .then(snap => { 
-//             snap.forEach(docs =>{
-//               firebase.firestore().collection('promotion').doc(docs.id).update({
-//                 image: require('../../../../assets/coldstorage.jpg')
-//               })
+//           })
+//       })
+  
+  
+//       firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
+//       .then(snap => { 
+//           snap.forEach(docs =>{
+//             firebase.firestore().collection('promotion').doc(docs.id).update({
+//               image: require('../../../../assets/coldstorage.jpg')
 //             })
-//         })
-//         var user = firebase.auth().currentUser; 
-//         // console.log("Search: render", user.email)
+//           })
+//       })
+//       var user = firebase.auth().currentUser;         // console.log("Search: render", user.email)
 //         if (this.props.route.params != null) { //from login page
 //             const {email} = this.props.route.params
-//             const {password} = this.props.route.params
+//             //const {password} = this.props.route.params
 //             const {username} = this.props.route.params
-//             const {name} = this.props.route.params; 
+//             const {name} = this.props.route.params
+//             console.log("welcome: " + name) 
 //             firebase.firestore().collection('info').doc(user.email).set({ 
 //                 name: name,
 //                 email: email, 
-//                 password: password,
-//                 username:username,
+//                 //password: password,
+//                 username: username,
 //                 frequency:'', //for Auto-Post frequency, to be updated eventually
 //                 pushToken:''
 //             })

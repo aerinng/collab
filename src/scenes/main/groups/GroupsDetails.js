@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import * as Progress from 'react-native-progress';
@@ -9,16 +9,20 @@ import { useIsFocused } from '@react-navigation/native';
 
 const DATA = [];
 
-  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect, navigation }) {
+  function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
         onPress={() => {
             onSelect(id);
-            navigation.navigate('OfferDetails', {orderID: id})
+            if (user === firebase.auth().currentUser.email) {
+                navigation.navigate('OfferDetails',  {orderID: id})
+            } else {
+                navigation.navigate('OfferDetailsJoin',  {orderID: id})
+            }
         }}
         style={[styles.item]}
       >
-        <Text style={styles.users}>{user}</Text>
+        <Text style={styles.users}>{username}</Text>
         <Text style={styles.detailsTitle}>{title}</Text>
         <Text style={styles.details}>{data}</Text>
         <Image source = {image} style = {styles.icons} />
@@ -37,22 +41,30 @@ const GroupsDetails = ({name, navigation}) => {
     const onSelect = (id) => {
         setSelected(id);
     }
-    /*const filteredData = DATA.filter((item)=> {
-        return item.title.indexOf(searchKey) >=0
-    })*/
 
     const isFocused = useIsFocused();
 
     var user = firebase.auth().currentUser;
+    var currName = name;
     //entering in DATA from this logged in user
-    firebase.firestore().collection("offers").where("category", "==", name).get()
-    .then(snap => {
-      DATA.length = 0;
-        snap.forEach(docs =>{      
-            DATA.push(docs.data())
-        })
-        console.log("Data [search] ", DATA)
-    })
+    useEffect(() => {
+        getData();
+    }, [DATA])
+
+    const getData = () => {
+        console.log(currName)
+        firebase.firestore()
+                .collection("offers")
+                .where("category", "==", currName)
+                .get()
+                .then(snap => {
+                    DATA.length = 0;
+                    snap.forEach(docs =>{      
+                        DATA.push(docs.data())
+                    })
+                    //console.log(DATA)
+                })
+    }
     return (
         <SafeAreaView style = {styles.container}>
             <TouchableOpacity onPress = {() => navigation.goBack()} >
@@ -76,7 +88,8 @@ const GroupsDetails = ({name, navigation}) => {
                     image = {item.image}
                     //progressIdx = {item.progressIdx}
                     //progress = {item.progress}
-                    //user = {item.user}
+                    user = {item.user}
+                    username = {item.username}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}

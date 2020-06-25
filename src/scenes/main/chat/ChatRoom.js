@@ -177,7 +177,7 @@ export default function ChatRoom({route, user}) {
             scrollToBottomComponent={scrollToBottomComponent}
             textInputStyle={styles.composer}
             isTyping = {true}
-            bottomOffset = {70}
+            bottomOffset = {40}
             renderAvatar = {null}
         />
     );

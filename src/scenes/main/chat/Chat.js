@@ -4,6 +4,14 @@ import { StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity,
 import firebase from "firebase";
 import { List, Divider, Searchbar } from 'react-native-paper';
 
+const searchFilterFunction = (text, threads) => {
+  var DATA = threads;
+  const newData = (DATA.filter(function(item) {
+    return item.name.indexOf(text) > -1;
+  }));
+  DATA.length = 0;
+  DATA.push(...newData);
+};
 
 export default class Chat extends React.Component {
   constructor(props) {
@@ -16,7 +24,9 @@ export default class Chat extends React.Component {
       username: '',
       friendUsername: '',
       friendEmail: '',
-      gotUser: false
+      gotUser: false,
+      query: '',
+      typingTimeout: 0
     };
   }
 
@@ -165,10 +175,19 @@ export default class Chat extends React.Component {
             text: 'You have created a room.',
             system: true
           })
-              //this.props.navigation.navigate('Chat');
-            //})
-            
-          
+  }
+
+  searched = (text) => {
+    this.setState({query: text});
+    if (this.state.typingTimeout) {
+      clearTimeout(this.state.typingTimeout);
+   }
+   var data = this.state.threads;
+   var temp = setTimeout(function() {
+    searchFilterFunction(text, data)
+   }, 500);
+  
+   this.setState({typingTimeout: temp})
   }
 
   render() {
@@ -188,14 +207,11 @@ export default class Chat extends React.Component {
               Chats
             </Text>
             <Searchbar 
-              //onChangeText={text => {
-              // setTimeout((text) => searched(text), 1500);
-              //}}
+              onChangeText={text => {this.searched(text)}}
               placeholder = "Search Chats"
+              autoCapitalize = 'none'
               style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginTop: 15, marginBottom: 25}}
-              //value = {query}
-              //theme = {{color: "266E7D"}}
-              // to change cursor colour bc its purple rn 
+              value = {this.state.query}
             />
             <View style = {[styles.container]}>
                     <Modal
@@ -272,6 +288,11 @@ export default class Chat extends React.Component {
                             descriptionNumberOfLines={1}
                           />
                           </TouchableOpacity>
+                        )}
+                        // optimisation, length number is a random number,
+                        // doesn't seem to affect anything
+                        getItemLayout={(data, index) => (
+                          {length: 15, offset: 15 * index, index}
                         )}
                       />
             </View>

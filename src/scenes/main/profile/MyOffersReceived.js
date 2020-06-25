@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, FlatList } from "react-native";
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
@@ -6,13 +6,16 @@ import firebase from 'firebase';
 
 const DATA = [];
 
-  function Item({ id, title, data, image, user, progress, progressIdx, selected, onSelect }) {
+  function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
-        onPress={() => onSelect(id)}
+        onPress={() => {
+            onSelect(id);
+            navigation.navigate('OfferDetailsReceived', {orderID: id})
+        }}
         style={[ styles.item ]}
       >
-        <Text style={styles.users}>{user}</Text>
+        <Text style={styles.users}>{username}</Text>
         <Text style={styles.detailsTitle}>{title}</Text>
         <Text style={styles.details}>{data}</Text>
         <Image source = {image} style = {styles.icons} />
@@ -31,18 +34,29 @@ const MyOffersReceived = ({navigation}) => {
         const [selected, setSelected] = React.useState(null);
         const onSelect = id => {
             setSelected(id);
-            DATA.length = 0; //EMPTY THE LIST
         };
         var user = firebase.auth().currentUser; 
-        DATA.length = 0;
         //entering in DATA from this logged in user
-        console.log(user.email)
-        firebase.firestore().collection("offers").where("userJoined", "array-contains", user.email).get()
-        .then(snap => {
-            snap.forEach(docs =>{      
-                DATA.push(docs.data())//just push the id
-            })
-        })
+        useEffect(() => {
+            getData()
+        },[]);
+
+        //console.log(user.email)
+        const getData = () => {
+            firebase.firestore()
+                    .collection("offers")
+                    .where("userJoined", "array-contains", user.email)
+                    .get()
+                    .then(snap => {
+                        snap.forEach(docs =>{      
+                            DATA.push(docs.data())//just push the id
+                        })
+                    }).catch(function(error) {
+                        console.log("Error getting document:", error);
+                    });
+            //console.log(DATA)
+        }
+        
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -55,9 +69,11 @@ const MyOffersReceived = ({navigation}) => {
                         image = {item.image}
                         //progressIdx = {item.progressIdx}
                         //progress = {item.progress}
-                        //user = {item.user}
+                        user = {item.user}
+                        username = {item.username}
                         selected={item.id == selected}
                         onSelect={onSelect}
+                        navigation = {navigation}
                     />
                     )}
                     keyExtractor={item => item.id}
