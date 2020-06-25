@@ -142,14 +142,13 @@ const styles = StyleSheet.create({
         width: 130,
         height: 130,
         alignSelf: 'center',
-        marginTop: 10
     },
     icons: {
         position: 'absolute',
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 435,
+        marginTop: 425,
         padding: 10,
         zIndex: 1
     },
@@ -158,7 +157,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 505,
+        marginTop: 495,
         padding: 10,
         zIndex: 1
     },
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 280,
+        marginTop: 270,
         padding: 10,
         zIndex: 1
     },
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 355,
+        marginTop: 345,
         padding: 10,
         zIndex: 1
     },

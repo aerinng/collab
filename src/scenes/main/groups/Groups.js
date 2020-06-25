@@ -58,10 +58,6 @@ const DATAdiscover = [
         setSelected(id);
     }
     const [categories, setCategories] = React.useState([])
-    // logic is to obtain categories from info collection, 
-    // then display the UI of the collection names,
-    // then only when its clicked, 
-    // then i will call to fetch order data aka filter from offers
     var user = firebase.auth().currentUser;
     firebase.firestore()
             .collection("info")
@@ -170,7 +166,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '600',
         padding: 5,
-        alignContent: 'stretch'
+        alignContent: 'stretch',
     },
     detailsTitle: {
         marginTop: 65,

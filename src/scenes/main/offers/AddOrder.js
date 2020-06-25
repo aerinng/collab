@@ -11,17 +11,18 @@ class AddOrder extends React.Component {
     state = {
         promo:'', 
         location:'', 
-        total: 0,
+        total: '',
         category:'', 
         date:'',
         desc:'',
-        switchValue:false, 
+        switchValue: false, 
         isDateTimePickerVisible: false, 
         displayDate: '', 
         item: null,
         username: '',
         user: '',
-        data: ''
+        data: '',
+        unsubscribe:''
     }
 
     changeCategory(item) {
@@ -46,9 +47,10 @@ class AddOrder extends React.Component {
         this.setState({displayDate : date});
     };
 
+    // fetch from firebase data
     componentDidMount() {
         this.state.user = firebase.auth().currentUser; 
-        this.state.unsubsribe = firebase.firestore()
+        this.state.unsubscribe = firebase.firestore()
                                         .collection('info')
                                         .doc(this.state.user.email)
                                         .get()
@@ -60,6 +62,7 @@ class AddOrder extends React.Component {
                                         });
     }
 
+    // perform clean up, unsubscribe from firebase data
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
@@ -75,9 +78,9 @@ class AddOrder extends React.Component {
                     data: data,
                     title: title,
                     location: this.state.location,
-                    total: this.state.total, 
+                    total: parseInt(this.state.total), 
                     category: this.state.category, 
-                    date: this.state.displayDate.toString(),
+                    date: this.state.displayDate.toString().substring(4,16),
                     desc: this.state.desc,
                     image: image,
                     switch: this.state.switchValue
@@ -94,7 +97,7 @@ class AddOrder extends React.Component {
                         desc:''                            
                     })*/
                     if (this.state.switchValue){
-                        daily(snapshot.id, this.state.user.email)
+                        stimulateOrder(snapshot.id, this.state.user.email)
                     }
                     alert("Added Successfully"); 
                 })
@@ -192,9 +195,13 @@ class AddOrder extends React.Component {
                         if (this.state.location != '' &&
                             this.state.category != '' &&
                             this.state.total != '' &&
-                            this.state.date != '') {
+                            this.state.displayDate != '') {
                             this.addToDB(data, title, image)
                         } else {
+                            console.log(this.state.location)
+                            console.log(this.state.category)
+                            console.log(this.state.total)
+                            console.log(this.state.displayDate)
                             alert("Please fill in all mandatory fields!")
                         }
                     }}
@@ -248,7 +255,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         marginBottom: 15,
-        borderRadius: 5
+        borderRadius: 5,
     },
     TextInputDesc: {
         alignSelf: 'stretch',
@@ -258,7 +265,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         marginBottom: 15,
-        borderRadius: 5
+        borderRadius: 5,
     },
     Picker: {
         marginBottom: 15,

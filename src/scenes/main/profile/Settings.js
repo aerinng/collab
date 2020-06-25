@@ -13,7 +13,8 @@ export default class SettingsScreen extends React.Component {
         switchValue4: false,
         isDateTimePickerVisible: false, 
         displayTime: "", 
-        frequency: ""
+        frequency: "",
+        freq:''
     };
     toggleSwitch1 = (value) => {
         this.setState({switchValue1: value})
@@ -40,17 +41,16 @@ export default class SettingsScreen extends React.Component {
         this.setState({displayTime : time});
     };
 
-    changeFreq(item) {
-        this.setState({ 
-            frequency: item.value
-        });
-    };
+    changeFreq = (item) => {
+        this.setState({freq: item.value})
+        console.log("the iem v for setState", item.value);
+    }
 
     onSave = () => {
         var user = firebase.auth().currentUser;
         //Update this into 'info' collection
         firebase.firestore().collection('info').doc(user.email).update({
-            frequency: this.state.frequency
+            frequency: this.state.freq
         })
         this.props.navigation.navigate('Profile')
     }
@@ -70,6 +70,8 @@ export default class SettingsScreen extends React.Component {
                     <Text style = {styles.title}> Auto-Post Frequency</Text>
                     <DropDownPicker 
                         style = {styles.Picker}
+                        placeholder = "Select a Frequency"
+                        defaultValue = ""
                         items = {[
                             {label: 'Weekly', value: 'Weekly'},
                             {label: 'Daily', value: 'Daily'},
@@ -126,7 +128,7 @@ export default class SettingsScreen extends React.Component {
                     />
                     <TouchableOpacity 
                         style = {styles.Button} 
-                        onPress={this.onSave}
+                        onPress={() => this.onSave()}
                     >
                         <Text style = {styles.buttonText}>Save</Text>
                     </TouchableOpacity>
