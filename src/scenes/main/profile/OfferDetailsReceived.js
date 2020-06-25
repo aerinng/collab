@@ -68,7 +68,7 @@ class OfferDetailsReceived extends React.Component {
                                 style = {{marginBottom: 15, alignSelf: 'center'}}
                             />
                             <Text style = { styles.titles }> Estimated Order Date </Text>
-                            <Text style ={ styles.data }>{item.date.toString().substring(4,16)}</Text>
+                            <Text style ={ styles.data }>{item.date.toString()}</Text>
                             <Text style = { styles.titles }> Description </Text>           
                             <Text style ={ styles.data, {marginBottom: 80} }>{item.desc}</Text>
                         </View>

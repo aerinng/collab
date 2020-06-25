@@ -101,13 +101,15 @@ export default class Login extends React.Component {
                     underlineColorAndroid = { 'transparent' }
                     autoCapitalize = 'none'
                 />
-                <TouchableOpacity style = {styles.Button} onPress = {() => {
-                   
-                    this.onBottomPress();
-                }}>
+                <TouchableOpacity 
+                    style = {styles.Button} 
+                    onPress = {() => {this.onBottomPress();}}
+                >
                     <Text style = {styles.buttonText}> Sign In </Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress = {() => {this.props.navigation.navigate('ForgetPassword')}}
+                >
                     <Text style = {styles.ForgetPW}> Forget Password? </Text>
                 </TouchableOpacity>
                 <Text style = {styles.NoAccountText}> Don't have an account? </Text>
@@ -133,14 +135,14 @@ const styles = StyleSheet.create({
         width: 130,
         height: 130,
         alignSelf: 'center',
-        marginTop: 75,
+        marginTop: 45,
     },
     icons: {
         position: 'absolute',
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 370,
+        marginTop: 340,
         padding: 10,
         zIndex: 1
     },
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 445,
+        marginTop: 415,
         padding: 10,
         zIndex: 1
     },

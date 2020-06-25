@@ -34,6 +34,7 @@ class OfferDetails extends React.Component {
 
     render(){
         //console.log("Offer Details: render"); 
+        const {orderID} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -67,7 +68,7 @@ class OfferDetails extends React.Component {
                                 style = {{marginBottom: 15, alignSelf: 'center'}}
                             />
                             <Text style = { styles.titles }> Estimated Order Date </Text>
-                            <Text style ={ styles.data }>{item.date.toString().substring(4,16)}</Text>
+                            <Text style ={ styles.data }>{item.date.toString()}</Text>
                             <Text style = { styles.titles }> Description </Text>           
                             <Text style ={ styles.data, {marginBottom: 50} }>{item.desc}</Text>
                         </View>
@@ -77,6 +78,7 @@ class OfferDetails extends React.Component {
                 /> 
                 <TouchableOpacity 
                     style = {styles.Button}
+                    onPress = {() => this.props.navigation.navigate('EditOffer', {orderID: orderID})}
                 >
                     <Text style = {styles.buttonText}> Edit </Text>
                 </TouchableOpacity>

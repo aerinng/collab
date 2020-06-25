@@ -124,27 +124,6 @@ const Search = ({navigation, searchKey}) => {
               style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginVertical: 15}}
               value = {query}
             />
-            <TouchableOpacity style = {styles.selection} 
-                title = "Send Push Notification"
-                onPress = {async () => {
-                    console.log("push notification pushed")
-                    const response = await fetch('https://exp.host/--/api/v2/push/send', {
-                        method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Accept-encoding': 'gzip, deflate',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            to: 'ExponentPushToken[E3h9-HK9lNgzpMQTG5TyYa]', //this one needa change
-                            sound: 'default',
-                            title: 'Demo',
-                            body: 'testing',
-                            _displayInForeground: true,
-                        })
-                    });
-                }}
-            />
            <FlatList
                 data={DATA}
                 renderItem={({ item }) => (
@@ -175,107 +154,106 @@ const Search = ({navigation, searchKey}) => {
 };
 
 export default class SearchScreen extends React.Component {
-    state = {
-        err:'',
-        users:null,
-        foo:false
-    }
+  state = {
+    err:'',
+    users:null,
+    foo:false
+  }
 
-    registerForPushNotificationsAsync = async () => {
-        var user = await firebase.auth().currentUser;
-        const { status: existingStatus } = await Permissions.getAsync(
-          Permissions.NOTIFICATIONS
-        );
-        let finalStatus = existingStatus;
-        // only ask if permissions have not already been determined, because
-        // iOS won't necessarily prompt the user a second time.
-        if (existingStatus !== 'granted') {
-          // Android remote notification permissions are granted during the app
-          // install, so this will only ask on iOS
-          const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-          finalStatus = status;
+  registerForPushNotificationsAsync = async () => {
+      var user = await firebase.auth().currentUser;
+      const { status: existingStatus } = await Permissions.getAsync(
+        Permissions.NOTIFICATIONS
+      );
+      let finalStatus = existingStatus;
+      // only ask if permissions have not already been determined, because
+      // iOS won't necessarily prompt the user a second time.
+      if (existingStatus !== 'granted') {
+        // Android remote notification permissions are granted during the app
+        // install, so this will only ask on iOS
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      // Stop here if the user did not grant permissions
+      if (finalStatus !== 'granted') {
+        return;
+      }
+      try {
+        // Get the token that uniquely identifies this device
+        let token = await Notifications.getExpoPushTokenAsync();
+        try{
+          // POST the token to your backend server from where you can retrieve it to send push notifications.
+          firebase.firestore().collection('info').doc(user.email).update({
+              pushToken: token
+          })
+        }catch(error){
+          console.log("error")
         }
-        // Stop here if the user did not grant permissions
-        if (finalStatus !== 'granted') {
-          return;
+        //Creating a new collection 
+        try{
+          const {pref} = this.props.route.params.pref; ///from login page 
+          firebase.firestore().collection(pref).doc(user.email).set({
+            pushToken:token
+          })
+        }catch(error){
+          console.log('error')
         }
-        try {
-          // Get the token that uniquely identifies this device
-          let token = await Notifications.getExpoPushTokenAsync();
-          try{
-            // POST the token to your backend server from where you can retrieve it to send push notifications.
-            firebase.firestore().collection('info').doc(user.email).update({
-                pushToken: token
-            })
-          }catch(error){
-            console.log("error")
-          }
-          //Creating a new collection 
-          try{
-            const {pref} = this.props.route.params.pref; ///from login page 
-            firebase.firestore().collection(pref).doc(user.email).set({
-              pushToken:token
-            })
-          }catch(error){
-            console.log('error')
-          }
-        } catch (error) {
-          console.log('error');
-        }
-    };            
+      } catch (error) {
+        console.log('error');
+      }
+  };            
 
-    async componentDidMount() {
-        //console.log("going to register")
-        await this.registerForPushNotificationsAsync();
-    }     
+  async componentDidMount() {
+      //console.log("going to register")
+      await this.registerForPushNotificationsAsync();
+  }     
 
-    render(){      
-      DATA.length = 0;
-      firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
-      .then(snap => { 
-          snap.forEach(docs =>{
-            firebase.firestore().collection('promotion').doc(docs.id).update({
-              image: require('../../../../assets/fairprice.jpg')
-            })
+  render(){      
+    DATA.length = 0;
+    firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/fairprice.jpg')
           })
-      })
-  
-      firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
-      .then(snap => { 
-          snap.forEach(docs =>{
-            firebase.firestore().collection('promotion').doc(docs.id).update({
-              image: require('../../../../assets/sephora.jpg')
-            })
+        })
+    })
+
+    firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/sephora.jpg')
           })
-      })
-  
-  
-      firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
-      .then(snap => { 
-          snap.forEach(docs =>{
-            firebase.firestore().collection('promotion').doc(docs.id).update({
-              image: require('../../../../assets/coldstorage.jpg')
-            })
+        })
+    })
+
+    firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/coldstorage.jpg')
           })
-      })
-        var user = firebase.auth().currentUser; 
-        // console.log("Search: render", user.email)
-        if (this.props.route.params != null) { //from login page
-            const {email} = this.props.route.params
-            //const {password} = this.props.route.params
-            const {username} = this.props.route.params
-            const {name} = this.props.route.params
-            //console.log("welcome: " + name) 
-            firebase.firestore().collection('info').doc(user.email).set({ 
-                name: name,
-                email: email, 
-                //password: password,
-                username: username,
-                frequency:'', //for Auto-Post frequency, to be updated eventually
-                pushToken:''
-            })
-        } 
-        return <Search navigation = {this.props.navigation} user ={user}/>
+        })
+    })
+      var user = firebase.auth().currentUser; 
+      // console.log("Search: render", user.email)
+      if (this.props.route.params != null) { //from login page
+          const {email} = this.props.route.params
+          //const {password} = this.props.route.params
+          const {username} = this.props.route.params
+          const {name} = this.props.route.params
+          //console.log("welcome: " + name) 
+          firebase.firestore().collection('info').doc(user.email).set({ 
+              name: name,
+              email: email, 
+              //password: password,
+              username: username,
+              frequency:'', //for Auto-Post frequency, to be updated eventually
+              pushToken:''
+          })
+      } 
+      return <Search navigation = {this.props.navigation} user ={user}/>
     }
 }
 

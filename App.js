@@ -10,6 +10,7 @@ import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
 import Login from './src/scenes/login/Login';
 import Signup from './src/scenes/login/Signup';
 import Preference from './src/scenes/login/Preference';
+import ForgetPassword from './src/scenes/login/ForgetPassword';
 import Profile from './src/scenes/main/profile/Profile';
 import Groups from './src/scenes/main/groups/Groups';
 import GroupsDetails from './src/scenes/main/groups/GroupsDetails';
@@ -72,6 +73,7 @@ const RootScreen = () => (
 >    
   <Root.Screen name = "Login" component = {Login} />
   <Root.Screen name = "Tabs" component = {TabNavigator} />
+  <Root.Screen name = "ForgetPassword" component = {ForgetPassword}/>
   <Root.Screen name = "SignUpScreen" component = {SignUpScreens}/>
 </Root.Navigator>
 );

@@ -187,15 +187,17 @@ class EditProfile extends React.Component{
                     />
                     <Divider />
                     <Text style = {styles.fieldName}>Username</Text>
-                    <Divider />
-                    <TextInput 
+                    <Text style = {{fontSize: 10}}>Oops, you can't change this!</Text>
+                    
+                    <Text
                         style = {styles.fieldText}
                         placeholder = {this.state.username}
                         placeholderTextColor = "#000"
                         onChangeText={textInput => {
                             this.setUsername(textInput);
                         }}
-                    />
+                    >{this.state.username}</Text>
+                    <Divider />
                     <Text style = {styles.fieldName}>Email</Text>
                     <Text style = {{fontSize: 10}}>Oops, you can't change this!</Text>
                     <Text 
