@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, FlatList, TouchableOpacity, Image, 
-    View, SafeAreaView, TextInput, Switch } from "react-native";
+    View, TextInput, Switch } from "react-native";
 import * as Progress from 'react-native-progress';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 class EditOffer extends React.Component {
     state = {

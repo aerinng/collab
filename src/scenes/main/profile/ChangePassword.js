@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, SafeAreaView, TouchableOpacity, TextInput, Image, ScrollView} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, TextInput, Image, ScrollView} from "react-native";
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default class ChangePassword extends React.Component {
     state = {

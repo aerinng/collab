@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
-import { StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, 
+import { StyleSheet, Text, FlatList, TouchableOpacity, 
   Image, Modal, TextInput, View } from "react-native";
 import firebase from "firebase";
 import { List, Divider, Searchbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const searchFilterFunction = (text, threads) => {
   var DATA = threads;

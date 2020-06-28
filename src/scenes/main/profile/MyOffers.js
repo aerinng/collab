@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
-import { View, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, FlatList } from "react-native";
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Image, FlatList } from "react-native";
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DATA = [];
 
@@ -81,6 +82,14 @@ const MyOffers = ({navigation}) => {
         )
 };
 export default class MyOffersScreen extends React.Component {
+    
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props !== nextProps) {
+        return true;
+        }
+        return false;
+    }
+
     render() {
         return <MyOffers navigation = {this.props.navigation} />;
     }

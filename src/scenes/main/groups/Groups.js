@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, ScrollView, SafeAreaView, Image, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, ScrollView,  Image, FlatList, TouchableOpacity } from "react-native";
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DATA = [];
 
@@ -142,6 +143,14 @@ const DATAdiscover = [
 };
 
 export default class GroupsScreen extends React.Component {
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props !== nextProps) {
+      return true;
+    }
+    return false;
+  }
+
     render() {
         return <Groups navigation = {this.props.navigation} />;
     }

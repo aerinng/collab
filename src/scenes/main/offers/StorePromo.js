@@ -1,7 +1,8 @@
 import React, {useState, useRef, useEffect} from 'react';
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList, ActivityIndicator, Linking } from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList, ActivityIndicator, Linking } from "react-native";
 import firebase from 'firebase'; 
 import { Searchbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 //const DATA = [];
 
@@ -154,6 +155,14 @@ const StorePromo = ({navigation}) => {
 };
 
 export default class Promo extends React.Component {
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props !== nextProps) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
       return <StorePromo navigation = {this.props.navigation} />;
   }

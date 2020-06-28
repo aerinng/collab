@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View, SafeAreaView } from "react-native";
+import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View} from "react-native";
 import * as Progress from 'react-native-progress';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import firebase from 'firebase';
 
 class OfferDetailsReceived extends React.Component {

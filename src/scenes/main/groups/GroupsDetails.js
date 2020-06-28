@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 import {  Notifications } from 'expo';
@@ -103,6 +104,14 @@ const GroupsDetails = ({name, navigation}) => {
 };
 
 export default class GroupsDetailsScreen extends React.Component {
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props !== nextProps) {
+          return true;
+        }
+        return false;
+      }
+
     render(){       
         var user = firebase.auth().currentUser; 
         const {name} = this.props.route.params;

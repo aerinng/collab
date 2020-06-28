@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 import {  Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { useIsFocused } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DATA = [];
 
@@ -207,6 +208,13 @@ export default class SearchScreen extends React.Component {
       //console.log("going to register")
       await this.registerForPushNotificationsAsync();
   }     
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props !== nextProps) {
+      return true;
+    }
+    return false;
+  }
 
   render(){      
     DATA.length = 0;

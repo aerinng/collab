@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, TextInput, Switch, TouchableOpacity, 
-    ScrollView, SafeAreaView, Image, Linking } from "react-native";
+    ScrollView, Image, Linking } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
 import {daily, weekly, biweekly, monthly} from './AddOrdFunc'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 class AddOrder extends React.Component {
     state = {
