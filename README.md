@@ -148,8 +148,7 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 
 ## User Guide
 Here is the link of the User Guide to Collab. 
-https://docs.google.com/document/d/1BydT8boSGoYgMdPaRL52hwcueggpTUNa5vU3k94hsAg/edit?usp=sharing
-
+https://drive.google.com/drive/u/0/folders/1Szq7f6NB0iJbNIt9p-_2vHag2NW9hWXT
 ## Development Plan
 Target | Actions to reach target | Target Date (Tentative) | Status
 -------| ------------------------| ------------------------|--------
