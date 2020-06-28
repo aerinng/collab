@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import firebase from 'firebase';
-import { StyleSheet, Text, ScrollView, SafeAreaView, Image, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, ScrollView, Image, FlatList, TouchableOpacity } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DATA = [
     {

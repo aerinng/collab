@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity, SafeAreaView } from "react-native";
+import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default class Signup extends React.Component{
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.

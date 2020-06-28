@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View, SafeAreaView } from "react-native";
+import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View} from "react-native";
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 class OfferDetailsCancel extends React.Component {
     state = {
