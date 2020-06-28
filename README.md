@@ -36,7 +36,7 @@ AA Battery
 
 Collab is an application serving as a communication platform to facilitate buyers to collaborate and collate items for a bigger order to achieve higher savings. Collab allows users to list the orders they will be making in order to find other buyers to combine orders with. 
 
-Collab will not be responsible for any payment to be made between buyers or orders to be made in external stores and is simply a platform to reach out to potential collaborators. There is also no platform fee incurred to list an offer on Collab.
+Collab is not an e-commerece platform. Collab will not be responsible for any payment to be made between buyers or orders to be made in external stores and is simply a platform to reach out to potential collaborators. There is also no platform fee incurred to list an offer on Collab.
 
 <p align="center">
    <img src="https://i.imgur.com/V5yb6Li.png" width="600">
@@ -50,11 +50,11 @@ We chose to develop our Application using a Hybrid App Framework, React Native, 
 For React Native, we chose Expo CLI for our development environment instead of React Native CLI as it is more convenient and simple for us with no mobile development experience to begin with. Expo also has a client app on iOS and Android phones to allow us to view how our application looks like on an actual phone, which will allow us to better design our app.
 
 ### Why Collab
-The idea of our application came about as both of us are avid online shoppers and would frequently meet the problem of not purchasing enough to meet the minimum required amount for free delivery. After some research, we found out that there are websites or applications that compares prices among different stores but none allows users to gather people to join orders with. Hence, the idea of Collab came about. Collab will not help users place their orders, but simply provide a simple platform for users to communicate and gather other users to combine orders with.
+The idea of our application came about as both of us are avid online shoppers and would frequently meet the problem of not purchasing enough to meet the minimum required amount for free delivery. After some research, we found out that there are websites or applications that compares prices among different stores but none allows users to gather people to join orders with. Hence, the idea of Collab came about. Collab will not help users place their orders, but simply provide a simple platform for users to communicate and gather other users to combine orders with. This helps to amount to larger purchases. 
 
-While deciding the features and functions of Collab, we were inspired by applications such as Carousell, Instagram and Grab. So we did an environmental scan for these three applications and from there, we gathered the best features and functions that we thought Collab would need. 
+While deciding the features and functions of Collab, we were inspired by applications such as Carousell, Instagram and Grab. So we did an environmental scan for these three applications and from there, we gathered the best features and functions that we believe Collab will need. 
 
-One feature inspired by our scan would be choosing Bottom Tabs Navigator over Drawer Navigator. Many applications use Bottom Tabs Navigator for navigation. As the interface of our phones is relatively small compared to a laptop, using Drawer Navigator would not allow users to view the screen content while choosing the tabs. Hence, Bottom Tabs Navigator was a better choice for us as it gives users a view of all the functions of our application at one glance, while allowing them to view the content of the screen.
+One feature adapted from our research would be choosing Bottom Tabs Navigator over Drawer Navigator. Many applications use Bottom Tabs Navigator for navigation. As the interface of our phones is relatively small compared to a laptop, using Drawer Navigator would not allow users to view the screen content while choosing the tabs. Hence, Bottom Tabs Navigator was a better choice for us as it gives users a view of all the functions of our application at one glance, while allowing them to view the content of the screen.
 
 Another feature would be our Groups Function. In Grab, food items are categorised by cuisines type, location proximity or recommendations based on user's orders. In Instagram, the Explore page are categorised by the types of posts an account frequently uploads or recommendations based on user's content preferences. In Carousell, users can upload their products and discussions to groups of different categories. These three applications have a common feature to group items by category, in order for users to find items they prefer easier and filter out other items which they may not want to view. Hence, this greatly inspired us to include our Groups Function.
 
@@ -62,7 +62,7 @@ Another feature would be our Groups Function. In Grab, food items are categorise
  
 For students who are staying on campus, buying groceries or online shop orders may be more costly as items are usually purchased in one or a few units. We may not always be able to find people to combine orders with to enjoy benefits like free delivery and discounts.
 
-How convenient would it be to have a platform to consolidate orders from other interested users near you to receive bigger savings on your order? Perhaps you do not want to fork-up more money for delivery, just because you did not hit the ‘minimum amount purchased’. You will not only reduce the inconvenience of needing to find friends to bulk order with, but you can also be certain to enjoy savings during your purchase.
+How convenient would it be to have a platform to consolidate orders from other interested users near you to receive bigger savings on your order? Perhaps you do not want to fork-up more money for delivery, just because you did not hit the ‘minimum amount purchased’. You will not only reduce the inconvenience of needing to find friends to bulk order with, but you can also be certain to enjoy savings during your purchase that some stores offer.
 
 ## Aim
  
@@ -127,7 +127,6 @@ Have a look at our [Prototype](https://www.figma.com/proto/K21NBhfN3Yd1pUdjtItRI
 2) Code: React Native, Javascript
 3) Database: FireBase
 4) Analytics: Google Analytics 
-5) Web Server:  Apache Web Server
 
 ## What Makes Collab Unique
 Features | Collab | DiffMart | iPrice
@@ -148,7 +147,8 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 3) [Milestone 3]() (Coming to you on 27 July!): Final Product
 
 ## User Guide
-Coming to you on 29 June!
+Here is the link of the User Guide to Collab. 
+https://docs.google.com/document/d/1BydT8boSGoYgMdPaRL52hwcueggpTUNa5vU3k94hsAg/edit?usp=sharing
 
 ## Development Plan
 Target | Actions to reach target | Target Date (Tentative) | Status
@@ -202,4 +202,4 @@ No. | Issue | Solution | Fixed?
 8) Search Bars: Realtime searching from database
 9) Additional Security Features: Encryption, Logging
 10) Enable Google Analytics on Firebase
-11) Allow multiple addition into My Groups
+11) Allow multiple addition of groups / preference into My Groups
