@@ -38,6 +38,8 @@ Collab is an application serving as a communication platform to facilitate buyer
 
 Collab is not an e-commerece platform. Collab will not be responsible for any payment to be made between buyers or orders to be made in external stores and is simply a platform to reach out to potential collaborators. There is also no platform fee incurred to list an offer on Collab.
 
+To preview Collab, iOS will be the most ideal to preview Collab as we mainly designed Collab for iOS devices. However, due to security measures by the Expo team, other users are unable to preview the app on iOS without prior authentication from the project owner. Tentatively, previewing it with Android will not have all the elements aligned to the page properly, although it still works on Android as well. This will be improved by the next submission.  
+
 <p align="center">
    <img src="https://i.imgur.com/V5yb6Li.png" width="600">
 </p>
@@ -126,7 +128,8 @@ Have a look at our [Prototype](https://www.figma.com/proto/K21NBhfN3Yd1pUdjtItRI
 1) IDE: VS Code
 2) Code: React Native, Javascript
 3) Database: FireBase
-4) Analytics: Google Analytics 
+4) Analytics: Google Analytics
+5) Environnent: Expo CLI
 
 ## What Makes Collab Unique
 Features | Collab | DiffMart | iPrice
