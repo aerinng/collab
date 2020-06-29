@@ -154,7 +154,7 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 3) Milestone 3 (Coming to you on 27 July!): Final Product
 
 ## User Guide
-The User Guide for Collab can be found [here](https://drive.google.com/file/d/14q4f9RlffBdioT1cIgAU5EatAehZmgDS/view?usp=sharing).
+The User Guide for Collab can be found [here](https://drive.google.com/file/d/1HVJU8znPSzS2bPH1cGGUivyuvAArADD6/view?usp=sharing).
 
 ## Development Plan
 Target | Actions to reach target | Target Date (Tentative) | Status
