@@ -40,6 +40,8 @@ Collab is not an e-commerce platform. Collab will not be responsible for any pay
 
 To preview Collab, iOS will be the most ideal to preview Collab as we mainly designed Collab for iOS devices. However, due to security measures by the Expo team, other users are unable to preview the app on iOS without prior authentication from the project owner. Tentatively, previewing it with Android will not have all the elements aligned to the page properly, although it still works on Android as well. This will be improved by the next submission.  
 
+You may preview Collab by following the [User Guide](https://github.com/aerinng/collab#user-guide).
+
 Find out more about Collab in this [video](https://drive.google.com/file/d/1yEoX7UF2L5jVTuDJbfPLYAWwAbgQAKR7/view?usp=sharing)!
 
 <p align="center">
