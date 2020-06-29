@@ -150,11 +150,11 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 
 ## Project Logs
 1) [Milestone 1](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing): Creation of Prototype
-2) [Milestone 2]() (Coming to you on 29 June!): Creation of MVP
-3) [Milestone 3]() (Coming to you on 27 July!): Final Product
+2) [Milestone 2](https://drive.google.com/file/d/1ItrYT3N14vkSin8SKVW9UIx_DrfPU0zP/view?usp=sharing): Creation of MVP
+3) Milestone 3 (Coming to you on 27 July!): Final Product
 
 ## User Guide
-The User Guide for Collab can be found [here](https://drive.google.com/file/d/1pjPVcUAlHuAm3e-NPK7zjA8MzebYorbY/view?usp=sharing).
+The User Guide for Collab can be found [here](https://drive.google.com/file/d/14q4f9RlffBdioT1cIgAU5EatAehZmgDS/view?usp=sharing).
 
 ## Development Plan
 Target | Actions to reach target | Target Date (Tentative) | Status
