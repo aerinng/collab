@@ -25,12 +25,13 @@ AA Battery
 ### Development of Collab
 - [Project Logs](https://github.com/aerinng/collab#project-logs)
 - [User Guide](https://github.com/aerinng/collab#user-guide)
+- [Developer Guide](https://github.com/aerinng/collab#developer-guide)
 - [Development Plan](https://github.com/aerinng/collab#development-plan)
 - [System Testing Log](https://github.com/aerinng/collab#system-testing-log)
+- [Usability Testing](https://github.com/aerinng/collab#usability-testing)
 - [Security Features](https://github.com/aerinng/collab#security-features)
 - [Challenges Encountered](https://github.com/aerinng/collab#challenges-encountered)
 - [Possible Enhancements for Milestone 3](https://github.com/aerinng/collab#possible-enhancements-for-milestone-3)
-
 
 ## App Description
 
@@ -102,7 +103,7 @@ We will be developing an application for iOS that contains these features.
 ## Program Flow
 The diagram below depicts the brief overview of Collab’s workflow. 
 <p align="center">
-   <img src="https://i.imgur.com/bObrX8O.png" width="600">
+   <img src="https://i.imgur.com/qZNeHIC.png" width="600">
 </p>
 
 ## How Collab Works
@@ -156,14 +157,17 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 ## User Guide
 The User Guide for Collab can be found [here](https://drive.google.com/file/d/1HVJU8znPSzS2bPH1cGGUivyuvAArADD6/view?usp=sharing).
 
+## Developer Guide
+The Developer Guide for Collab will be coming to you on 27 July!
+
 ## Development Plan
 Target | Actions to reach target | Target Date (Tentative) | Status
 -------| ------------------------| ------------------------|--------
 Notification Pop-ups | Understand how to use API calls to send notifications to users | Mid June (17th June) | :white_check_mark:
 Auto-Retrieval of Data from Websites Function | Reach out to relevant stores to request utilizing their APIs. Understand how APIs work (to request, passing the authentication etc). Since we are unable to obtain APIs, we will store promotion data in database and fetch from there. | End June (30th June) | :white_check_mark:
-Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July) | :negative_squared_cross_mark:
-Messaging Function | Research the technologies and languages used on other similar chatting applications. | Mid July (17th July) | :negative_squared_cross_mark:
-Groups Function | Program the application such that it identifies each user’s favourites. | Mid July (17th July) | :negative_squared_cross_mark:
+Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July) | :white_check_mark:
+Messaging Function | Research the technologies and languages used on other similar chatting applications. | Mid July (17th July) | :white_check_mark:
+Groups Function | Program the application such that it identifies each user’s favourites. | Mid July (17th July) | :white_check_mark:
 Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon successful implementations. | Ongoing | Ongoing
 
 ## System Testing Log
@@ -184,6 +188,9 @@ No. | Issue | Solution | Fixed?
 13 | Notifications: Unable to navigate users to intended page after clicking on notification | Work In Progress! | :negative_squared_cross_mark:
 14 | Preference Page: Unable to add into array via multiple selection of items with the first click, requires a second click | Since useState hook is not async, tried useEffect hook to re-render after change in array and it didn't work. Hence, changed to single selection instead of multiple selection in order to create a MVP first. Will be incorporating this fix into milestone 3. | :negative_squared_cross_mark:
 
+## Usability Testing
+Coming to you on 27 July!
+
 ## Security Features
 1) Authentication: Only registered users in Collab can gain access to the application
 2) Authorisation: Only registered users in Collab's database will be able to login successfully
@@ -198,14 +205,17 @@ No. | Issue | Solution | Fixed?
 5) Connection to Firebase while running simulator: Quota limits are hit sometimes even though database does not reflect that limit was hit. We are not sure why does this happen but so far it is not a big issue as it only affected us a few times.
 
 ## Possible Enhancements for Milestone 3
-1) Additional option for Google authentication when logging in 
-2) Filters promotions for stores that are the user’s favourites
-3) For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached
-4) Notifications for chat messages
-5) Allow users to send images and display their avatar icons on chat rooms
-6) Display alert if no username is found when searching for username on Chat page
-7) Optimisation of loading time
-8) Search Bars: Realtime searching from database
-9) Additional Security Features: Encryption, Logging
-10) Enable Google Analytics on Firebase
-11) Allow multiple addition of groups / preference into My Groups
+Target | Target Date | Status
+-------|-------------|-------
+Google authentication when logging in | 12 July | :negative_squared_cross_mark:
+For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 12 July | :negative_squared_cross_mark:
+Notifications for chat messages | 12 July | :negative_squared_cross_mark:
+Allow users to send images and display their avatar icons on chat rooms | 12 July | :negative_squared_cross_mark:
+Display alert if no username is found when searching for username on Chat page | 12 July | :negative_squared_cross_mark:
+Chat Search Bars: Realtime searching from database | 12 July | :negative_squared_cross_mark:
+Allow multiple addition of groups / preference into My Groups | 12 July | :negative_squared_cross_mark:
+Form Validations | 12 July | :white_check_mark:
+Auto-post frequency can have more than 1 setting | 19 July | :negative_squared_cross_mark:
+Optimisation of loading time | 19 July | :negative_squared_cross_mark:
+Additional Security Features: Encryption, Logging | 19 July | :negative_squared_cross_mark:
+Enable Google Analytics on Firebase | 19 July | :negative_squared_cross_mark:
