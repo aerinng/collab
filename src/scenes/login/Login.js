@@ -1,16 +1,41 @@
 import React from 'react';
 import firebase from 'firebase';
 import { View, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity } from "react-native";
-//import { render } from 'react-dom';
-//import { withFormik } from 'formik';
+
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import * as Google from 'expo-google-app-auth';
+
 export default class Login extends React.Component {
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
     state = {        
             email:'',
             password:'',
             error:''
-    } 
+    }   
+
+    //NEW SET OF CODES [GOOGLE SIGNIN]
+    async googleSignin() {
+        try {
+          const result = await Google.logInAsync({
+            // androidClientId: YOUR_CLIENT_ID_HERE,
+            iosClientId: "335681130717-oai52figqvp0f5dgjdmvlqgtqco7qvsl.apps.googleusercontent.com",
+          });
+          if (result.type === 'success') {
+            //PLEASE IGNORE THE COMMENTED CODES HERE 
+            //check if first time user
+            // this.props.navigation.navigate('Preferences', {result: result, byGoogle:true})
+
+
+            //byGoogle login: [boolean value]
+            this.props.navigation.navigate('Tabs', {result: result, byGoogle:true})
+          } else {
+            console.log("cancelled")
+          }
+        } 
+        catch (e) {
+          console.log("error", e);
+        }
+    }     
 
     //Sign In users with the given email and password (FOR AUTHENTICATION)
     onBottomPress = () =>{
@@ -37,15 +62,15 @@ export default class Login extends React.Component {
             error:''
         })
         try{
-            const {name} = this.props.route.params
-            const {email} = this.props.route.params
-            //const {password} = this.props.route.params
-            const {username} = this.props.route.params
-            console.log("Login: first tab ", password)
-            this.props.navigation.navigate('Tabs', {name:name, email:email,username:username}) // removed password, if you need please add it back in!!
+                const {name} = this.props.route.params
+                const {email} = this.props.route.params
+                //const {password} = this.props.route.params
+                const {username} = this.props.route.params
+                this.props.navigation.navigate('Tabs', {name:name, email:email,username:username, byGoogle: false}) // removed password, if you need please add it back in!!
+            
         }catch{
-            this.props.navigation.navigate('Tabs')
-        }   
+            this.props.navigation.navigate('Tabs', {byGoogle: false})
+        }
     }
 
     updateCategory = (category, email) => {
@@ -60,14 +85,12 @@ export default class Login extends React.Component {
                 });
     }
 
-    render(){
+    render(){ 
         if (this.props.route.params != null) {
             const {category} = this.props.route.params;
             const {email} = this.props.route.params;
             this.updateCategory(category, email)
         }
-        //const {name} = this.props.route.params
-        //const {username} = this.props.route.params
         return(
             <KeyboardAwareScrollView>
             <View style = {styles.container}>
@@ -102,11 +125,15 @@ export default class Login extends React.Component {
                     autoCapitalize = 'none'
                 />
                 <TouchableOpacity style = {styles.Button} onPress = {() => {
-                   
                     this.onBottomPress();
                 }}>
                     <Text style = {styles.buttonText}> Sign In </Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => this.googleSignin()}>
+                    <Text style = {styles.ForgetPW}> GOOGLE LOGINNN</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity>
                     <Text style = {styles.ForgetPW}> Forget Password? </Text>
                 </TouchableOpacity>
@@ -202,28 +229,3 @@ const styles = StyleSheet.create({
        
     }
 });
-
-// export default withFormik({
-//     mapPropsToValues: ({details}) => ({
-//       email: details.email,
-//       password: details.password,
-//     }),
-//     enableReinitialize: true,
-//     validationSchema: (props) => yup.object().shape({
-//       email: yup.string().max(30).required(),
-//       password: yup.string().max(15).required()
-//     }),
-//     handleSubmit: (values, { props }) => {
-//       console.log(props);
-//       console.log(values);
-  
-//       addFood(values);
-//     //   if (props.details.id) {
-//     //     values.id = props.details.id;
-//     //     values.createdAt = props.details.createdAt;
-//     //     uploadFood(values, props.onFoodUpdated);
-//     //   } else {
-//     //     uploadFood(values, props.onFoodAdded);
-//     //   }
-//     },
-//   })(Login);

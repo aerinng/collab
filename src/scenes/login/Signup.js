@@ -20,16 +20,15 @@ export default class Signup extends React.Component{
     onBottomPress = () => {
         firebase.auth()
                 .createUserWithEmailAndPassword(this.state.email,this.state.password)
-                //.then(this.onSignupSuccess())
+                .then(this.onSignupSuccess())
                 .catch(err => {
                     alert(err);
                 })
-        this.onSignupSuccess();
     }
 
     //If successful, no error message shown
     onSignupSuccess =  () => {
-        //var cUser = firebase.auth().currentUser.uid; 
+        //Creates individual email user as a Collection
         var mail = this.state.email;
         firebase.firestore()
                 .collection('info')
@@ -53,7 +52,8 @@ export default class Signup extends React.Component{
                        'Preferences', 
                        {email: mail, 
                         name: this.state.name, 
-                        username: this.state.username
+                        username: this.state.username,
+                        byGoogle: false
                     });
                 })
                 .catch(error => {

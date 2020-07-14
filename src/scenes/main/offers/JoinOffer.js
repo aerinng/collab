@@ -14,11 +14,11 @@ class JoinOffer extends React.Component {
     componentDidMount() {
         //trying to update state, but code is gone 
         var user = firebase.auth().currentUser; 
-        const {orderID} = this.props.route.params
-        this.setState({currOrderID: orderID})
+        const {docID} = this.props.route.params
+        this.setState({currOrderID: docID})
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
-                                         .doc(orderID)
+                                         .doc(docID)
                                          .get()
                                         . then(sth => {
                                                 const results = []

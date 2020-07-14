@@ -35,7 +35,7 @@ const StorePromo = ({navigation}) => {
   const [selected, setSelected] = React.useState(null);
   const onSelect = (id) => {
       setSelected(id);
-      console.log(id);
+      // console.log(id);
   }
   
   DATA.length = 0;
@@ -49,9 +49,9 @@ const StorePromo = ({navigation}) => {
   const [typingTimeout, setTypingTimeout] = React.useState(0);
 
   const searched = (text) => {
-    console.log("before: " + query)
+    // console.log("before: " + query)
     setQuery(text);
-    console.log("after: " + query)
+    // console.log("after: " + query)
 
     if (typingTimeout) {
       clearTimeout(typingTimeout);
@@ -67,7 +67,7 @@ const StorePromo = ({navigation}) => {
       const itemData = item.title ? item.title : '';
       return itemData.indexOf(text) > -1;
     }));
-    console.log("before: " + DATA.length)
+    // console.log("before: " + DATA.length)
     DATA.length = 0;
     setDATA(DATA => [...DATA, newData]);
     console.log("after: " + DATA.length)
@@ -99,7 +99,6 @@ const StorePromo = ({navigation}) => {
           })
           DATA.push(docs.data()) //from firebase
         })
-        //console.log("Data", DATA)
     })
 
 
@@ -111,8 +110,6 @@ const StorePromo = ({navigation}) => {
           })
           DATA.push(docs.data()) //from firebase
         })
-        // console.log("Data", DATA)
-        //console.log(" Data in SP", DATA)
     })
   }
 

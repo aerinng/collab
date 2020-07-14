@@ -24,7 +24,15 @@ class Profile extends React.Component {
     }
 
     getData = () => {
-        var user = firebase.auth().currentUser.email;
+        //NEW CODES: to see if user is:
+        //Google login OR Collab login
+         if (this.props.route.params.result != null){
+            const {result} = this.props.route.params;
+            var user = result.user.email; 
+         } else {
+            var user = firebase.auth().currentUser.email;
+         }
+         
         var document = firebase.firestore().collection('info').doc(user);
         this.state.unsubscribe = document.get().then((doc) => {
             var data = doc.data();

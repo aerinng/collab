@@ -1,11 +1,17 @@
 import firebase from 'firebase';
 import {useEffect} from 'react'; 
 import moment from 'moment';
+// var PushNotification = require('react-native-push-notification');
+// import PushNotification from 'react-native-push-notification';
 
 
 //https://medium.com/better-programming/using-moment-js-in-react-native-d1b6ebe226d4
 
+
 export function stimulateOrder(docID,user){
+
+
+
   console.log("got called")
   
   //Check if settings is a Weekly, biweekly etc
@@ -15,12 +21,12 @@ export function stimulateOrder(docID,user){
         switch(querySnapshot.data().frequency){
           case "Daily": 
             daily(docID,user)
-          // case "Weekly": 
-          //   weekly(docID,user)
-          // case "Biweekly": 
-          //   biweekly(docID,user)
-          // case "Monthly": 
-          //   monthly(docID,user)
+          case "Weekly": 
+          daily(docID,user)
+          case "Biweekly": 
+          daily(docID,user)
+          case "Monthly": 
+          daily(docID,user)
         }
 
           // console.log(doc.id, " => ", doc.data());
@@ -36,32 +42,6 @@ export function stimulateOrder(docID,user){
 }
 
 export function daily(docID,user){
-  // const timeoutId = setTimeout(() => {
-  //   //Testing one 
-  //   firebase.firestore().collection("A").get()
-  //   .then(snapshot =>{        
-  //     snapshot.forEach(element => {
-  //       console.log("push notifcation pushed")
-  //         const response = fetch('https://exp.host/--/api/v2/push/send', {
-  //         method: 'POST',
-  //         headers: {
-  //           Accept: 'application/json',
-  //           'Accept-encoding': 'gzip, deflate',
-  //           'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify({
-  //           to: element.data().pushToken,//this one needa change
-  //           sound: 'default',
-  //           title: 'Order Added!',
-  //           body: 'Buyer has re-sent another offer to buy request!',
-  //           _displayInForeground: true,
-  //         })
-  //       });
-  //   })
-  // })
-  //   }, 2000);
-
-
 //Below is the correct one 
   //need to recreate the order with the same details 
   var data=''
@@ -114,7 +94,6 @@ export function daily(docID,user){
           firebase.firestore().collection("info").where("category", "==", category).get()
           .then(snapshot =>{        
             snapshot.forEach(element => {
-              console.log("element is", element.id)
               // console.log("category is", element.data().category)
               console.log("push notifcation pushed")
                 const response = fetch('https://exp.host/--/api/v2/push/send', {

@@ -1,7 +1,7 @@
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore';
 
-//API key for configuration
+// API key for configuration
 var firebaseConfig = {
     apiKey: "AIzaSyAOkCekXGgLyBJE3XXvPDdCqSeFOcD5F7c",
     authDomain: "collab-testfb.firebaseapp.com",

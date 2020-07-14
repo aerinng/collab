@@ -41,6 +41,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore';
 import {decode, encode} from 'base-64';
+import { ProgressViewIOSComponent } from 'react-native';
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode } 
@@ -243,7 +244,7 @@ function ChatStackScreen(props) {
       <ChatStack.Screen 
         name = "ChatRoom" 
         component = {ChatRoom} 
-        initialParams={{route: props.route.params, user: firebase.auth().currentUser.uid}}
+        initialParams={{route: props.route.params}} 
         options={({route}) => ({title: route.params.threads.name,
           headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, 
           headerTintColor: "#000"})}

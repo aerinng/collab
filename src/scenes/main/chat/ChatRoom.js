@@ -5,12 +5,26 @@ import { IconButton } from 'react-native-paper';
 import firebase from "firebase";
 import { GiftedChat, Bubble, Send, SystemMessage } from 'react-native-gifted-chat';
 
-export default function ChatRoom({route, user}) {
+export default function ChatRoom({route}) {
     const [messages, setMessages] = useState([]);
     const {threads} = route.params;
-    //console.log("testing: " + threads._id + " and " + threads.name)
-    var user = firebase.auth().currentUser.uid;
-    var email = firebase.auth().currentUser.email;
+    console.log("testing: " + threads._id + " and " + threads.name)
+    //NEW CODES: to see if user is:
+    //Google login OR Collab login
+    try{
+        if (route.params.route.result.user != null){ 
+            var user = route.params.route.result.user.id;
+            console.log("the id for the user in CR is", user)
+            var email = route.params.route.result.user.email; 
+         } else {
+            console.log("chatroom, result is empty" )
+            var user = firebase.auth().currentUser.uid;
+            var email = firebase.auth().currentUser.email;
+         } 
+    }catch{
+        var user = firebase.auth().currentUser.uid;
+        var email = firebase.auth().currentUser.email;
+    }    
     //threads._id is the friend's email
 
     async function handleSend(messages) {

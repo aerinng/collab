@@ -13,10 +13,11 @@ class OfferDetailsJoin extends React.Component {
     componentDidMount() {
         //trying to update state, but code is gone 
         var user = firebase.auth().currentUser; 
-        const {orderID} = this.props.route.params;
+        const {docID} = this.props.route.params;
+        console.log("order id is", docID)
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
-                                         .doc(orderID)
+                                         .doc(docID)
                                          .get()
                                         . then(sth => {
                                                 const results = []
@@ -36,7 +37,7 @@ class OfferDetailsJoin extends React.Component {
 
     render(){
         //console.log("Offer Details: render"); 
-        const {orderID} = this.props.route.params;
+        const {docID} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -70,6 +71,8 @@ class OfferDetailsJoin extends React.Component {
                             />
                             <Text style = { styles.titles }> Estimated Order Date </Text>
                             <Text style ={ styles.data }>{item.date.toString().substring(4,16)}</Text>
+                            <Text style = { styles.titles }> User </Text>           
+                            <Text style ={ styles.data }>{item.user}</Text>                             
                             <Text style = { styles.titles }> Description </Text>           
                             <Text style ={ styles.data, {marginBottom: 50} }>{item.desc}</Text>
                         </View>
@@ -79,7 +82,7 @@ class OfferDetailsJoin extends React.Component {
                 /> 
                 <TouchableOpacity 
                     style = {styles.Button}
-                    onPress = {() => this.props.navigation.navigate('JoinOffer', {orderID: orderID})}
+                    onPress = {() => this.props.navigation.navigate('JoinOffer', {docID: docID})}
                 >
                     <Text style = {styles.buttonText}> Join </Text>
                 </TouchableOpacity>

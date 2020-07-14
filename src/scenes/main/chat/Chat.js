@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
-import { StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, 
+import { StyleSheet, Text, FlatList, TouchableOpacity, 
   Image, Modal, TextInput, View } from "react-native";
 import firebase from "firebase";
 import { List, Divider, Searchbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const searchFilterFunction = (text, threads) => {
   var DATA = threads;
@@ -47,7 +48,16 @@ export default class Chat extends React.Component {
 
   // fetch chats data from Firestore
   componentDidMount() {
-    this.getChats(firebase.auth().currentUser.email);
+    //NEW CODES: to see if user is:
+    //Google login OR Collab login    
+    if (this.props.route.params.result != null){
+      const {result} = this.props.route.params;
+      var user = result.user; 
+      
+   } else {
+      var user = firebase.auth().currentUser;
+   }       
+    this.getChats(user.email)
   }
 
   // stop listening to changes from Firestore
@@ -86,6 +96,7 @@ export default class Chat extends React.Component {
             .get()
             .then(querySnapshot => {
               var curr = this;
+              console.log("in chat, curr ",curr)
               const threads = querySnapshot.forEach(function(doc) {
                 var mail = doc.id;
                 var userObtained = doc.data().username;
@@ -108,17 +119,29 @@ export default class Chat extends React.Component {
 
   findName = (email) => {
     var mail = email;
-    var currU = firebase.auth().currentUser.email;
+    console.log("chat currently in findName")
+
+    if (this.props.route.params.result != null){
+      const {result} = this.props.route.params;
+      var currU = result.user.email; 
+      
+   } else {
+      var currU = firebase.auth().currentUser.email;
+   }       
+    // var currU = firebase.auth().currentUser.email;
     //console.log("curr email: " + currU)
     //console.log("friendMail: " + mail)
-    var document = firebase.firestore().collection('info').doc(currU);
 
+    var document = firebase.firestore().collection('info').doc(currU);
     document.get()
             .then(doc => {
               var curr = this;
+              // console.log("in chat, curr:", curr)
               this.setState({username: doc.data().username})
               //console.log("name attained11: " + this.state.username)
+              // console.log("in chat, username", this.state.username)
               this.addOwnChat(currU, mail);
+              // console.log("in chat, nail", mail)
               this.addFriendChat(mail, this.state.username, currU);
             })
             .catch(function(error) {
@@ -191,7 +214,6 @@ export default class Chat extends React.Component {
   }
 
   render() {
-    var user = firebase.auth().currentUser.email;
     const { modalVisible } = this.state;
     return (
         <SafeAreaView style = {styles.container}>
@@ -274,6 +296,7 @@ export default class Chat extends React.Component {
                             onPress={() => this.props.navigation.navigate(
                               'ChatRoom', { 
                                 threads: item , 
+                                result: this.props.params
                                 //friendEmail: this.state.friendEmail, 
                                 //friendUsername: this.state.friendUsername 
                               })}

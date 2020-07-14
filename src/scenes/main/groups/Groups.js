@@ -52,20 +52,24 @@ const DATAdiscover = [
     );
   }
 
-  const Groups = ({navigation}) => {
+  const Groups = ({navigation, result}) => {
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
     const [categories, setCategories] = React.useState([])
+    if (result != null){
+      var user = result.user.email; 
+    } else {
+      var user = firebase.auth().currentUser.email;
+    }    
     // logic is to obtain categories from info collection, 
     // then display the UI of the collection names,
     // then only when its clicked, 
     // then i will call to fetch order data aka filter from offers
-    var user = firebase.auth().currentUser;
     firebase.firestore()
             .collection("info")
-            .doc(user.email)
+            .doc(user)
             .get()
             .then(snap => {
               DATA.length = 0;
@@ -147,7 +151,7 @@ const DATAdiscover = [
 
 export default class GroupsScreen extends React.Component {
     render() {
-        return <Groups navigation = {this.props.navigation} />;
+        return <Groups navigation = {this.props.navigation} result ={this.props.route.params.result} />;
     }
 }
 
