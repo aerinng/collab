@@ -186,7 +186,9 @@ No. | Issue | Solution | Fixed?
 11 | Preference Page: Page is bypassed despite being inserted in the navigations | Used firebase then() function to return a new Promise and navigate to Preference page | :white_check_mark:
 12 | Chat Page: Could not find the opposing user's username and email when passed as parameters to another function from Chat to Chat Room, hence received an error due to passing an empty object to firebase | Define the parameters inside an object in Chats then pass the entire object to Chat Room | :white_check_mark:
 13 | Notifications: Unable to navigate users to intended page after clicking on notification | Work In Progress! | :negative_squared_cross_mark:
-14 | Preference Page: Unable to add into array via multiple selection of items with the first click, requires a second click | Since useState hook is not async, tried useEffect hook to re-render after change in array and it didn't work. Hence, changed to single selection instead of multiple selection in order to create a MVP first. Will be incorporating this fix into milestone 3. | :negative_squared_cross_mark:
+14 | Preference Page: User cannot join multiple groups at once. Unable to add into array via multiple selection of items with the first click, requires a second click | Since useState hook is not async, tried useEffect hook to re-render after change in array and it didn't work. Hence, will allow user to only add 1 group into My Groups at a time so reducing the need to use arrays in useState. But still allowing users to be in multiple groups. | :white_check_mark:
+15 | Chat Page: Avatar icons for both sender and receiver are the same | Work In Progress! | :negative_squared_cross_mark:
+16 | Chat Page: User able to select image to send but Front End unable to display the image | Work In Progress! | :negative_squared_cross_mark:
 
 ## Usability Testing
 Coming to you on 27 July!
@@ -207,15 +209,16 @@ Coming to you on 27 July!
 ## Possible Enhancements for Milestone 3
 Target | Target Date | Status
 -------|-------------|-------
-Google authentication when logging in | 12 July | :white_check_mark:
+Additional option of Google authentication when logging in | 12 July | :white_check_mark:
 Allow multiple addition of groups / preference into My Groups | 12 July | :white_check_mark:
-Form Validations | 12 July | :white_check_mark:
+Form Validations for emails and integers | 12 July | :white_check_mark:
+Display alert if no username is found when searching for username on Chat page | 12 July | :white_check_mark:
 For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 19 July | :negative_squared_cross_mark:
 Notifications for chat messages | 19 July | :negative_squared_cross_mark:
-Allow users to send images and display their avatar icons on chat rooms | 19 July | :negative_squared_cross_mark:
-Display alert if no username is found when searching for username on Chat page | 19 July | :negative_squared_cross_mark:
-Chat Search Bars: Realtime searching from database | 19 July | :negative_squared_cross_mark:
+Allow users to send images in chat rooms | 19 July | :negative_squared_cross_mark:
+Allow users to display their avatar icons on chat rooms | 19 July | :negative_squared_cross_mark:
 Auto-post frequency can have more than 1 setting | 19 July | :negative_squared_cross_mark:
 Optimisation of loading time | 19 July | :negative_squared_cross_mark:
-Additional Security Features: Encryption, Logging | 19 July | :negative_squared_cross_mark:
+Additional Security Features: Encryption | 19 July | :negative_squared_cross_mark:
 Enable Google Analytics on Firebase | 19 July | :negative_squared_cross_mark:
+Make screens responsive for different screen sizes | 19 July | :negative_squared_cross_mark:
