@@ -207,14 +207,14 @@ Coming to you on 27 July!
 ## Possible Enhancements for Milestone 3
 Target | Target Date | Status
 -------|-------------|-------
-Google authentication when logging in | 12 July | :negative_squared_cross_mark:
-For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 12 July | :negative_squared_cross_mark:
-Notifications for chat messages | 12 July | :negative_squared_cross_mark:
-Allow users to send images and display their avatar icons on chat rooms | 12 July | :negative_squared_cross_mark:
-Display alert if no username is found when searching for username on Chat page | 12 July | :negative_squared_cross_mark:
-Chat Search Bars: Realtime searching from database | 12 July | :negative_squared_cross_mark:
-Allow multiple addition of groups / preference into My Groups | 12 July | :negative_squared_cross_mark:
+Google authentication when logging in | 12 July | :white_check_mark:
+Allow multiple addition of groups / preference into My Groups | 12 July | :white_check_mark:
 Form Validations | 12 July | :white_check_mark:
+For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 19 July | :negative_squared_cross_mark:
+Notifications for chat messages | 19 July | :negative_squared_cross_mark:
+Allow users to send images and display their avatar icons on chat rooms | 19 July | :negative_squared_cross_mark:
+Display alert if no username is found when searching for username on Chat page | 19 July | :negative_squared_cross_mark:
+Chat Search Bars: Realtime searching from database | 19 July | :negative_squared_cross_mark:
 Auto-post frequency can have more than 1 setting | 19 July | :negative_squared_cross_mark:
 Optimisation of loading time | 19 July | :negative_squared_cross_mark:
 Additional Security Features: Encryption, Logging | 19 July | :negative_squared_cross_mark:
