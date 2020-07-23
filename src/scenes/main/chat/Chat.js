@@ -1,10 +1,11 @@
 import React, {useEffect} from 'react';
 import { StyleSheet, Text, FlatList, TouchableOpacity, 
-  Image, Modal, TextInput, View } from "react-native";
+  Image, Modal, TextInput, View, Alert } from "react-native";
 import firebase from "firebase";
 import { List, Divider, Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+// function for the search bar to filter by usernames
 const searchFilterFunction = (text, threads) => {
   var DATA = threads;
   const newData = (DATA.filter(function(item) {
@@ -31,6 +32,7 @@ export default class Chat extends React.Component {
     };
   }
 
+  // set visibility of modal to input username
   setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
   }
@@ -42,13 +44,19 @@ export default class Chat extends React.Component {
   setFriendDetails = (email, user) => {
     this.setState({friendEmail: email});
     this.setState({friendUsername: user});
-   //console.log("test1: " + this.state.friendEmail);
-    //console.log("test2: " + this.state.friendUsername)
   }
 
-  // fetch chats data from Firestore
+  // fetch chats data from Cloud Firestore database
   componentDidMount() {
-    this.getChats(firebase.auth().currentUser.email);
+    //NEW CODES: to see if user is:
+    //Google login OR Collab login    
+    if (this.props.route.params.result != null){
+      const {result} = this.props.route.params;
+      var user = result.user; 
+    } else {
+        var user = firebase.auth().currentUser;
+    }       
+    this.getChats(user.email)
   }
 
   // stop listening to changes from Firestore
@@ -70,7 +78,8 @@ export default class Chat extends React.Component {
                                             _id: documentSnapshot.id,
                                             name: '',
                                             latestMessage: {
-                                              text: ''
+                                              text: '',
+                                              image: ''
                                             },
                                             ...firebaseData
                                           };
@@ -80,25 +89,21 @@ export default class Chat extends React.Component {
                                       });
   }
 
+  // find username from user's text input
   findUsername = () => {
     firebase.firestore()
             .collection('info')
             .where('username', '==', this.state.textInputName)
             .get()
             .then(querySnapshot => {
-              var curr = this;
-              const threads = querySnapshot.forEach(function(doc) {
-                var mail = doc.id;
-                var userObtained = doc.data().username;
-                //console.log("firstmail: " + mail)
-                //console.log("firstuser: " + userObtained)
-                curr.setFriendDetails(mail, userObtained);
-                curr.findName(mail);
-                //console.log("text input: " + curr.state.textInputName)
-                //console.log("username found: " + doc.data().username)
+                var curr = this;
+                const threads = querySnapshot.forEach(function(doc) {
+                  var mail = doc.id;
+                  var userObtained = doc.data().username;
+                  curr.setFriendDetails(mail, userObtained);
+                  curr.findName(mail);
+                  curr.setCurrUser();
               })
-              //console.log("username updated " + this.state.username)
-              this.setState({gotUser: true})
             })
             .catch((error) => {
               this.setState({gotUser: false})
@@ -107,27 +112,59 @@ export default class Chat extends React.Component {
             });
   }
 
+  // set boolean as true if user is found
+  setCurrUser = () => {
+    this.setState({gotUser: true})
+  }
+  
+  // impose a timeout before function starts checking if username exists
+  seeGotUserNot = () => {
+    if (this.state.typingTimeout) {
+      clearTimeout(this.state.typingTimeout);
+   }
+   var temp = setTimeout(
+     this.checkUser
+   , 500);
+  
+   this.setState({typingTimeout: temp})
+  }
+
+  // function to check if username exists
+  checkUser = () => {
+    //console.log(this.state.gotUser)
+    if (!this.state.gotUser) {
+      Alert.alert("Alert", "Username cannot be found!")
+    } else {
+      this.setModalVisible(!this.state.modalVisible);
+    }
+  }
+
+  // find username of sender and call functions to add chats into databases
   findName = (email) => {
     var mail = email;
-    var currU = firebase.auth().currentUser.email;
-    //console.log("curr email: " + currU)
-    //console.log("friendMail: " + mail)
+    //NEW CODES: to see if user is:
+    //Google login OR Collab login    
+    if (this.props.route.params.result != null){
+        const {result} = this.props.route.params;
+        var currU = result.user.email; 
+    } else {
+        var currU = firebase.auth().currentUser.email;
+    }       
     var document = firebase.firestore().collection('info').doc(currU);
 
     document.get()
             .then(doc => {
               var curr = this;
               this.setState({username: doc.data().username})
-              //console.log("name attained11: " + this.state.username)
               this.addOwnChat(currU, mail);
               this.addFriendChat(mail, this.state.username, currU);
             })
             .catch(function(error) {
-              console.log("Eeeeerror getting document:", error);
+              console.log("Error getting document:", error);
             });
-          //console.log("name attained: " + this.state.username)
   }
 
+  // add chat into sender's database
   addOwnChat = (user, friendEmail) => {
     var docRef = firebase.firestore()
                          .collection('chats: ' + user)
@@ -150,11 +187,9 @@ export default class Chat extends React.Component {
             text: 'You have created a room.',
             system: true
           })
-            //this.props.navigation.navigate('Chat');
-          //})
-          
   }
 
+  // add chat into receiver's database
   addFriendChat = (email, name, ownEmail) => {
     var docRef = firebase.firestore()
             .collection('chats: ' + email)
@@ -169,7 +204,6 @@ export default class Chat extends React.Component {
           .catch(function(error) {
             console.error("Error writing document: ", error);
           });
-            //.then(docRef => {
     docRef.collection('msg')
           .add({
             timeStamp: new Date().getTime(),
@@ -178,21 +212,21 @@ export default class Chat extends React.Component {
           })
   }
 
+  // impose a timeout before starting the filtering via username on the search bar
   searched = (text) => {
     this.setState({query: text});
     if (this.state.typingTimeout) {
       clearTimeout(this.state.typingTimeout);
-   }
-   var data = this.state.threads;
-   var temp = setTimeout(function() {
-    searchFilterFunction(text, data)
-   }, 500);
-  
-   this.setState({typingTimeout: temp})
+    }
+    var data = this.state.threads;
+    var temp = setTimeout(function() {
+      searchFilterFunction(text, data)
+    }, 500);
+    
+    this.setState({typingTimeout: temp})
   }
 
   render() {
-    var user = firebase.auth().currentUser.email;
     const { modalVisible } = this.state;
     return (
         <SafeAreaView style = {styles.container}>
@@ -246,13 +280,8 @@ export default class Chat extends React.Component {
                             paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, 
                             alignSelf: 'center', borderRadius: 10}}
                           onPress = {() => {
-                            //console.log("hello " + this.state.textInputName)
                             this.findUsername();
-                            this.setModalVisible(!modalVisible);
-                            /*if (!this.state.gotUser) {
-                              alert("Username cannot be found!")
-                            }*/
-                            //console.log("after " + this.state.modalVisible);
+                            this.seeGotUserNot();
                           }}
                         >
                             <Text
@@ -274,9 +303,7 @@ export default class Chat extends React.Component {
                           <TouchableOpacity
                             onPress={() => this.props.navigation.navigate(
                               'ChatRoom', { 
-                                threads: item , 
-                                //friendEmail: this.state.friendEmail, 
-                                //friendUsername: this.state.friendUsername 
+                                threads: item
                               })}
                           >
                           <List.Item

@@ -32,17 +32,21 @@ function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
 }
 
 const StorePromo = ({navigation}) => {
+
+  // array for store promotions
   const [DATA, setDATA] = React.useState([]);
+
+  // allow the selection of store promotions
   const [selected, setSelected] = React.useState(null);
   const onSelect = (id) => {
       setSelected(id);
-      //console.log(id);
   }
 
-  // FROM HERE: SEARCH BAR
+  // variables needed for search bar filter feature
   const [query, setQuery] = React.useState('');
   const [typingTimeout, setTypingTimeout] = React.useState(0);
 
+  // impose a timeout before the search function is called
   const searched = (text) => {
     setQuery(text);
 
@@ -55,21 +59,22 @@ const StorePromo = ({navigation}) => {
       }, 500))
   }
 
+  // function to filter from search bar
   const searchFilterFunction = text => {
     const newData = (DATA.filter(function(item) {
       return item.title.indexOf(text) > -1;
     }));
     setDATA(newData);
   };
-// UNTIL HERE: SEARCH BAR
 
+  // fetch data of store promotions from database whenever there's a new render
   useEffect(() => {
     DATA.length = 0;
     fetchData();
   }, [DATA])
 
+  // fetch data of store promotions from database
   const fetchData = () => {
-    //just for fairprice...
     firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
       .then(snap => { 
           snap.forEach(docs =>{
@@ -78,7 +83,6 @@ const StorePromo = ({navigation}) => {
             })
             DATA.push(docs.data()) //from firebase
           })
-          // console.log("Data", DATA)
       })
 
     firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
@@ -89,7 +93,6 @@ const StorePromo = ({navigation}) => {
           })
           DATA.push(docs.data()) //from firebase
         })
-        //console.log("Data", DATA)
     })
 
     firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
@@ -100,10 +103,9 @@ const StorePromo = ({navigation}) => {
           })
           DATA.push(docs.data()) //from firebase
         })
-        // console.log("Data", DATA)
-        //console.log(" Data in SP", DATA)
     })
   }
+  
     return (
         <SafeAreaView style = {styles.container}>
             <TouchableOpacity onPress = {() => navigation.navigate('Search')} >

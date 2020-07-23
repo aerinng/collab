@@ -12,8 +12,6 @@ class EditProfile extends React.Component{
         super(props);
         this.state = {
             textInputName: '',
-            textInputUsername: '',
-            textInputEmail: '',
             textInputAddressLine1: '',
             textInputAddressLine2: '',
             name: '',
@@ -27,27 +25,22 @@ class EditProfile extends React.Component{
         };
     }
 
+    // allowing the setting of new name
     setName = (name) => {
         this.setState({textInputName: name});
     }
 
-    setUsername = (username) => {
-        this.setState({textInputUsername: username});
-    }
-
-    setEmail = (email) => {
-        this.setState({textInputEmail: email});
-    }
-
-    // to be added
+    // allow the setting of new address line 1
     setAddress1 = (address) => {
         this.setState({textInputAddressLine1: address});
     }
 
+    // allow the setting of new address line 2
     setAddress2 = (address) => {
         this.setState({textInputAddressLine2: address});
     }
     
+    // allow the changing of user's name
     changeName = () => {
         var user = firebase.auth().currentUser;
         firebase.firestore().collection('info').doc(user.email).update({
@@ -55,21 +48,7 @@ class EditProfile extends React.Component{
         })
     }
 
-    changeUsername = () => {
-        var user = firebase.auth().currentUser;
-        firebase.firestore().collection('info').doc(user.email).update({
-            username: this.state.textInputUsername
-        })
-    }
-
-    /*changeEmail = () => {
-        firebase.auth().currentUser.updateEmail(this.state.textInputEmail).then(function() {
-            alert("Email updated successfully.");
-          }).catch(function(error) {
-            alert(error.message);
-          });
-    }*/
-
+    // allow the changing of address
     changeAddress = () => {
         var user = firebase.auth().currentUser;
         firebase.firestore().collection('info').doc(user.email).update({
@@ -78,6 +57,7 @@ class EditProfile extends React.Component{
         })
     }
 
+    // set the states for username, name, address, avatar and status
     setsStates = (data) => {
         this.setState({username: data.username});
         this.setState({name: data.name});
@@ -94,9 +74,10 @@ class EditProfile extends React.Component{
         }
     }
 
+    // fetch profile data from Cloud Firestore database
     getData = () => {
-        var user = firebase.auth().currentUser;
-        var document = firebase.firestore().collection('info').doc(user.email);
+        var user = this.props.route.params.user;
+        var document = firebase.firestore().collection('info').doc(user);
         this.state.unsubscribe = document.get().then((doc) => {
             var data = doc.data();
             this.setsStates(data);
@@ -105,10 +86,10 @@ class EditProfile extends React.Component{
         });
     }
 
+    // ask for user's permission to access camera roll
     askPermission = async () => {
         if (Constants.platform.ios) {
           const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
-          //console.log(status)
           if (status !== 'granted') {
             alert('Oops, we need camera roll permission :")');
           } else if (status == 'granted'){
@@ -117,6 +98,7 @@ class EditProfile extends React.Component{
         }
     }
 
+    // allow the setting of user's avatar
     handleUserAvatar = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -124,9 +106,7 @@ class EditProfile extends React.Component{
             aspect: [4, 3],
             quality: 1,
           });
-      
-          //console.log(result);
-      
+    
           if (!result.cancelled) {
             this.setState({userAvatar: result.uri});
             this.setState({imageChosen: true});
@@ -137,6 +117,7 @@ class EditProfile extends React.Component{
           }
     }
 
+    // fetch profile data from Cloud Firestore database upon renders
     componentDidMount() {
         this.getData();
         if (this.state.status == 'undetermined' && Constants.platform.ios) {
@@ -144,13 +125,14 @@ class EditProfile extends React.Component{
         }
     }
 
+    // unsubscribe from fetching data from Cloud Firestore database
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
     render(){
-        var user = firebase.auth().currentUser;
+        var user = this.props.route.params.user;
         return (
             <KeyboardAwareScrollView>
                 <Image source = {require('../../../../assets/banner.jpg')} style = {styles.banner}/>
@@ -202,7 +184,7 @@ class EditProfile extends React.Component{
                     <Text style = {{fontSize: 10}}>Oops, you can't change this!</Text>
                     <Text 
                         style = {styles.fieldText}
-                        placeholder = {user.email}
+                        placeholder = {user}
                         placeholderTextColor = "#000"
                         onChangeText={textInput => {
                             this.setEmail(textInput);
@@ -237,12 +219,6 @@ class EditProfile extends React.Component{
                             }
                             if (this.state.textInputName != '') {
                                 this.changeName();
-                            }
-                            if (this.state.textInputUsername != '') {
-                                this.changeUsername();
-                            }
-                            if (this.state.textInputEmail != '') {
-                                this.changeEmail();
                             }
                             this.props.navigation.navigate('Profile');
                         }}

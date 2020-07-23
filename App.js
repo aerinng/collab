@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { ProgressViewIOSComponent } from 'react-native';
 
 // scenes imports
 import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
@@ -31,6 +32,7 @@ import OfferDetailsCancel from './src/scenes/main/profile/OfferDetailsCancel';
 import OfferDetailsReceived from './src/scenes/main/profile/OfferDetailsReceived';
 import Settings from './src/scenes/main/profile/Settings';
 import ChangePassword from './src/scenes/main/profile/ChangePassword';
+import AddGroups from './src/scenes/main/groups/AddGroups';
 
 // icons imports
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -143,6 +145,7 @@ function GroupsScreens(props) {
       }}
     >
       <GroupsStack.Screen name = "GroupsScreen" component = {Groups} initialParams={props.route.params}/>
+      <GroupsStack.Screen name = "AddGroups" component = {AddGroups} initialParams={props.route.params}/>
       <GroupsStack.Screen name = "GroupsDetails" component = {GroupsDetails} initialParams={props.route.params}/>
       <GroupsStack.Screen name = "OfferDetails" component = {OfferDetails} initialParams={props.route.params} />
       <GroupsStack.Screen name = "EditOffer" component = {EditOffer} initialParams={props.route.params} />
@@ -245,7 +248,7 @@ function ChatStackScreen(props) {
       <ChatStack.Screen 
         name = "ChatRoom" 
         component = {ChatRoom} 
-        initialParams={{route: props.route.params, user: firebase.auth().currentUser.uid}}
+        initialParams={{route: props.route.params}}
         options={({route}) => ({title: route.params.threads.name,
           headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, 
           headerTintColor: "#000"})}

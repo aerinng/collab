@@ -8,16 +8,22 @@ export default class ChangePassword extends React.Component {
         textInputPassword: ''
     }
 
+    // allow the setting of new password
     setPassword = (password) => {
         this.setState({textInputPassword: password});
     }
 
+    // allow the changing of new password and sending of email notification
     changePassword = () => {
-        firebase.auth().currentUser.updatePassword(this.state.textInputPassword).then(function() {
-            alert("Password changed successfully.");
-          }).catch(function(error) {
-            alert(error.message);
-          });
+        firebase.auth()
+                .currentUser
+                .updatePassword(this.state.textInputPassword)
+                .then(function() {
+                    alert("Password changed successfully.");
+                })
+                .catch(function(error) {
+                    alert(error.message);
+                });
     }
 
     render() {

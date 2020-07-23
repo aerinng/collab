@@ -5,7 +5,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
-import {daily, weekly, biweekly, monthly} from './AddOrdFunc'
+import {stimulateOrder} from './AddOrdFunc'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 class AddOrder extends React.Component {
@@ -26,31 +26,45 @@ class AddOrder extends React.Component {
         unsubscribe:''
     }
 
+    // allow the setting of category for the offer
     changeCategory(item) {
         this.setState({category: item.value});
         console.log(this.state.category)
     }
 
+    // allow the auto posting switch to be toggled
     toggleSwitch = (value) => {
         this.setState({switchValue: value})
     }
 
+    // display the datetime picker
     showDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: true });
     };
     
+    // hide the display of datetime picker
     hideDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: false });
     };
     
+    // set the date picked from the datetime picker
     handleDatePicked = date => {
         this.hideDateTimePicker();
         this.setState({displayDate : date});
     };
 
-    // fetch from firebase data
+    // fetch username from Cloud Firestore database
     componentDidMount() {
-        this.state.user = firebase.auth().currentUser; 
+        //NEW CODES: to see if user is:
+        //Google login OR Collab login        
+        if (this.props.route.params.result != null){
+            const {result} = this.props.route.params;
+            this.state.user = result.user; 
+            
+         } else {
+            this.state.user = firebase.auth().currentUser;
+         }        
+         
         this.state.unsubscribe = firebase.firestore()
                                         .collection('info')
                                         .doc(this.state.user.email)
@@ -59,7 +73,7 @@ class AddOrder extends React.Component {
                                             this.setState({username: doc.data().username})
                                         })
                                         .catch(function(error) {
-                                            console.log("Eeeeerror getting document:", error);
+                                            console.log("Error getting document:", error);
                                         });
     }
 
@@ -69,6 +83,7 @@ class AddOrder extends React.Component {
         unsubscribe;
     }
 
+    // add offer data to Cloud Firestore database
     addToDB = (data, title, image) => {
         firebase.firestore()
                 .collection("offers")
@@ -86,7 +101,6 @@ class AddOrder extends React.Component {
                     image: image,
                     switch: this.state.switchValue
                 }).then((snapshot) => { //all asynchronous
-                    //console.log("already added"); 
                     snapshot.update({
                         id:snapshot.id
                     })
@@ -104,6 +118,12 @@ class AddOrder extends React.Component {
                 })
     }
 
+    // validate current total to be only integers
+    validateAmt = (amt) => {
+        var re = /^([0-9]+)$/;
+          return re.test(amt);
+    };
+
     render() {
         //these things are carried over from Store Promo.
         const {data} = this.props.route.params
@@ -111,6 +131,7 @@ class AddOrder extends React.Component {
         const {Pid} = this.props.route.params
         const {image} = this.props.route.params
         const orderDate = this.state.displayDate.toString().substring(4,16);
+
         return (
         <SafeAreaView style = {styles.container}>
             <KeyboardAwareScrollView style={styles.scrollView}>
@@ -149,7 +170,6 @@ class AddOrder extends React.Component {
                     value = {this.state.category}
                     onChangeItem = {item => {
                         this.setState({category: item.value});
-                        //console.log(this.state.category);
                     }}
                 />
                 <Text style = { styles.titles }> Current Total *</Text>
@@ -193,16 +213,14 @@ class AddOrder extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button} 
                     onPress={() =>  {
-                        if (this.state.location != '' &&
+                        if (!this.validateAmt(this.state.total)) {
+                            alert("Please input a valid Current Total!")
+                        } else if (this.state.location != '' &&
                             this.state.category != '' &&
                             this.state.total != '' &&
                             this.state.displayDate != '') {
                             this.addToDB(data, title, image)
                         } else {
-                            console.log(this.state.location)
-                            console.log(this.state.category)
-                            console.log(this.state.total)
-                            console.log(this.state.displayDate)
                             alert("Please fill in all mandatory fields!")
                         }
                     }}
