@@ -188,7 +188,7 @@ No. | Issue | Solution | Fixed?
 13 | Notifications: Unable to navigate users to intended page after clicking on notification | Work In Progress! | :negative_squared_cross_mark:
 14 | Preference Page: User cannot join multiple groups at once. Unable to add into array via multiple selection of items with the first click, requires a second click | Since useState hook is not async, tried useEffect hook to re-render after change in array and it didn't work. Hence, will allow user to only add 1 group into My Groups at a time so reducing the need to use arrays in useState. But still allowing users to be in multiple groups. | :white_check_mark:
 15 | Chat Page: Avatar icons for both sender and receiver are the same | Work In Progress! | :negative_squared_cross_mark:
-16 | Chat Page: User able to select image to send but Front End unable to display the image | Work In Progress! | :negative_squared_cross_mark:
+16 | Chat Page: User able to select image to send but Front End unable to display the image | Added in additional parameters into the chat object to allow the display of images sent | :white_check_mark:
 
 ## Usability Testing
 Coming to you on 27 July!
@@ -198,6 +198,7 @@ Coming to you on 27 July!
 2) Authorisation: Only registered users in Collab's database will be able to login successfully
 3) Permission: Permission must be granted by the user before Collab is able to access user's camera roll or send notification to users
 4) Tokenisation: Usage of tokens for login and notifications unique per user device
+5) Encryption: Personal information and data are encoded so that users' privacy are secured
 
 ## Challenges Encountered
 1) We tried to contact stores to obtain their APIs for easy retrieval of promotions data, but there was no response received. Hence, we will store the data in our database and fetch the data from there.
@@ -213,12 +214,11 @@ Additional option of Google authentication when logging in | 12 July | :white_ch
 Allow multiple addition of groups / preference into My Groups | 12 July | :white_check_mark:
 Form Validations for emails and integers | 12 July | :white_check_mark:
 Display alert if no username is found when searching for username on Chat page | 12 July | :white_check_mark:
-For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 19 July | :negative_squared_cross_mark:
-Notifications for chat messages | 19 July | :negative_squared_cross_mark:
-Allow users to send images in chat rooms | 19 July | :negative_squared_cross_mark:
-Allow users to display their avatar icons on chat rooms | 19 July | :negative_squared_cross_mark:
-Auto-post frequency can have more than 1 setting | 19 July | :negative_squared_cross_mark:
-Optimisation of loading time | 19 July | :negative_squared_cross_mark:
-Additional Security Features: Encryption | 19 July | :negative_squared_cross_mark:
-Enable Google Analytics on Firebase | 19 July | :negative_squared_cross_mark:
-Make screens responsive for different screen sizes | 19 July | :negative_squared_cross_mark:
+Allow users to send images in chat rooms | 19 July | :white_check_mark:
+Optimisation of loading time | 19 July | :white_check_mark:
+Additional Security Features: Encryption | 19 July | :white_check_mark:
+For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 25 July | :negative_squared_cross_mark:
+Allow users to display their avatar icons on chat rooms | 25 July | :negative_squared_cross_mark:
+Auto-post frequency can have more than 1 setting | 25 July | :negative_squared_cross_mark:
+Enable Google Analytics on Firebase | 25 July | :negative_squared_cross_mark:
+Make screens responsive for different screen sizes | 25 July | :negative_squared_cross_mark:
