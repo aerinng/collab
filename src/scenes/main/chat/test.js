@@ -11,22 +11,9 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 export default function ChatRoom({route, user}) {
     const [messages, setMessages] = useState([]);
     const {threads} = route.params;
-    //NEW CODES: to see if user is:
-    //Google login OR Collab login
-    try{
-        if (route.params.route.result.user != null){ 
-            var user = route.params.route.result.user.id;
-            console.log("the id for the user in CR is", user)
-            var email = route.params.route.result.user.email; 
-         } else {
-            console.log("chatroom, result is empty" )
-            var user = firebase.auth().currentUser.uid;
-            var email = firebase.auth().currentUser.email;
-         } 
-    }catch{
-        var user = firebase.auth().currentUser.uid;
-        var email = firebase.auth().currentUser.email;
-    }    
+    //console.log("testing: " + threads._id + " and " + threads.name)
+    var user = firebase.auth().currentUser.uid;
+    var email = firebase.auth().currentUser.email;
     //threads._id is the friend's email
 
     /*const [imgFriend, setImgFriend] = React.useState('');
@@ -47,22 +34,18 @@ export default function ChatRoom({route, user}) {
         console.log("Error getting document:", error);
     });*/
     
-    // enable the sending of messages from the sender to the receiver
+
     async function handleSend(messages) {
-        var text = messages[0].text;
-        var image = '';
-        if (text.includes("file") || text.includes(".jpg") || text.includes(".png")) {
-            image = messages[0].text;
-            text = '';
-        }
-        // current user to add message
+        console.log(messages);
+        const text = messages[0].text;
+      
+        // current user add
         firebase.firestore()
                 .collection('chats: ' + email)
                 .doc(threads._id)
                 .collection('msg')
                 .add({
                     text,
-                    image,
                     timeStamp: new Date().getTime(),
                     user: {
                         _id: user,
@@ -77,7 +60,6 @@ export default function ChatRoom({route, user}) {
                 {
                     latestMessage: {
                         text,
-                        image,
                         timeStamp: new Date().getTime()
                     }
                 },
@@ -87,14 +69,13 @@ export default function ChatRoom({route, user}) {
                     console.log("Eeeeerror getting document:", error);
                 });
 
-        // friend user to add message
+        // friend user add
         firebase.firestore()
                 .collection('chats: ' + threads._id)
                 .doc(email)
                 .collection('msg')
                 .add({
                     text,
-                    image,
                     timeStamp: new Date().getTime(),
                     user: {
                         _id: threads.name,
@@ -109,7 +90,6 @@ export default function ChatRoom({route, user}) {
                 {
                     latestMessage: {
                         text,
-                        image,
                         timeStamp: new Date().getTime()
                     },
                 },
@@ -120,7 +100,6 @@ export default function ChatRoom({route, user}) {
                 });
     }
 
-    // fetch the messages from Cloud Firestore database
     useEffect(() => {
         const messagesListener = firebase.firestore()
                                          .collection('chats: ' + email)
@@ -133,10 +112,15 @@ export default function ChatRoom({route, user}) {
                                             const data = {
                                                 _id: doc.id,
                                                 text: '',
-                                                image: '',
                                                 timeStamp: new Date().getTime(),
                                                 ...firebaseData
                                             };
+                                            /*if (!firebaseData.system) {
+                                                data.user = {
+                                                    ...firebaseData.user,
+                                                    name: firebaseData.user.email
+                                                };
+                                            }*/
                                             return data;
                                          });
                                          setMessages(msg); 
@@ -144,7 +128,7 @@ export default function ChatRoom({route, user}) {
                             return () => messagesListener();
                         }, []);
     
-    // display messages in nice bubbles
+    // display messages in bubbles
     function renderBubble(props) {
         return (
             <Bubble
@@ -177,7 +161,7 @@ export default function ChatRoom({route, user}) {
         );
     }
 
-    // add send button icon on the right of the sending container
+    // add send button icon
     function renderSend(props) {
         return (
         <Send {...props}>
@@ -197,7 +181,6 @@ export default function ChatRoom({route, user}) {
         );
     }
 
-    // function to display avatar icon
    function renderAvatar(props) {
         return (
             <GiftedAvatar 
@@ -209,16 +192,14 @@ export default function ChatRoom({route, user}) {
         )
     }
 
-    // function to display loading container 
     function renderLoading() {
         return (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size='large' color='#6646ee' />
           </View>
         );
-    }
-    
-    // function to allow the choosing of image to be sent
+      }
+
     function renderImage(props) {
         return (
         <Actions 
@@ -227,10 +208,11 @@ export default function ChatRoom({route, user}) {
                 <FontAwesome5 name = "plus" size = {20} color = "#266E7D" style = {{marginTop: -5, marginLeft: 8}}/>
             )}
             options={{
-                'Choose from Library': async () => {
+                /*'Choose from Library': async () => {
                     //askPermission
                     if (Constants.platform.ios) {
                         const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+                        console.log(status)
                         if (status !== 'granted') {
                           alert('Oops, we need camera roll permission :")');
                         } else if (status == 'granted'){
@@ -240,54 +222,60 @@ export default function ChatRoom({route, user}) {
                                 aspect: [4, 3],
                                 quality: 1,
                               });
-                              if (!result.cancelled) {
-                                var obj = new Object();
-                                obj.text = result.uri;
-                                var arr = [obj];
-                                handleSend(arr);
-                              }
-                        }
-                      }
-                },
-                Cancel: () => {}
+                              /*if (!result.cancelled) {
+                                //this.setState({userAvatar: result.uri});
+                                //this.setState({imageChosen: true});
+                                console.log("test: " + result.uri)
+                                var arr = [result.uri, ""]
+                                console.log("test2: " + arr[0])
+                                handleSend(result.uri);
+                              }*/
+                        //}
+                      //}
+                //}
+                Cancel: () => {
+                    //console.log('Cancel');
+                }
             }}
-            optionTintColor="#266E7D"
+            optionTintColor="#222B45"
         />
         )
     }
-      
-    // get current user's avatar
-    const [img, setImg] = React.useState('');
+         
+    /*const [img, setImg] = React.useState('');
+    //current user
     firebase.firestore()
     .collection('info')
     .doc(email)
     .get()
     .then(snap => {
+        //console.log(snap.data().avatar)
         setImg(snap.data().avatar);
     })
     .catch(function(error) {
         console.log("Error getting document:", error);
-    });
-    
+    });*/
+    //console.log(img)
     return (
+    
         <GiftedChat 
             messages={messages}
             onSend={handleSend}
             user={{ _id: user, avatar: img}}
             renderBubble={renderBubble} // bubble display function
-            placeholder='Message' // placeholder text in sending container
+            placeholder='Message'
             showUserAvatar// shows users icon
             showAvatarForEveryMessage
             alwaysShowSend // shows send button
             scrollToBottom // always scrolls to latest message at bottom
             renderSend={renderSend} // send icon function
-            renderActions={renderImage} // send image
-            renderLoading={renderLoading} // loading screen
-            scrollToBottomComponent={scrollToBottomComponent} // function that scrolls to latest message at bottom
+            renderActions={renderImage}
+            renderLoading={renderLoading}
+            scrollToBottomComponent={scrollToBottomComponent}
             textInputStyle={styles.composer}
             isTyping = {true}
             bottomOffset = {70}
-            renderAvatar = {renderAvatar} // user's avatar
+            renderAvatar = {renderAvatar}
         />
     );
 }

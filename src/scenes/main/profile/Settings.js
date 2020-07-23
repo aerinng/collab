@@ -16,6 +16,8 @@ export default class SettingsScreen extends React.Component {
         frequency: "",
         freq:''
     };
+
+    // enable toggling of switches for notification settings
     toggleSwitch1 = (value) => {
         this.setState({switchValue1: value})
     }
@@ -28,24 +30,29 @@ export default class SettingsScreen extends React.Component {
     toggleSwitch4 = (value) => {
         this.setState({switchValue4: value})
     }
+
+    // display of datetime picker
     showDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: true });
     };
     
+    // hide display of datetime picker
     hideDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: false });
     };
     
+    // allow the choosing of time picked from datetime picker
     handleTimePicked = time => {
         this.hideDateTimePicker();
         this.setState({displayTime : time});
     };
 
+    // allow the changing of auto-post frequency
     changeFreq = (item) => {
-        this.setState({freq: item.value})
-        console.log("the iem v for setState", item.value);
+        this.setState({freq: item.value});
     }
 
+    // allow the saving of settings into Cloud Firestore database
     onSave = () => {
         var user = firebase.auth().currentUser;
         //Update this into 'info' collection
@@ -57,6 +64,7 @@ export default class SettingsScreen extends React.Component {
 
     render() {
         const time = this.state.displayTime.toString().substring(16, 21);
+        
         return (
             <SafeAreaView style = {styles.container}>
                 <ScrollView style = {styles.scrollView}>

@@ -12,8 +12,9 @@ class JoinOffer extends React.Component {
         currTotal: 0,
         total: 0
     }
+
+    // fetch offer details data from Cloud Firestore database
     componentDidMount() {
-        //trying to update state, but code is gone 
         var user = firebase.auth().currentUser; 
         const {orderID} = this.props.route.params
         this.setState({currOrderID: orderID})
@@ -21,24 +22,24 @@ class JoinOffer extends React.Component {
                                          .collection("offers")
                                          .doc(orderID)
                                          .get()
-                                        . then(sth => {
+                                        . then(snapshot => {
                                                 const results = []
-                                                results.push(sth.data())
+                                                results.push(snapshot.data())
                                                 this.setState({
                                                     users: results
                                                 })
-                                                //console.log("users: " , this.state.users)
                                         })
                                         .catch(err => console.error(err));
     }    
 
+    // unsubscribe from fetching of data from database
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
     // currently user only has to input their current total
-    // addition of total amount in database is done
+    // addition of total amount to Cloud Firestore database
     addToDB = () => {
         firebase.firestore()
                 .collection("offers")
@@ -58,7 +59,6 @@ class JoinOffer extends React.Component {
     }
 
     render(){
-        //console.log("Offer Details: render"); 
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList

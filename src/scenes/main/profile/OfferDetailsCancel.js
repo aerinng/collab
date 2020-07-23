@@ -10,33 +10,33 @@ class OfferDetailsCancel extends React.Component {
         unsubscribe:''
     }
 
+    // fetch offer details data from Cloud Firestore database upon renders
     componentDidMount() {
-        //trying to update state, but code is gone 
         var user = firebase.auth().currentUser; 
         const {orderID} = this.props.route.params;
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
                                          .doc(orderID)
                                          .get()
-                                        . then(sth => {
+                                        . then(snap => {
                                                 const results = []
-                                                results.push(sth.data())
+                                                results.push(snap.data())
                                                 this.setState({
                                                     users: results
                                                 })
-                                                //console.log("users: " , this.state.users)
                                         })
                                         .catch(err => console.error(err));
     }    
 
+    // unsubscribe from fetching data from database
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
     render(){
-        //console.log("Offer Details: render"); 
         const {orderID} = this.props.route.params;
+        
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList

@@ -1,49 +1,51 @@
 import React from 'react';
-import { StyleSheet, Text, ScrollView,  Image, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, ScrollView,  Image, FlatList, TouchableOpacity, Button } from "react-native";
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const DATA = [];
+  // list of user's My Groups
+  const DATA = [];
 
-const DATAdiscover = [
-  {
-    id: '1',
-    name: 'Clothes',
-    image: require('../../../../assets/clothes.jpg'),
-  },
-  {
-    id: '2',
-    name: 'Groceries',
-    image: require('../../../../assets/groceries.jpg'),
-  },
-  {
-    id: '3',
-    name: 'Make Up',
-    image: require('../../../../assets/makeup.jpg'),
-  },
-  {
-    id: '4',
-    name: 'Pet Supplies',
-    image: require('../../../../assets/pet.jpg'),
-  },
-  {
-    id: '5',
-    name: 'Shoes',
-    image: require('../../../../assets/shoes.jpg'),
-  },
-  {
-    id: '6',
-    name: 'Stationeries',
-    image: require('../../../../assets/stationeries.jpg'),
-  },
-];
+  // list of all groups
+  const DATAdiscover = [
+    {
+      id: '1',
+      name: 'Clothes',
+      image: require('../../../../assets/clothes.jpg'),
+    },
+    {
+      id: '2',
+      name: 'Groceries',
+      image: require('../../../../assets/groceries.jpg'),
+    },
+    {
+      id: '3',
+      name: 'Make Up',
+      image: require('../../../../assets/makeup.jpg'),
+    },
+    {
+      id: '4',
+      name: 'Pet Supplies',
+      image: require('../../../../assets/pet.jpg'),
+    },
+    {
+      id: '5',
+      name: 'Shoes',
+      image: require('../../../../assets/shoes.jpg'),
+    },
+    {
+      id: '6',
+      name: 'Stationeries',
+      image: require('../../../../assets/stationeries.jpg'),
+    },
+  ];
 
+  // function for individual group item
   function Item({ id, name, image, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
         onPress={() => {
           onSelect(id);
-          //console.log("test: " + name)
           navigation.navigate('GroupsDetails', {name: name});
         }}
       >
@@ -53,47 +55,69 @@ const DATAdiscover = [
     );
   }
 
-  const Groups = ({navigation}) => {
+  const Groups = ({navigation, result}) => {
+    // allow the selection of groups
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
-    const [categories, setCategories] = React.useState([])
-    var user = firebase.auth().currentUser;
-    firebase.firestore()
+    
+    // allow the choosing of categories
+    const [categories, setCategories] = React.useState([]);
+
+    // fetch the list of categories under user's My Groups
+    React.useEffect(() => {
+      if (result != null){
+        var user = result.user.email; 
+      } else {
+        var user = firebase.auth().currentUser.email;
+      }    
+      firebase.firestore()
             .collection("info")
-            .doc(user.email)
+            .doc(user)
             .get()
             .then(snap => {
               DATA.length = 0;
-              var cat =  snap.data().category; 
-              var img = '';  
-              if (cat == 'Clothes') {
-                img = require('../../../../assets/clothes.jpg')
-              } else if (cat == 'Groceries') {
-                img = require('../../../../assets/groceries.jpg')
-              } else if (cat == "Make Up") {
-                img = require('../../../../assets/makeup.jpg')
-              } else if (cat == "Pet Supplies") {
-                img = require('../../../../assets/pet.jpg')
-              } else if (cat == "Shoes") {
-                img = require('../../../../assets/shoes.jpg')
-              } else {
-                img = require('../../../../assets/stationeries.jpg')
+              var cat = snap.data().category; 
+              for (var idx = 0; idx < cat.length; idx++) {
+                var catName = cat[idx];
+                var img = '';  
+                if (catName == 'Clothes') {
+                  img = require('../../../../assets/clothes.jpg')
+                } else if (catName == 'Groceries') {
+                  img = require('../../../../assets/groceries.jpg')
+                } else if (catName == "Make Up") {
+                  img = require('../../../../assets/makeup.jpg')
+                } else if (catName == "Pet Supplies") {
+                  img = require('../../../../assets/pet.jpg')
+                } else if (catName == "Shoes") {
+                  img = require('../../../../assets/shoes.jpg')
+                } else {
+                  img = require('../../../../assets/stationeries.jpg')
+                }
+                DATA.push({
+                  name: catName,
+                  image: img
+                })
               }
-              DATA.push({
-                name: cat,
-                image: img
-              })
-              //console.log("Data [search] ", DATA)
             })
             .catch(err => {
               console.log(err);
           })
+    }, [DATA]);
 
     return (
         <SafeAreaView style = {styles.container}>
             <Text style = {styles.header}> Groups </Text>
+            <TouchableOpacity
+              style = {{alignSelf: "flex-end", marginRight: 10, 
+              backgroundColor: "#266E7D", paddingHorizontal: 15, 
+              paddingVertical: 5, borderRadius: 10, marginBottom: -40,
+              zIndex: 1}}
+              onPress = {() => navigation.navigate("AddGroups", {DATA: DATA})}
+            >
+              <Text style = {{fontSize: 18, fontWeight: '600', color: "#fff"}}> Join </Text>
+            </TouchableOpacity>
             <Text style = {styles.title}> My Groups </Text>
             <FlatList
                 data={DATA}
@@ -115,7 +139,7 @@ const DATAdiscover = [
                   {length: 40, offset: 40 * index, index}
                 )}
             />
-            <Text style = {styles.title}> Discover Groups </Text>
+            <Text style = {styles.title}> All Groups </Text>
             <FlatList
                 data={DATAdiscover}
                 numColumns = {2}
@@ -152,7 +176,7 @@ export default class GroupsScreen extends React.Component {
   }
 
     render() {
-        return <Groups navigation = {this.props.navigation} />;
+        return <Groups navigation = {this.props.navigation} result ={this.props.route.params.result} />;
     }
 }
 

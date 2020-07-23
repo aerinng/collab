@@ -30,7 +30,7 @@ export default class Signup extends React.Component{
 
     //If successful, no error message shown
     onSignupSuccess =  () => {
-        //var cUser = firebase.auth().currentUser.uid; 
+        //Creates individual email user as a Collection
         var mail = this.state.email;
         firebase.firestore()
                 .collection('info')
@@ -54,13 +54,20 @@ export default class Signup extends React.Component{
                        'Preferences', 
                        {email: mail, 
                         name: this.state.name, 
-                        username: this.state.username
+                        username: this.state.username,
+                        byGoogle: false
                     });
                 })
                 .catch(error => {
                     alert(error);
                 });
     }
+
+    // email validation
+    validateEmail = (email) => {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return re.test(email);
+    };
 
     render() {
         return (           
@@ -91,7 +98,9 @@ export default class Signup extends React.Component{
                         style = {styles.TextInput}
                         placeholder = "Email"
                         //value={this.state.email}
-                        onChangeText={email => this.setState({email: email})}
+                        onChangeText={email => {
+                                this.setState({email: email})
+                        }}
                         autoCapitalize = 'none'
                     />
                     <Image 
@@ -120,7 +129,11 @@ export default class Signup extends React.Component{
                     <TouchableOpacity 
                         style = {styles.Button} 
                         onPress = {() => {
-                            this.onBottomPress();
+                            if (!this.validateEmail(this.state.email)) {
+                                alert("Please input a valid email!")
+                            } else {
+                                this.onBottomPress();
+                            }
                         }}
                     > 
                         <Text style = {styles.buttonText}> Sign Up </Text>

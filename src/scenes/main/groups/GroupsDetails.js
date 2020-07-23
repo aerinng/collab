@@ -8,8 +8,10 @@ import {  Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { useIsFocused } from '@react-navigation/native';
 
-const DATA = [];
+  // list of offers under a particular group
+  const DATA = [];
 
+  // individual offer item
   function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
@@ -38,20 +40,21 @@ const DATA = [];
   }
 
 const GroupsDetails = ({name, navigation}) => {
+    // allow the selection of offers
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
 
-    const isFocused = useIsFocused();
-
-    var user = firebase.auth().currentUser;
+    //const isFocused = useIsFocused();
     var currName = name;
+
     //entering in DATA from this logged in user
     useEffect(() => {
         getData();
     }, [DATA])
 
+    // fetch list of offers under a particular category
     const getData = () => {
         console.log(currName)
         firebase.firestore()
@@ -61,9 +64,8 @@ const GroupsDetails = ({name, navigation}) => {
                 .then(snap => {
                     DATA.length = 0;
                     snap.forEach(docs =>{      
-                        DATA.push(docs.data())
+                        DATA.push(docs.data());
                     })
-                    //console.log(DATA)
                 })
     }
     return (
@@ -113,7 +115,6 @@ export default class GroupsDetailsScreen extends React.Component {
       }
 
     render(){       
-        var user = firebase.auth().currentUser; 
         const {name} = this.props.route.params;
         return <GroupsDetails name = {name} navigation = {this.props.navigation}/>
     }

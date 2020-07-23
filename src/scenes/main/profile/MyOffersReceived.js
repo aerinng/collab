@@ -5,8 +5,10 @@ import { useIsFocused } from '@react-navigation/native';
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const DATA = [];
+  // list of offers data
+  const DATA = [];
 
+  // individual offer item
   function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
@@ -30,32 +32,40 @@ const DATA = [];
     );
   }
 
-const MyOffersReceived = ({navigation}) => {
+const MyOffersReceived = ({navigation, result}) => {
         const isFocused = useIsFocused();
+
+        // allow the selection of offers
         const [selected, setSelected] = React.useState(null);
         const onSelect = id => {
             setSelected(id);
         };
-        var user = firebase.auth().currentUser; 
+
+        // check if user is Google or Collab login
+        if (result != null){
+            var user = result.user.email; 
+        } else {
+            var user = firebase.auth().currentUser.email;
+        }        
+
         //entering in DATA from this logged in user
         useEffect(() => {
             getData()
         },[]);
 
-        //console.log(user.email)
+        // fetch user's offers received data from Cloud Firestore database
         const getData = () => {
             firebase.firestore()
                     .collection("offers")
-                    .where("userJoined", "array-contains", user.email)
+                    .where("userJoined", "array-contains", user)
                     .get()
                     .then(snap => {
                         snap.forEach(docs =>{      
-                            DATA.push(docs.data())//just push the id
+                            DATA.push(docs.data())
                         })
                     }).catch(function(error) {
                         console.log("Error getting document:", error);
                     });
-            //console.log(DATA)
         }
         
         return (
@@ -95,8 +105,7 @@ export default class MyOffersScreen extends React.Component {
     }
 
     render() {
-        //const {docID} = this.props.route.params;
-        return <MyOffersReceived navigation = {this.props.navigation} />;
+        return <MyOffersReceived navigation = {this.props.navigation} result ={this.props.route.params.result}/>;
     }
 }
 

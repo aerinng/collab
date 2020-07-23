@@ -7,6 +7,7 @@ export default class AddOrderButton extends React.Component {
     mode = new Animated.Value(0);
     buttonSize = new Animated.Value(1);
 
+    // animation for the button
     handlePress = () => {
         Animated.sequence([
             Animated.timing(this.buttonSize, {

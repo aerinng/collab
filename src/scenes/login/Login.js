@@ -1,9 +1,8 @@
 import React from 'react';
 import firebase from 'firebase';
 import { View, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity } from "react-native";
-//import { render } from 'react-dom';
-//import { withFormik } from 'formik';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import * as Google from 'expo-google-app-auth';
 export default class Login extends React.Component {
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
     state = {        
@@ -11,6 +10,32 @@ export default class Login extends React.Component {
             password:'',
             error:''
     } 
+
+
+    //NEW SET OF CODES [GOOGLE SIGNIN]
+    async googleSignin() {
+        try {
+          const result = await Google.logInAsync({
+            // androidClientId: YOUR_CLIENT_ID_HERE,
+            iosClientId: "335681130717-oai52figqvp0f5dgjdmvlqgtqco7qvsl.apps.googleusercontent.com",
+          });
+          if (result.type === 'success') {
+            //PLEASE IGNORE THE COMMENTED CODES HERE 
+            //check if first time user
+            // this.props.navigation.navigate('Preferences', {result: result, byGoogle:true})
+
+
+            //byGoogle login: [boolean value]
+            this.props.navigation.navigate('Tabs', {result: result, byGoogle:true})
+          } else {
+            console.log("cancelled")
+          }
+        } 
+        catch (error) {
+          console.log("error: ", error);
+        }
+    }     
+
 
     //Sign In users with the given email and password (FOR AUTHENTICATION)
     onBottomPress = () =>{
@@ -41,24 +66,32 @@ export default class Login extends React.Component {
             const {email} = this.props.route.params
             //const {password} = this.props.route.params
             const {username} = this.props.route.params
-            console.log("Login: first tab ", password)
-            this.props.navigation.navigate('Tabs', {name:name, email:email,username:username}) // removed password, if you need please add it back in!!
+            
+            this.props.navigation.navigate('Tabs', {name:name, email:email, username:username, byGoogle: false}) // removed password, if you need please add it back in!!
         }catch{
-            this.props.navigation.navigate('Tabs')
+            this.props.navigation.navigate('Tabs', {byGoogle: false})
         }   
     }
 
     updateCategory = (category, email) => {
+        const temp = [];
+        temp.push(category);
         firebase.firestore()
                 .collection('info')
                 .doc(email)
                 .update({
-                    category: category
+                    category: temp
                 })
                 .catch(function(error) {
                     console.log("Error updating document:", error);
                 });
     }
+
+    // email validation
+    validateEmail = (email) => {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
 
     render(){
         if (this.props.route.params != null) {
@@ -66,8 +99,6 @@ export default class Login extends React.Component {
             const {email} = this.props.route.params;
             this.updateCategory(category, email)
         }
-        //const {name} = this.props.route.params
-        //const {username} = this.props.route.params
         return(
             <KeyboardAwareScrollView>
             <View style = {styles.container}>
@@ -80,6 +111,10 @@ export default class Login extends React.Component {
                     style = {styles.icons}
                     source = {require('../../../assets/user.png')}
                 />
+                <TouchableOpacity onPress={() => this.googleSignin()}>
+                    <Image source = {require('../../../assets/google.png')} style = {styles.google}/>
+                </TouchableOpacity>
+                <Text style = {styles.or}>OR</Text>
                 <TextInput 
                     style = {styles.TextInput} 
                     onChangeText={email => this.setState({email})}
@@ -103,7 +138,13 @@ export default class Login extends React.Component {
                 />
                 <TouchableOpacity 
                     style = {styles.Button} 
-                    onPress = {() => {this.onBottomPress();}}
+                    onPress = {() => {
+                        if (!this.validateEmail(this.state.email)) {
+                            alert("Please input a valid email!")
+                        } else {
+                            this.onBottomPress();
+                        }
+                    }}
                 >
                     <Text style = {styles.buttonText}> Sign In </Text>
                 </TouchableOpacity>
@@ -142,7 +183,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 340,
+        marginTop: 405,
         padding: 10,
         zIndex: 1
     },
@@ -151,7 +192,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 415,
+        marginTop: 480,
         padding: 10,
         zIndex: 1
     },
@@ -159,7 +200,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 45,
         fontWeight: '600',
-        paddingBottom: 55
+        paddingBottom: 20
     },
     TextInput: {
         alignSelf: 'stretch',
@@ -201,33 +242,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '700',
         marginTop: 5
-       
+    },
+    google: {
+        width: 205,
+        height: 50,
+        alignSelf: 'center',
+        marginBottom: 15
+    },
+    or: {
+        alignSelf: 'center',
+        fontSize: 20,
+        fontWeight: '700',
+        marginBottom: 10
     }
 });
-
-// export default withFormik({
-//     mapPropsToValues: ({details}) => ({
-//       email: details.email,
-//       password: details.password,
-//     }),
-//     enableReinitialize: true,
-//     validationSchema: (props) => yup.object().shape({
-//       email: yup.string().max(30).required(),
-//       password: yup.string().max(15).required()
-//     }),
-//     handleSubmit: (values, { props }) => {
-//       console.log(props);
-//       console.log(values);
-  
-//       addFood(values);
-//     //   if (props.details.id) {
-//     //     values.id = props.details.id;
-//     //     values.createdAt = props.details.createdAt;
-//     //     uploadFood(values, props.onFoodUpdated);
-//     //   } else {
-//     //     uploadFood(values, props.onFoodAdded);
-//     //   }
-//     },
-//   })(Login);
-
  

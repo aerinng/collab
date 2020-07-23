@@ -18,57 +18,59 @@ class EditOffer extends React.Component {
         desc: '',
     }
 
+    // allow the auto post switch to be toggled
     toggleSwitch = (value) => {
         this.setState({switchValue: value})
     }
 
+    // display the datetime picker
     showDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: true });
     };
     
+    // hide the display of datetime picker
     hideDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: false });
     };
     
+    // allow the setting of date picked from the datetime picker
     handleDatePicked = date => {
         this.hideDateTimePicker();
         this.setState({displayDate : date});
     };
 
+    // fetch offer details data from Cloud Firestore database
     componentDidMount() {
-        //trying to update state, but code is gone 
         var user = firebase.auth().currentUser; 
         const {orderID} = this.props.route.params
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
                                          .doc(orderID)
                                          .get()
-                                        . then(sth => {
-                                            //console.log(sth.data())
+                                        . then(snapshot => {
                                                 const results = []
-                                                results.push(sth.data())
-                                                this.setStates(results, sth.data())
+                                                results.push(snapshot.data())
+                                                this.setStates(results, snapshot.data())
                                         })
                                         .catch(err => console.error(err));
-        //console.log("test: " + this.state.offer)
     }    
 
+    // unsubscribe from the fetching of data from database
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
+    // allow the setting of offer details data
     setStates = (results, offerData) => {
         this.setState({users: [...results]})
-        //console.log("hi: " + this.state.users)
         this.setState({displayDate: offerData.date})
-        //console.log(this.displayDate)
         this.setState({location: offerData.location})
         this.setState({desc: offerData.desc})
         this.setState({switchValue: offerData.switch})
-        //console.log("hi2: " + this.state.offer)
     }
 
+    // add the offer details to the Cloud Firestore database
     addToDB = () => {
         const {orderID} = this.props.route.params;
         firebase.firestore()
@@ -83,8 +85,8 @@ class EditOffer extends React.Component {
     }
 
     render(){
-        //console.log("Offer Details: render"); 
         const orderDate = this.state.displayDate.toString();
+        
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList

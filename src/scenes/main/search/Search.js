@@ -8,47 +8,59 @@ import { useIsFocused } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const DATA = [];
+  // list of offers data
+  const DATA = [];
 
-function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
-  return (
-    <TouchableOpacity
-      onPress={() => {
-          onSelect(id);
-          //console.log(user)
-          //console.log(firebase.auth().currentUser.email)
-          if (user === firebase.auth().currentUser.email) {
-            navigation.navigate('OfferDetails',  {orderID: id})
-          } else {
-            navigation.navigate('OfferDetailsJoin',  {orderID: id})
-          }
-      }}
-      style={[ styles.item]}
-    >
-      <Text style={styles.users}>{username}</Text>
-      <Text style={styles.detailsTitle}>{title}</Text>
-      <Text style={styles.details}>{data}</Text>
-      <Image source = {image} style = {styles.icons} />
-      <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-      <Text style = {styles.progressText}>{progress}</Text>
-      <Progress.Bar 
-          progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-          color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-          style = {{marginTop: 38, alignSelf: 'center'}} />
-    </TouchableOpacity>
-  );
-}
+  // individual offer item
+  function Item({ id, title, data, image, user, username, progress, 
+    progressIdx, result, byGoogle, selected, onSelect, navigation }) {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+            onSelect(id);
+            if (byGoogle == false){
+              //NEW CODES: to see if user is:
+              //Google login OR Collab login
+                if (user === firebase.auth().currentUser.email) {
+                  navigation.navigate('OfferDetails',  {orderID: id})
+                } else {
+                  navigation.navigate('OfferDetailsJoin',  {orderID: id})
+                }
+              } else {
+                if (user === result.user.email) {
+                  navigation.navigate('OfferDetails',  {orderID: id})
+                } 
+                navigation.navigate('OfferDetailsJoin',  {orderID: id})
+                
+              }
+        }}
+        style={[ styles.item]}
+      >
+        <Text style={styles.users}>{username}</Text>
+        <Text style={styles.detailsTitle}>{title}</Text>
+        <Text style={styles.details}>{data}</Text>
+        <Image source = {image} style = {styles.icons} />
+        <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+        <Text style = {styles.progressText}>{progress}</Text>
+        <Progress.Bar 
+            progress={progressIdx} width={330} height ={30} borderRadius = {15} 
+            color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
+            style = {{marginTop: 38, alignSelf: 'center'}} />
+      </TouchableOpacity>
+    );
+  }
 
-const Search = ({navigation, searchKey}) => {
+const Search = ({navigation, result, byGoogle}) => {
+    // allow the setting of offers data
     const [DATA, setDATA] = React.useState([]);
+
+    // allow the selection of offers
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
-
     const isFocused = useIsFocused();
 
-    var user = firebase.auth().currentUser;
     //entering in DATA from this logged in user
     firebase.firestore().collection("offers").get()
     .then(snap => {
@@ -56,40 +68,13 @@ const Search = ({navigation, searchKey}) => {
         snap.forEach(docs =>{      
             DATA.push(docs.data())
         })
-        //console.log("Data [search] ", DATA)
-    })
-    firebase.firestore().collection('offers').where("title", "==", 'Sephora')
-    .get()
-    .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          firebase.firestore().collection("offers").doc(doc.id).update({
-            image: require('../../../../assets/sephora.jpg')
-          })
-        });  
-    })
-    firebase.firestore().collection("offers").where("title", "==", 'Cold Storage')
-    .get()
-    .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          firebase.firestore().collection("offers").doc(doc.id).update({
-            image: require('../../../../assets/coldstorage.jpg')
-          })
-        });  
-    })    
-    firebase.firestore().collection("offers").where("title", "==", 'Fairprice')
-    .get()
-    .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          firebase.firestore().collection("offers").doc(doc.id).update({
-            image: require('../../../../assets/fairprice.jpg')
-          })
-        });  
     })
 
-  // FROM HERE: SEARCH BAR 
+  // variables required for search bar filter function
   const [query, setQuery] = React.useState('');
   const [typingTimeout, setTypingTimeout] = React.useState(0);
 
+  // impose a timeout before search function is called
   const searched = (text) => {
     setQuery(text);
     if (typingTimeout) {
@@ -100,6 +85,7 @@ const Search = ({navigation, searchKey}) => {
       }, 500))
   }
 
+  // function to allow the filtering in the search bar
   const searchFilterFunction = text => {
     const newData = (DATA.filter(function(item) {
       return item.title.indexOf(text) > -1;
@@ -107,7 +93,7 @@ const Search = ({navigation, searchKey}) => {
     DATA.length = 0;
     DATA.push(...newData);
   };
-// UNTIL HERE: SEARCH BAR 
+
     return (
         <SafeAreaView style = {styles.container}>
             <Image
@@ -128,6 +114,33 @@ const Search = ({navigation, searchKey}) => {
            <FlatList
                 data={DATA}
                 renderItem={({ item }) => (
+                  firebase.firestore().collection('offers').where("title", "==", 'Sephora')
+                  .get()
+                  .then(querySnapshot => {
+                      querySnapshot.forEach(doc => {
+                        firebase.firestore().collection("offers").doc(doc.id).update({
+                          image: require('../../../../assets/sephora.jpg')
+                        })
+                      });  
+                  }),
+                  firebase.firestore().collection("offers").where("title", "==", 'Cold Storage')
+                  .get()
+                  .then(querySnapshot => {
+                      querySnapshot.forEach(doc => {
+                        firebase.firestore().collection("offers").doc(doc.id).update({
+                          image: require('../../../../assets/coldstorage.jpg')
+                        })
+                      });  
+                  }),
+                  firebase.firestore().collection("offers").where("title", "==", 'Fairprice')
+                  .get()
+                  .then(querySnapshot => {
+                      querySnapshot.forEach(doc => {
+                        firebase.firestore().collection("offers").doc(doc.id).update({
+                          image: require('../../../../assets/fairprice.jpg')
+                        })
+                      });  
+                  }),
                 <Item
                     id={item.id}
                     title={item.title}
@@ -137,6 +150,8 @@ const Search = ({navigation, searchKey}) => {
                     //progress = {item.progress}
                     user = {item.user}
                     username = {item.username}
+                    result = {result}
+                    byGoogle = {byGoogle}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
@@ -160,56 +175,55 @@ export default class SearchScreen extends React.Component {
     users:null,
     foo:false
   }
-
-  registerForPushNotificationsAsync = async () => {
-      var user = await firebase.auth().currentUser;
-      const { status: existingStatus } = await Permissions.getAsync(
-        Permissions.NOTIFICATIONS
-      );
-      let finalStatus = existingStatus;
-      // only ask if permissions have not already been determined, because
-      // iOS won't necessarily prompt the user a second time.
-      if (existingStatus !== 'granted') {
-        // Android remote notification permissions are granted during the app
-        // install, so this will only ask on iOS
-        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-        finalStatus = status;
+  
+  registerForPushNotificationsAsync = async ({result}) => {
+    // var user = await firebase.auth().currentUser;
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    let finalStatus = existingStatus;
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      return;
+    }
+    try {
+      // Get the token that uniquely identifies this device
+      let token = await Notifications.getExpoPushTokenAsync();
+      try{
+        // POST the token to your backend server from where you can retrieve it to send push notifications.
+        firebase.firestore().collection('info').doc(user.email).update({
+            pushToken: token
+        })
+      }catch(error){
+        console.log("error")
       }
-      // Stop here if the user did not grant permissions
-      if (finalStatus !== 'granted') {
-        return;
+      //Creating a new collection 
+      try{
+        const {pref} = this.props.route.params.pref; ///from login page 
+        firebase.firestore().collection(pref).doc(result.user.email).set({
+          pushToken:token
+        })
+      }catch(error){
+        console.log('error')
       }
-      try {
-        // Get the token that uniquely identifies this device
-        let token = await Notifications.getExpoPushTokenAsync();
-        try{
-          // POST the token to your backend server from where you can retrieve it to send push notifications.
-          firebase.firestore().collection('info').doc(user.email).update({
-              pushToken: token
-          })
-        }catch(error){
-          console.log("error")
-        }
-        //Creating a new collection 
-        try{
-          const {pref} = this.props.route.params.pref; ///from login page 
-          firebase.firestore().collection(pref).doc(user.email).set({
-            pushToken:token
-          })
-        }catch(error){
-          console.log('error')
-        }
-      } catch (error) {
-        console.log('error');
-      }
-  };            
+    } catch (error) {
+      console.log('error');
+    }
+  };   
 
   async componentDidMount() {
-      //console.log("going to register")
-      await this.registerForPushNotificationsAsync();
+    await this.registerForPushNotificationsAsync();
   }     
 
-  shouldComponentUpdate(nextProps, nextState) {
+  componentDidUpdate(nextProps, nextState) {
     if (this.props !== nextProps) {
       return true;
     }
@@ -217,6 +231,7 @@ export default class SearchScreen extends React.Component {
   }
 
   render(){      
+    console.log("renderedd once : Search")
     DATA.length = 0;
     firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
     .then(snap => { 
@@ -236,6 +251,7 @@ export default class SearchScreen extends React.Component {
         })
     })
 
+
     firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
     .then(snap => { 
         snap.forEach(docs =>{
@@ -244,24 +260,31 @@ export default class SearchScreen extends React.Component {
           })
         })
     })
-      var user = firebase.auth().currentUser; 
-      // console.log("Search: render", user.email)
-      if (this.props.route.params != null) { //from login page
+      if (this.props.route.params.byGoogle == false) { //from signup + login page
+        if (this.props.route.params.name != null){
           const {email} = this.props.route.params
-          //const {password} = this.props.route.params
           const {username} = this.props.route.params
           const {name} = this.props.route.params
-          //console.log("welcome: " + name) 
-          firebase.firestore().collection('info').doc(user.email).set({ 
-              name: name,
-              email: email, 
-              //password: password,
-              username: username,
-              frequency:'', //for Auto-Post frequency, to be updated eventually
-              pushToken:''
-          })
-      } 
-      return <Search navigation = {this.props.navigation} user ={user}/>
+          //Creates db for each customer in Info collection
+          firebase.firestore().collection('info').doc(email).set({ 
+          name: name,
+          email: email, 
+          username: username,
+          frequency:'', //for Auto-Post frequency, to be updated eventually
+          pushToken:''})
+        }
+      } else if (this.props.route.params.byGoogle == true) { // sign in but gooogle
+        const {result} = this.props.route.params
+        firebase.firestore().collection('info').doc(result.user.email).set({ 
+          name: result.user.name,
+          email: result.user.email, 
+          username: result.user.name,
+          frequency:'', //for Auto-Post frequency, to be updated eventually
+          pushToken:''
+        })          
+      }
+      return <Search navigation = {this.props.navigation} result ={this.props.route.params.result} 
+      byGoogle = {this.props.route.params.byGoogle}/>
     }
 }
 

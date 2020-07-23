@@ -15,6 +15,7 @@ class Profile extends React.Component {
         };
     }
 
+    // allow user to sign out of Collab
     onSignOut = () => {
         firebase.auth().signOut().then(function() {
             alert("You have signed out successfully.");
@@ -24,8 +25,17 @@ class Profile extends React.Component {
         this.props.navigation.navigate('Login');
     }
 
+    // fetch profile data from Cloud Firestore database
     getData = () => {
-        var user = firebase.auth().currentUser.email;
+        //NEW CODES: to see if user is:
+        //Google login OR Collab login
+        if (this.props.route.params.result != null){
+            const {result} = this.props.route.params;
+            var user = result.user.email; 
+         } else {
+            var user = firebase.auth().currentUser.email;
+         }
+
         var document = firebase.firestore().collection('info').doc(user);
         this.state.unsubscribe = document.get().then((doc) => {
             var data = doc.data();
@@ -41,10 +51,12 @@ class Profile extends React.Component {
         });
     }
 
+    // fetch profile data from Cloud Firestore database upon renders
     componentDidMount() {
         this.getData();
     }
 
+    // re-render if user's avatar changed
     componentDidUpdate(prevProps, prevState) {
         if (this.state.userAvatar !== prevState.userAvatar ||
             this.props !== prevProps) {
@@ -52,12 +64,21 @@ class Profile extends React.Component {
         }
       }
 
+    // unsubscribe from fetching data from database
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
     render() {
+        //NEW CODES: to see if user is:
+        //Google login OR Collab login
+        if (this.props.route.params.result != null){
+            const {result} = this.props.route.params;
+            var user = result.user.email; 
+         } else {
+            var user = firebase.auth().currentUser.email;
+         }
         return (
             <SafeAreaView style = {styles.container}>
                 <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
@@ -66,7 +87,7 @@ class Profile extends React.Component {
                 <Text style = {styles.header}>{ this.state.username }</Text>
                 <TouchableOpacity 
                     style = {styles.Button}
-                    onPress={() => this.props.navigation.navigate('EditProfile')}
+                    onPress={() => this.props.navigation.navigate('EditProfile', {user: user})}
                 >
                     <Text style = {styles.buttonTexts}> Edit Profile</Text>
                 </TouchableOpacity>
