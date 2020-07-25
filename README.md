@@ -168,7 +168,7 @@ Auto-Retrieval of Data from Websites Function | Reach out to relevant stores to 
 Auto-Post of Requests Function | Research on other applications with similar features on how this can be implemented successfully | Mid July (17th July) | :white_check_mark:
 Messaging Function | Research the technologies and languages used on other similar chatting applications. | Mid July (17th July) | :white_check_mark:
 Groups Function | Program the application such that it identifies each user’s favourites. | Mid July (17th July) | :white_check_mark:
-Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon successful implementations. | Ongoing | Ongoing
+Testing | Read up on the different types of testing. Thereafter conduct the relevant tests upon successful implementations. | Ongoing | :white_check_mark:
 
 ## System Testing Log
 No. | Issue | Solution | Fixed?
@@ -187,8 +187,11 @@ No. | Issue | Solution | Fixed?
 12 | Chat Page: Could not find the opposing user's username and email when passed as parameters to another function from Chat to Chat Room, hence received an error due to passing an empty object to firebase | Define the parameters inside an object in Chats then pass the entire object to Chat Room | :white_check_mark:
 13 | Notifications: Unable to navigate users to intended page after clicking on notification | Work In Progress! | :negative_squared_cross_mark:
 14 | Preference Page: User cannot join multiple groups at once. Unable to add into array via multiple selection of items with the first click, requires a second click | Since useState hook is not async, tried useEffect hook to re-render after change in array and it didn't work. Hence, will allow user to only add 1 group into My Groups at a time so reducing the need to use arrays in useState. But still allowing users to be in multiple groups. | :white_check_mark:
-15 | Chat Page: Avatar icons for both sender and receiver are the same | Work In Progress! | :negative_squared_cross_mark:
+15 | Chat Page: Avatar icons for both sender and receiver are the same | Allowed display of a generic user icon for both receiver and sender. Could not find function in the chat module to vary icons for both receiver and sender. | :white_check_mark:
 16 | Chat Page: User able to select image to send but Front End unable to display the image | Added in additional parameters into the chat object to allow the display of images sent | :white_check_mark:
+17 | Chat Room Page: Keyboard covers text input box | Added KeyboardAvoidingView module as well as varied bottom offset of keyboard from text input container | :white_check_mark:
+18 | Chat Page: Modal's close button is small and is difficult to close via touch screen | Changed the button to be larger and more prominent, making it easier to press | :white_check_mark
+19 | Unhandled promise rejection warning from Firebase | Added exception handlings for all fetching and writing of data from and to Cloud Firestore database | :white_check_mark:
 
 ## Usability Testing
 Coming to you on 27 July!
@@ -202,10 +205,11 @@ Coming to you on 27 July!
 
 ## Challenges Encountered
 1) We tried to contact stores to obtain their APIs for easy retrieval of promotions data, but there was no response received. Hence, we will store the data in our database and fetch the data from there.
-2) Authenticating with Google can be quite challenging, hence we will implement this at a later phase during Milestone 3, when most of our features are ready.
-3) Some pages takes a really long loading time or requires a scroll before items can render. We will attempt to optimise the loading time of our screens in Milestone 3.
-4) When searching for usernames to create a Chat Room with, user must type in the entire username in order to search for the user. We will attempt to implement realtime searching in Milestone 3 if time permits.
+2) Authenticating with Google can be quite challenging, hence we will implement this at a later phase during Milestone 3, when most of our features are ready. This is currently included in Milestone 3.
+3) Some pages takes a really long loading time or requires a scroll before items can render. We will attempt to optimise the loading time of our screens in Milestone 3. Loading time is improved for Milestone 3.
+4) When searching for usernames to create a Chat Room with, user must type in the entire username in order to search for the user.
 5) Connection to Firebase while running simulator: Quota limits are hit sometimes even though database does not reflect that limit was hit. We are not sure why does this happen but so far it is not a big issue as it only affected us a few times.
+6) Google authentication is currently only available for iOS devices.
 
 ## Possible Enhancements for Milestone 3
 Target | Target Date | Status
@@ -214,11 +218,13 @@ Additional option of Google authentication when logging in | 12 July | :white_ch
 Allow multiple addition of groups / preference into My Groups | 12 July | :white_check_mark:
 Form Validations for emails and integers | 12 July | :white_check_mark:
 Display alert if no username is found when searching for username on Chat page | 12 July | :white_check_mark:
+Ensure all functions work regardless of Google or Collab login | 19 July | :white_check_mark:
+Enhance chat page modal to search for username to be more user friendly | 19 July | :white_check_mark:
 Allow users to send images in chat rooms | 19 July | :white_check_mark:
 Optimisation of loading time | 19 July | :white_check_mark:
 Additional Security Features: Encryption | 19 July | :white_check_mark:
 For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 25 July | :negative_squared_cross_mark:
-Allow users to display their avatar icons on chat rooms | 25 July | :negative_squared_cross_mark:
+Allow the display of avatar icons on chat rooms | 25 July | :white_check_mark:
 Auto-post frequency can have more than 1 setting | 25 July | :negative_squared_cross_mark:
 Enable Google Analytics on Firebase | 25 July | :negative_squared_cross_mark:
-Make screens responsive for different screen sizes | 25 July | :negative_squared_cross_mark:
+Make screens responsive for different screen sizes | 25 July | :white_check_mark:
