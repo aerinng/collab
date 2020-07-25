@@ -4,6 +4,7 @@ import { StyleSheet, Text, FlatList, TouchableOpacity,
 import firebase from "firebase";
 import { List, Divider, Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Analytics from 'expo-firebase-analytics';
 
 // function for the search bar to filter by usernames
 const searchFilterFunction = (text, threads) => {
@@ -226,6 +227,16 @@ export default class Chat extends React.Component {
     this.setState({typingTimeout: temp})
   }
 
+  // add into analytics
+  logsEvent = async () => { 
+    await Analytics.logEvent('Chat', {
+        name: 'addchat',
+        screen: 'chat',
+        purpose: 'Added new chat room',
+      });
+  }
+
+
   render() {
     const { modalVisible } = this.state;
     return (
@@ -293,6 +304,7 @@ export default class Chat extends React.Component {
                           onPress = {() => {
                             this.findUsername();
                             this.seeGotUserNot();
+                            this.logsEvent();
                           }}
                         >
                             <Text

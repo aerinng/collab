@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import * as Analytics from 'expo-firebase-analytics';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -52,6 +53,15 @@ class Profile extends React.Component {
         });
     }
 
+    // add into analytics
+    logsEvent = async () => { 
+        await Analytics.logEvent('EditProfileAttempt', {
+            name: 'editprofileattempt',
+            screen: 'profile',
+            purpose: 'Clicked on Edit profile',
+          });
+    }
+
     // fetch profile data from Cloud Firestore database upon renders
     componentDidMount() {
         this.getData();
@@ -89,7 +99,10 @@ class Profile extends React.Component {
                 <Text style = {styles.header}>{ this.state.username }</Text>
                 <TouchableOpacity 
                     style = {styles.Button}
-                    onPress={() => this.props.navigation.navigate('EditProfile', {user: user, result: result})}
+                    onPress={() => {
+                        this.logsEvent();
+                        this.props.navigation.navigate('EditProfile', {user: user, result: result});
+                    }}
                 >
                     <Text style = {styles.buttonTexts}> Edit Profile</Text>
                 </TouchableOpacity>

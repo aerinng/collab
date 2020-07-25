@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity } from "reac
 import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Analytics from 'expo-firebase-analytics';
 
 export default class Signup extends React.Component{
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
@@ -16,6 +17,15 @@ export default class Signup extends React.Component{
         error:'',
         err: ''
     }
+
+    // add into analytics
+  logsEvent = async () => { 
+    await Analytics.logEvent('Signup', {
+        name: 'signup',
+        screen: 'signup',
+        purpose: 'User successfully signed up via Collab login method',
+      });
+  }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
     onBottomPress = () => {
@@ -73,7 +83,7 @@ export default class Signup extends React.Component{
     render() {
         return (           
             <SafeAreaView style = {styles.container}>
-            <KeyboardAwareScrollView>
+                <KeyboardAwareScrollView>
                 <View style = {styles.container}>
                     <Image 
                         style = {styles.image}
@@ -130,9 +140,15 @@ export default class Signup extends React.Component{
                     <TouchableOpacity 
                         style = {styles.Button} 
                         onPress = {() => {
-                            if (!this.validateEmail(this.state.email)) {
+                            if (this.state.name == '' || 
+                                this.state.email == '' ||
+                                this.state.username == '' ||
+                                this.state.password =='') {
+                                alert("Please input all mandatory fields!")
+                            } else if (!this.validateEmail(this.state.email)) {
                                 alert("Please input a valid email!")
                             } else {
+                                this.logsEvent();
                                 this.onBottomPress();
                             }
                         }}
