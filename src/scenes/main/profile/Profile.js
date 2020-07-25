@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, Image} from "react-native";
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -76,9 +77,10 @@ class Profile extends React.Component {
         if (this.props.route.params.result != null){
             const {result} = this.props.route.params;
             var user = result.user.email; 
-         } else {
+        } else {
             var user = firebase.auth().currentUser.email;
-         }
+        }
+        const result = this.props.route.params.result;
         return (
             <SafeAreaView style = {styles.container}>
                 <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
@@ -87,7 +89,7 @@ class Profile extends React.Component {
                 <Text style = {styles.header}>{ this.state.username }</Text>
                 <TouchableOpacity 
                     style = {styles.Button}
-                    onPress={() => this.props.navigation.navigate('EditProfile', {user: user})}
+                    onPress={() => this.props.navigation.navigate('EditProfile', {user: user, result: result})}
                 >
                     <Text style = {styles.buttonTexts}> Edit Profile</Text>
                 </TouchableOpacity>
@@ -106,10 +108,14 @@ class Profile extends React.Component {
                     <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
                 </TouchableOpacity>
                 <TouchableOpacity 
-                    style = {styles.itemNew}
-                    onPress = {() => this.props.navigation.navigate('ChangePassword')}
+                    style = {[styles.itemNew, {opacity: this.props.route.params.result != null ? 0 : 1}]}
+                    onPress = {() => {
+                        if (this.props.route.params.result == null) {
+                            this.props.navigation.navigate('ChangePassword')
+                        }
+                    }}
                 >
-                    <Text style = {styles.detailsTitleNew}> Change Password</Text>
+                    <Text style = {[styles.detailsTitleNew, {opacity: this.props.route.params.result != null ? 0 : 1}]}> Change Password</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style = {styles.itemNew2}
@@ -162,7 +168,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 40,
         borderRadius: 15,
-        backgroundColor: "#fff"
+        backgroundColor: "#fff",
     },
     detailsTitle: {
         fontSize: 25,

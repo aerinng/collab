@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import firebase from 'firebase';
 import { StyleSheet, Text, ScrollView, Image, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 // list of all groups
 const DATA2 = [
@@ -58,7 +59,7 @@ function Item({ id, name, image, selected, onSelect, updateCategory, setChosen, 
     );
 }
 
-const AddGroups = ({navigation, DATA}) => {
+const AddGroups = ({navigation, DATA, result}) => {
     // allow the selection of group items
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id, itemName) => {
@@ -81,19 +82,23 @@ const AddGroups = ({navigation, DATA}) => {
     React.useEffect(() => {}, [category])
 
    // check if user has already joined a certain category before adding into My Groups
-   const checkCategory = (category, navigation) => {
+   const checkCategory = (category, navigation, result) => {
        for (var idx = 0; idx < DATA.DATA.length; idx++) {
             if (DATA.DATA[idx].name == category) {
                 alert("You have already joined this Group!")
             } else {
-                updateCategory(category, navigation);
+                updateCategory(category, navigation, result);
             }
         }
     }
 
     // update the list of categories under user's My Groups
-    const updateCategory = (category, navigation) => {
-        var email = firebase.auth().currentUser.email;
+    const updateCategory = (category, navigation, result) => {
+        if (result != null){ 
+            var email = result.user.email;
+        } else {
+            var email = firebase.auth().currentUser.email;
+        }
         firebase.firestore()
                 .collection('info')
                 .doc(email)
@@ -105,7 +110,6 @@ const AddGroups = ({navigation, DATA}) => {
                 });
         navigation.navigate("GroupsScreen");
     }
-
 
     return (
         <SafeAreaView style = {styles.container}>
@@ -141,7 +145,7 @@ const AddGroups = ({navigation, DATA}) => {
                 style = {styles.Button} 
                 onPress={() => 
                     chosen 
-                    ? checkCategory(category, navigation)
+                    ? checkCategory(category, navigation, result)
                     : alert("Please select 1 Group!")}
             > 
                 <Text style = {styles.buttonText}> Done </Text>
@@ -153,7 +157,8 @@ const AddGroups = ({navigation, DATA}) => {
 export default class AddGroupsScreen extends React.Component {
     render() {
         const DATA = this.props.route.params;
-        return <AddGroups navigation = {this.props.navigation} DATA = {DATA}/>;
+        const result = this.props.route.params.result;
+        return <AddGroups navigation = {this.props.navigation} DATA = {DATA} result = {result}/>;
     }
 }
 
@@ -163,7 +168,8 @@ const styles = StyleSheet.create({
       padding: 35,
       flex: 1,
       marginHorizontal: 10,
-      marginBottom: 33
+      marginBottom: 33,
+      width: wp('96%')
     },
     header: {
         fontSize: 30,

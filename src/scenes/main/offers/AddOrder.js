@@ -176,7 +176,7 @@ class AddOrder extends React.Component {
                 <TextInput 
                     style = { styles.TextInput } 
                     keyboardType = {'numeric'}
-                    placeholder = "Enter Your Current Total"
+                    placeholder = "Enter Your Current Total ($)"
                     value = {this.state.total}
                     onChangeText={total => this.setState({total})}  
                 />
@@ -213,15 +213,15 @@ class AddOrder extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button} 
                     onPress={() =>  {
-                        if (!this.validateAmt(this.state.total)) {
-                            alert("Please input a valid Current Total!")
-                        } else if (this.state.location != '' &&
-                            this.state.category != '' &&
-                            this.state.total != '' &&
-                            this.state.displayDate != '') {
-                            this.addToDB(data, title, image)
-                        } else {
+                        if (this.state.location == '' ||
+                            this.state.category == '' ||
+                            this.state.total == '' ||
+                            this.state.displayDate == '') {
                             alert("Please fill in all mandatory fields!")
+                        } else if (!this.validateAmt(this.state.total)) {
+                            alert("Please input a valid Current Total!")
+                        } else {
+                            this.addToDB(data, title, image)
                         }
                     }}
                 >

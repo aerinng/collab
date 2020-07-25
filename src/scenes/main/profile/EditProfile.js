@@ -41,16 +41,24 @@ class EditProfile extends React.Component{
     }
     
     // allow the changing of user's name
-    changeName = () => {
-        var user = firebase.auth().currentUser;
+    changeName = (result) => {
+        if (result != null){ 
+            var user = result.user;
+        } else {
+            var user = firebase.auth().currentUser;
+        }
         firebase.firestore().collection('info').doc(user.email).update({
             name: this.state.textInputName
         })
     }
 
     // allow the changing of address
-    changeAddress = () => {
-        var user = firebase.auth().currentUser;
+    changeAddress = (result) => {
+        if (result != null){ 
+            var user = result.user;
+        } else {
+            var user = firebase.auth().currentUser;
+        }
         firebase.firestore().collection('info').doc(user.email).update({
             addressLine1: this.state.textInputAddressLine1,
             addressLine2: this.state.textInputAddressLine2,
@@ -87,30 +95,34 @@ class EditProfile extends React.Component{
     }
 
     // ask for user's permission to access camera roll
-    askPermission = async () => {
-        if (Constants.platform.ios) {
+    askPermission = async (result) => {
+        if (Constants.platform.ios || Constants.platform.android) {
           const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
           if (status !== 'granted') {
             alert('Oops, we need camera roll permission :")');
           } else if (status == 'granted'){
-              this.handleUserAvatar();
+              this.handleUserAvatar(result);
           }
         }
     }
 
     // allow the setting of user's avatar
-    handleUserAvatar = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
+    handleUserAvatar = async (result) => {
+        let results = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
           });
     
-          if (!result.cancelled) {
-            this.setState({userAvatar: result.uri});
+          if (!results.cancelled) {
+            this.setState({userAvatar: results.uri});
             this.setState({imageChosen: true});
-            var user = firebase.auth().currentUser;
+            if (result != null){ 
+                var user = result.user;
+            } else {
+                var user = firebase.auth().currentUser;
+            }
             firebase.firestore().collection('info').doc(user.email).update({
                 avatar: this.state.userAvatar
             })
@@ -132,7 +144,8 @@ class EditProfile extends React.Component{
     }
 
     render(){
-        var user = this.props.route.params.user;
+        var user = this.props.route.params.user; // email
+        var result = this.props.route.params.result;
         return (
             <KeyboardAwareScrollView>
                 <Image source = {require('../../../../assets/banner.jpg')} style = {styles.banner}/>
@@ -146,7 +159,7 @@ class EditProfile extends React.Component{
                     <TouchableOpacity
                         style = {{color: "#266E7D", width: 150, height: 100}}
                         onPress = {() => {
-                            this.askPermission();
+                            this.askPermission(result);
                         }}
                     >
                         <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
@@ -189,7 +202,7 @@ class EditProfile extends React.Component{
                         onChangeText={textInput => {
                             this.setEmail(textInput);
                         }}
-                    >{user.email}</Text>
+                    >{user}</Text>
                     <Divider />
                     <Text style = {styles.fieldName}>My Address</Text>
                     <TextInput 
@@ -214,11 +227,11 @@ class EditProfile extends React.Component{
                     <TouchableOpacity 
                         style = {styles.item}
                         onPress = {() => {
-                            if (this.state.textInputAddress != '') {
-                                this.changeAddress();
+                            if (this.state.textInputAddressLine1 != '' || this.state.textInputAddressLine2 != '') {
+                                this.changeAddress(result);
                             }
                             if (this.state.textInputName != '') {
-                                this.changeName();
+                                this.changeName(result);
                             }
                             this.props.navigation.navigate('Profile');
                         }}

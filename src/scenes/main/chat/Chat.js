@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { StyleSheet, Text, FlatList, TouchableOpacity, 
-  Image, Modal, TextInput, View, Alert } from "react-native";
+  Image, Modal, TextInput, View, Alert, TouchableWithoutFeedback } from "react-native";
 import firebase from "firebase";
 import { List, Divider, Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -56,7 +56,7 @@ export default class Chat extends React.Component {
     } else {
         var user = firebase.auth().currentUser;
     }       
-    this.getChats(user.email)
+    this.getChats(user.email);
   }
 
   // stop listening to changes from Firestore
@@ -230,7 +230,8 @@ export default class Chat extends React.Component {
     const { modalVisible } = this.state;
     return (
         <SafeAreaView style = {styles.container}>
-            <TouchableOpacity onPress = {() => {this.setModalVisible(true)}} >
+            <TouchableOpacity onPress = {() => {console.log(modalVisible) 
+              this.setModalVisible(true)}} >
               <Image
                 source = {require('../../../../assets/edit.png')}
                 style = {{marginTop: 15, resizeMode: 'stretch', width: 30, height: 30, alignSelf: 'flex-end', marginRight: 25}}
@@ -249,6 +250,7 @@ export default class Chat extends React.Component {
               value = {this.state.query}
             />
             <View style = {[styles.container]}>
+            <TouchableWithoutFeedback onPress={() => {}}>
                     <Modal
                       transparent={true}
                       style = {{
@@ -262,11 +264,6 @@ export default class Chat extends React.Component {
                       animationType="slide"
                     >
                       <View style = {styles.container}>
-                        <TouchableOpacity
-                          onPress = {() => this.setModalVisible(!modalVisible)}
-                        >
-                          <Image source = {require('../../../../assets/delete.png')} style = {{resizeMode: 'stretch', width: 15, height: 15, marginTop: 200, marginBottom: -310}}/>
-                        </TouchableOpacity>
                         <TextInput 
                           placeholder = "Enter a username to start chatting!"
                           autoCapitalize = 'none'
@@ -276,9 +273,23 @@ export default class Chat extends React.Component {
                           style ={{backgroundColor: "#fff", marginTop: 250, marginHorizontal: 10, borderRadius: 15, padding: 10}}
                         />
                         <TouchableOpacity
+                        style = {{paddingHorizontal: 37, 
+                          paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, borderRadius: 10, alignSelf: 'flex-start'}}
+                          onPress = {() => {
+                            this.setModalVisible(!modalVisible)
+                          }}
+                        >
+                          <Text
+                              style = {{fontSize: 18, fontWeight: '600', 
+                              position: 'absolute', marginTop: 3, color: "#fff", marginLeft: 8}}
+                            > 
+                              Cancel 
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
                           style = {{paddingHorizontal: 37, 
-                            paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, 
-                            alignSelf: 'center', borderRadius: 10}}
+                            paddingVertical: 15, backgroundColor: "#266E7D", marginTop: -30, 
+                            alignSelf: 'flex-end', borderRadius: 10}}
                           onPress = {() => {
                             this.findUsername();
                             this.seeGotUserNot();
@@ -293,6 +304,7 @@ export default class Chat extends React.Component {
                           </TouchableOpacity>
                           </View>
                       </Modal>
+                      </TouchableWithoutFeedback>
                     </View>
                     <View style = {styles.container2}>
                       <FlatList

@@ -47,7 +47,8 @@ export default class Signup extends React.Component{
                     addressLine2: this.state.addressLine2,
                     name: this.state.name,
                     username: this.state.username,
-                    pushToken: ''
+                    pushToken: '',
+                    frequency: ''
                 })
                 .then(() => {
                    this.props.navigation.navigate(

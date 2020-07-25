@@ -12,7 +12,6 @@ class OfferDetailsJoin extends React.Component {
 
     // fetch offer details data from Cloud Firestore database
     componentDidMount() {
-        var user = firebase.auth().currentUser; 
         const {orderID} = this.props.route.params;
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
@@ -36,7 +35,7 @@ class OfferDetailsJoin extends React.Component {
 
     render(){
         const {orderID} = this.props.route.params;
-        
+        const {result} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -60,7 +59,7 @@ class OfferDetailsJoin extends React.Component {
                             <Text style ={ styles.data}>{item.location}</Text>  
                             <Text style = { styles.titles }> Category </Text>
                             <Text style ={ styles.data }>{item.category}</Text>
-                            <Text style = { styles.titles }> Current Total </Text>
+                            <Text style = { styles.titles }> Current Total ($)</Text>
                             <Text style ={ styles.data }>{item.total}</Text>
                             <Text style = { styles.titles }> Progress </Text>
                             <Progress.Bar 
@@ -81,7 +80,7 @@ class OfferDetailsJoin extends React.Component {
                 /> 
                 <TouchableOpacity 
                     style = {styles.Button}
-                    onPress = {() => this.props.navigation.navigate('JoinOffer', {orderID: orderID})}
+                    onPress = {() => this.props.navigation.navigate('JoinOffer', {orderID: orderID, result: result})}
                 >
                     <Text style = {styles.buttonText}> Join </Text>
                 </TouchableOpacity>

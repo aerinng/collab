@@ -1,9 +1,10 @@
 import React , {useState} from 'react';
 import { TextInput, StyleSheet, Text, ScrollView, 
-    SafeAreaView, TouchableOpacity, Image, Switch } from "react-native";
+    TouchableOpacity, Image, Switch } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase'; 
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default class SettingsScreen extends React.Component {
     state = { 

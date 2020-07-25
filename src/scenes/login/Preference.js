@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import firebase from 'firebase';
 import { StyleSheet, Text, ScrollView, Image, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const DATA = [
     {
@@ -141,7 +142,8 @@ const styles = StyleSheet.create({
       padding: 35,
       flex: 1,
       marginHorizontal: 10,
-      marginBottom: 33
+      marginBottom: 33,
+      width: wp('96%')
     },
     header: {
         fontSize: 30,
