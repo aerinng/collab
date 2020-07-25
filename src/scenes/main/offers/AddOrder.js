@@ -95,7 +95,7 @@ class AddOrder extends React.Component {
                     data: data,
                     title: title,
                     location: this.state.location,
-                    total: parseInt(this.state.total), 
+                    total: parseFloat(this.state.total), 
                     category: this.state.category, 
                     date: this.state.displayDate.toString().substring(4,16),
                     desc: this.state.desc,

@@ -6,17 +6,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 class JoinOffer extends React.Component {
     state = {
-        users:null,
+        users: [],
         unsubscribe: '',
         currOrderID: '',
-        currTotal: 0,
-        total: 0
+        currTotal: 0.0,
+        total: 0.0
     }
 
     // fetch offer details data from Cloud Firestore database
     componentDidMount() {
-        const {orderID} = this.props.route.params
+        const {orderID} = this.props.route.params;
         this.setState({currOrderID: orderID})
+        console.log(orderID)
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
                                          .doc(orderID)
@@ -27,8 +28,7 @@ class JoinOffer extends React.Component {
                                                 this.setState({
                                                     users: results
                                                 })
-                                        })
-                                        .catch(err => console.error(err));
+                                        }).catch(err => console.error(err));
     }    
 
     // unsubscribe from fetching of data from database
@@ -45,21 +45,30 @@ class JoinOffer extends React.Component {
         } else {
             var email = firebase.auth().currentUser.email;
         }
+        const {orderID} = this.props.route.params;
+        var curr = this;
         firebase.firestore()
                 .collection("offers")
-                .doc(this.state.currOrderID)
+                .doc(orderID)
                 .get()
                 .then(doc => {
-                    this.setState({total: doc.data().total})
-                })
-                //console.log(this.state.total)
+                    var total = doc.data().total;
+                    //console.log("fb " + total)
+                    curr.setTotal(total)
+                }).catch(err => console.error(err));
         firebase.firestore()
                 .collection("offers")
-                .doc(this.state.currOrderID)
+                .doc(orderID)
                 .update({
                     userJoined: firebase.firestore.FieldValue.arrayUnion(email),
-                    total: parseInt(this.state.total) + parseInt(this.state.currTotal)
-                })
+                    total: parseFloat(this.state.total) + parseFloat(this.state.currTotal)
+                }).catch(err => console.error(err));
+    }
+
+    setTotal = (total) => {
+        this.setState({total: total})
+        //console.log(this.state.total)
+        //console.log(this.state.currTotal)
     }
 
     // validate current total to be only integers
@@ -105,6 +114,7 @@ class JoinOffer extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button}
                     onPress = {() => {
+                        //this.setTotalRequest();
                         if (this.state.currTotal == 0) {
                             alert("Please fill in all mandatory fields!");
                         } else if (!this.validateAmt(this.state.currTotal)) {

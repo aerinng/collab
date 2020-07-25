@@ -103,6 +103,13 @@ export default class MyOffersScreen extends React.Component {
         }
         return false;
     }
+    
+    componentDidUpdate(nextProps, nextState) {
+        if (this.props !== nextProps) {
+          return true;
+        }
+        return false;
+    }
 
     render() {
         return <MyOffersReceived navigation = {this.props.navigation} result ={this.props.route.params.result}/>;

@@ -25,7 +25,7 @@ class OfferDetailsCancel extends React.Component {
                                                 })
                                         })
                                         .catch(err => console.error(err));
-    }    
+    }   
 
     // unsubscribe from fetching data from database
     componentWillUnmount() {
