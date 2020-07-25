@@ -108,7 +108,7 @@ The diagram below depicts the brief overview of Collab’s workflow.
 
 ## How Collab Works
 <p align="center">
-   <img src="https://i.imgur.com/F0Xs9tm.png" width="600">
+   <img src="https://i.imgur.com/v7kg0zv.png" width="600">
 </p>
 
 When the user first opens the application, they will have to create an account before being able to login as part of authentication. 
@@ -190,7 +190,7 @@ No. | Issue | Solution | Fixed?
 15 | Chat Page: Avatar icons for both sender and receiver are the same | Allowed display of a generic user icon for both receiver and sender. Could not find function in the chat module to vary icons for both receiver and sender. | :white_check_mark:
 16 | Chat Page: User able to select image to send but Front End unable to display the image | Added in additional parameters into the chat object to allow the display of images sent | :white_check_mark:
 17 | Chat Room Page: Keyboard covers text input box | Added KeyboardAvoidingView module as well as varied bottom offset of keyboard from text input container | :white_check_mark:
-18 | Chat Page: Modal's close button is small and is difficult to close via touch screen | Changed the button to be larger and more prominent, making it easier to press | :white_check_mark
+18 | Chat Page: Modal's close button is small and is difficult to close via touch screen | Changed the button to be larger and more prominent, making it easier to press | :white_check_mark:
 19 | Unhandled promise rejection warning from Firebase | Added exception handlings for all fetching and writing of data from and to Cloud Firestore database | :white_check_mark:
 
 ## Usability Testing
