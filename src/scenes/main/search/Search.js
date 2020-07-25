@@ -270,6 +270,13 @@ export default class SearchScreen extends React.Component {
     });
   }     
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props !== nextProps) {
+      return true;
+    }
+    return false;
+  }
+
   componentDidUpdate(nextProps, nextState) {
     if (this.props !== nextProps) {
       return true;

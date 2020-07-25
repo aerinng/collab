@@ -68,6 +68,7 @@ const GroupsDetails = ({name, navigation}) => {
                     })
                 })
     }
+
     return (
         <SafeAreaView style = {styles.container}>
             <TouchableOpacity onPress = {() => navigation.goBack()} >
@@ -112,7 +113,14 @@ export default class GroupsDetailsScreen extends React.Component {
           return true;
         }
         return false;
-      }
+    }
+    
+    componentDidUpdate(nextProps, nextState) {
+        if (this.props !== nextProps) {
+          return true;
+        }
+        return false;
+    }
 
     render(){       
         const {name} = this.props.route.params;
