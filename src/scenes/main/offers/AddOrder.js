@@ -7,6 +7,7 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
 import {stimulateOrder} from './AddOrdFunc'
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Analytics from 'expo-firebase-analytics';
 
 class AddOrder extends React.Component {
     state = {
@@ -116,11 +117,21 @@ class AddOrder extends React.Component {
                     }
                     alert("Added Successfully"); 
                 })
+        this.logsEvent();
+    }
+
+    // add into analytics
+    logsEvent = async () => { 
+        await Analytics.logEvent('AddOffer', {
+            name: 'addoffer',
+            screen: 'addoffer',
+            purpose: 'Added a new offer in Collab',
+          });
     }
 
     // validate current total to be only integers
     validateAmt = (amt) => {
-        var re = /^([0-9]+)$/;
+        var re = /^\d+(\.\d{1,2})?$/;
           return re.test(amt);
     };
 

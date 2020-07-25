@@ -6,6 +6,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
+import * as Analytics from 'expo-firebase-analytics';
 
 class EditProfile extends React.Component{
     constructor(props) {
@@ -143,6 +144,15 @@ class EditProfile extends React.Component{
         unsubscribe;
     }
 
+    // add into analytics
+    logsEvent = async () => { 
+        await Analytics.logEvent('EditProfile', {
+            name: 'editprofile',
+            screen: 'editprofile',
+            purpose: 'Successfully edited profile',
+          });
+    }
+
     render(){
         var user = this.props.route.params.user; // email
         var result = this.props.route.params.result;
@@ -233,6 +243,7 @@ class EditProfile extends React.Component{
                             if (this.state.textInputName != '') {
                                 this.changeName(result);
                             }
+                            this.logsEvent();
                             this.props.navigation.navigate('Profile');
                         }}
                     >

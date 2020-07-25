@@ -57,12 +57,12 @@ var firebaseConfig = {
     projectId: "collab-8af51",
     storageBucket: "collab-8af51.appspot.com",
     messagingSenderId: "688778678705",
-    appId: "1:688778678705:web:97a9bcc682a22bd4512d90"
+    appId: "1:688778678705:web:97a9bcc682a22bd4512d90",
+    measurementId: "G-B2P2PYGRCX"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
 firebase.firestore();
 
 //User navigated to Login page by default
