@@ -62,6 +62,12 @@ class JoinOffer extends React.Component {
                 })
     }
 
+    // validate current total to be only integers
+    validateAmt = (amt) => {
+        var re = /^\d+(\.\d{1,2})?$/;
+          return re.test(amt);
+    };
+
     render(){
         const {result} = this.props.route.params;
         return (
@@ -99,8 +105,14 @@ class JoinOffer extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button}
                     onPress = {() => {
-                        this.addToDB(result);
-                        alert('You have successfully joined the offer!')
+                        if (this.state.currTotal == '') {
+                            alert("Please fill in all mandatory fields!");
+                        } else if (!this.validateAmt(this.state.total)) {
+                            alert("Please input a valid Current Total!");
+                        } else {
+                            this.addToDB(result);
+                            alert('You have successfully joined the offer!');
+                        }
                     }}
                 >
                     <Text style = {styles.buttonText}> Done </Text>
