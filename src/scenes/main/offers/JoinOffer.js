@@ -52,7 +52,7 @@ class JoinOffer extends React.Component {
                 .then(doc => {
                     this.setState({total: doc.data().total})
                 })
-                console.log(this.state.total)
+                //console.log(this.state.total)
         firebase.firestore()
                 .collection("offers")
                 .doc(this.state.currOrderID)
@@ -105,9 +105,9 @@ class JoinOffer extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button}
                     onPress = {() => {
-                        if (this.state.currTotal == '') {
+                        if (this.state.currTotal == 0) {
                             alert("Please fill in all mandatory fields!");
-                        } else if (!this.validateAmt(this.state.total)) {
+                        } else if (!this.validateAmt(this.state.currTotal)) {
                             alert("Please input a valid Current Total!");
                         } else {
                             this.addToDB(result);
