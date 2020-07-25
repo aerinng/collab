@@ -56,7 +56,7 @@ const GroupsDetails = ({name, navigation}) => {
 
     // fetch list of offers under a particular category
     const getData = () => {
-        console.log(currName)
+        //console.log(currName)
         firebase.firestore()
                 .collection("offers")
                 .where("category", "==", currName)

@@ -14,19 +14,25 @@ export default class Login extends React.Component {
 
     //NEW SET OF CODES [GOOGLE SIGNIN]
     async googleSignin() {
+        var curr = this;
         try {
           const result = await Google.logInAsync({
             // androidClientId: YOUR_CLIENT_ID_HERE,
             iosClientId: "335681130717-oai52figqvp0f5dgjdmvlqgtqco7qvsl.apps.googleusercontent.com",
           });
           if (result.type === 'success') {
-            //PLEASE IGNORE THE COMMENTED CODES HERE 
-            //check if first time user
-            // this.props.navigation.navigate('Preferences', {result: result, byGoogle:true})
-
-
-            //byGoogle login: [boolean value]
-            this.props.navigation.navigate('Tabs', {result: result, byGoogle:true})
+            var doc = firebase.firestore().collection("info").doc(result.user.email);
+            doc.get().then(function(docRef) {
+                if (!docRef.exists) {
+                    console.log("not exists")
+                    curr.props.navigation.navigate('SignUpGoogleScreens', {result: result, byGoogle:true})
+                } else {
+                    console.log("exists")
+                    curr.props.navigation.navigate('Tabs', {result: result, byGoogle:true})
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
           } else {
             console.log("cancelled")
           }
@@ -35,6 +41,40 @@ export default class Login extends React.Component {
           console.log("error: ", error);
         }
     }     
+
+    googleSignUp = () => {
+        //Creates individual email user as a Collection
+        var mail = this.state.email;
+        firebase.firestore()
+                .collection('info')
+                .doc(mail)
+                .set({
+                    promo:'',
+                    location:'',
+                    category:'',
+                    total:'', 
+                    date:'',
+                    desc:'',
+                    avatar: 'null',
+                    addressLine1: this.state.addressLine1,
+                    addressLine2: this.state.addressLine2,
+                    name: this.state.name,
+                    username: this.state.username,
+                    pushToken: ''
+                })
+                .then(() => {
+                    this.props.navigation.navigate(
+                        'Preferences', 
+                        {email: mail, 
+                        name: this.state.name, 
+                        username: this.state.username,
+                        byGoogle: false
+                    });
+                })
+                .catch(error => {
+                    alert(error);
+                });
+    }
 
 
     //Sign In users with the given email and password (FOR AUTHENTICATION)

@@ -4,8 +4,7 @@ import firebase from 'firebase';
 import { Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-//const DATA = [];
-
+// individual store promotion item
 function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
   return (
     <TouchableOpacity
@@ -13,9 +12,7 @@ function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
         onSelect(id);
         navigation.navigate('AddOrder', {Pid:id, title:title, data:data, image:image});
       }}
-      style={[
-        styles.item
-      ]}
+      style={[styles.item]}
     >
       <TouchableOpacity
         style = {{backgroundColor: "#C5C5C5", borderRadius: 15, marginLeft: 255, marginRight: 10, marginTop: -30, padding: 10}}
@@ -34,7 +31,29 @@ function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
 const StorePromo = ({navigation}) => {
 
   // array for store promotions
-  const [DATA, setDATA] = React.useState([]);
+  const [DATA, setDATA] = React.useState([
+    {
+      id: '1',
+      title: 'Fairprice',
+      data: "Free delivery with purchase above $79",
+      image: require('../../../../assets/fairprice.jpg'),
+      url: 'https://www.fairprice.com.sg/promotions'
+    },
+    {
+      id: '2',
+      title: 'Cold Storage',
+      data: "Free delivery with purchase above $79",
+      image: require('../../../../assets/coldstorage.jpg'),
+      url: 'https://coldstorage.com.sg/deals/'
+    },
+    {
+      id: '3',
+      title: 'Sephora',
+      data: "Free delivery with purchase above $50",
+      image: require('../../../../assets/sephora.jpg'),
+      url: 'https://www.sephora.sg/sale'
+    },
+  ]);
 
   // allow the selection of store promotions
   const [selected, setSelected] = React.useState(null);
@@ -68,13 +87,11 @@ const StorePromo = ({navigation}) => {
   };
 
   // fetch data of store promotions from database whenever there's a new render
-  useEffect(() => {
-    DATA.length = 0;
-    fetchData();
-  }, [DATA])
+  useEffect(() => {}, [DATA])
+
 
   // fetch data of store promotions from database
-  const fetchData = () => {
+  const setDataa = () => {
     firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
       .then(snap => { 
           snap.forEach(docs =>{
@@ -158,7 +175,7 @@ const StorePromo = ({navigation}) => {
 
 export default class Promo extends React.Component {
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     if (this.props !== nextProps) {
       return true;
     }

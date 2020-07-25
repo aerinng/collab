@@ -4,12 +4,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { ProgressViewIOSComponent } from 'react-native';
 
 // scenes imports
 import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
 import Login from './src/scenes/login/Login';
 import Signup from './src/scenes/login/Signup';
+import SignupGoogle from './src/scenes/login/SignupGoogle';
+import PreferenceGoogle from './src/scenes/login/PreferenceGoogle';
 import Preference from './src/scenes/login/Preference';
 import ForgetPassword from './src/scenes/login/ForgetPassword';
 import Profile from './src/scenes/main/profile/Profile';
@@ -77,6 +78,7 @@ const RootScreen = () => (
   <Root.Screen name = "Tabs" component = {TabNavigator} />
   <Root.Screen name = "ForgetPassword" component = {ForgetPassword}/>
   <Root.Screen name = "SignUpScreen" component = {SignUpScreens}/>
+  <Root.Screen name = "SignUpGoogleScreens" component = {SignUpGoogleScreens}/>
 </Root.Navigator>
 );
 
@@ -93,6 +95,22 @@ function SignUpScreens(props) {
       <SignUpStack.Screen name = "Signup" component = {Signup} initialParams={props.route.params}/>
       <SignUpStack.Screen name = "Preferences" component = {Preference} initialParams={props.route.params}/> 
     </SignUpStack.Navigator>
+  )
+}
+
+const SignUpGoogleStack = createStackNavigator();
+function SignUpGoogleScreens(props) {
+  return (
+    <SignUpGoogleStack.Navigator
+      initialRouteName = "SignupGoogle"
+      screenOptions = {{
+        gestureEnabled: true,
+        headerShown: false
+      }}
+    >
+      <SignUpGoogleStack.Screen name = "SignupGoogle" component = {SignupGoogle} initialParams={props.route.params}/>
+      <SignUpGoogleStack.Screen name = "PreferenceGoogle" component = {PreferenceGoogle} initialParams={props.route.params}/> 
+    </SignUpGoogleStack.Navigator>
   )
 }
 

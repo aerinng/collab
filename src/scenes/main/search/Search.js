@@ -7,7 +7,7 @@ import * as Permissions from 'expo-permissions';
 import { useIsFocused } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+ 
   // list of offers data
   const DATA = [];
 
@@ -18,21 +18,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
       <TouchableOpacity
         onPress={() => {
             onSelect(id);
-            if (byGoogle == false){
-              //NEW CODES: to see if user is:
-              //Google login OR Collab login
-                if (user === firebase.auth().currentUser.email) {
-                  navigation.navigate('OfferDetails',  {orderID: id})
-                } else {
-                  navigation.navigate('OfferDetailsJoin',  {orderID: id})
-                }
-              } else {
-                if (user === result.user.email) {
-                  navigation.navigate('OfferDetails',  {orderID: id})
-                } 
-                navigation.navigate('OfferDetailsJoin',  {orderID: id})
-                
-              }
+            if ((result == null && user === firebase.auth().currentUser.email) || (result != null && user === result.user.email)) {
+                navigation.navigate('OfferDetails',  {orderID: id, result: result})
+            } else {
+                navigation.navigate('OfferDetailsJoin',  {orderID: id, result: result}) 
+            }
         }}
         style={[ styles.item]}
       >
@@ -120,8 +110,12 @@ const Search = ({navigation, result, byGoogle}) => {
                       querySnapshot.forEach(doc => {
                         firebase.firestore().collection("offers").doc(doc.id).update({
                           image: require('../../../../assets/sephora.jpg')
-                        })
+                        }).catch(function(error) {
+                          console.log("Error getting document:", error);
+                        });
                       });  
+                  }).catch(function(error) {
+                    console.log("Error getting document:", error);
                   }),
                   firebase.firestore().collection("offers").where("title", "==", 'Cold Storage')
                   .get()
@@ -129,8 +123,12 @@ const Search = ({navigation, result, byGoogle}) => {
                       querySnapshot.forEach(doc => {
                         firebase.firestore().collection("offers").doc(doc.id).update({
                           image: require('../../../../assets/coldstorage.jpg')
-                        })
+                        }).catch(function(error) {
+                          console.log("Error getting document:", error);
+                        });
                       });  
+                  }).catch(function(error) {
+                    console.log("Error getting document:", error);
                   }),
                   firebase.firestore().collection("offers").where("title", "==", 'Fairprice')
                   .get()
@@ -138,8 +136,12 @@ const Search = ({navigation, result, byGoogle}) => {
                       querySnapshot.forEach(doc => {
                         firebase.firestore().collection("offers").doc(doc.id).update({
                           image: require('../../../../assets/fairprice.jpg')
-                        })
+                        }).catch(function(error) {
+                          console.log("Error getting document:", error);
+                        });
                       });  
+                  }).catch(function(error) {
+                    console.log("Error getting document:", error);
                   }),
                 <Item
                     id={item.id}
@@ -177,10 +179,8 @@ export default class SearchScreen extends React.Component {
   }
   
   registerForPushNotificationsAsync = async ({result}) => {
-    // var user = await firebase.auth().currentUser;
-    const { status: existingStatus } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS
-    );
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+
     let finalStatus = existingStatus;
     // only ask if permissions have not already been determined, because
     // iOS won't necessarily prompt the user a second time.
@@ -197,22 +197,29 @@ export default class SearchScreen extends React.Component {
     try {
       // Get the token that uniquely identifies this device
       let token = await Notifications.getExpoPushTokenAsync();
-      try{
-        // POST the token to your backend server from where you can retrieve it to send push notifications.
-        firebase.firestore().collection('info').doc(user.email).update({
-            pushToken: token
-        })
-      }catch(error){
-        console.log("error")
-      }
+      if (result == null) {
+        try {
+          // POST the token to your backend server from where you can retrieve it to send push notifications.
+          firebase.firestore().collection('info').doc(user.email).update({
+              pushToken: token
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        } catch (error) {
+          console.log("error")
+        }
+      } else {
       //Creating a new collection 
-      try{
-        const {pref} = this.props.route.params.pref; ///from login page 
-        firebase.firestore().collection(pref).doc(result.user.email).set({
-          pushToken:token
-        })
-      }catch(error){
-        console.log('error')
+        try {
+          const {pref} = this.props.route.params.pref; ///from login page 
+          firebase.firestore().collection(pref).doc(result.user.email).set({
+            pushToken:token
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        } catch(error) {
+          console.log('error')
+        }
       }
     } catch (error) {
       console.log('error');
@@ -220,7 +227,47 @@ export default class SearchScreen extends React.Component {
   };   
 
   async componentDidMount() {
-    await this.registerForPushNotificationsAsync();
+    var result = this.props.route.params.result;
+    await this.registerForPushNotificationsAsync(result);
+    DATA.length = 0;
+    firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/fairprice.jpg')
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        })
+    }).catch(function(error) {
+      console.log("Error getting document:", error);
+    });
+
+    firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/sephora.jpg')
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        })
+    }).catch(function(error) {
+      console.log("Error getting document:", error);
+    });
+
+    firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/coldstorage.jpg')
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        })
+    }).catch(function(error) {
+      console.log("Error getting document:", error);
+    });
   }     
 
   componentDidUpdate(nextProps, nextState) {
@@ -231,60 +278,11 @@ export default class SearchScreen extends React.Component {
   }
 
   render(){      
-    console.log("renderedd once : Search")
-    DATA.length = 0;
-    firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
-    .then(snap => { 
-        snap.forEach(docs =>{
-          firebase.firestore().collection('promotion').doc(docs.id).update({
-            image: require('../../../../assets/fairprice.jpg')
-          })
-        })
-    })
-
-    firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
-    .then(snap => { 
-        snap.forEach(docs =>{
-          firebase.firestore().collection('promotion').doc(docs.id).update({
-            image: require('../../../../assets/sephora.jpg')
-          })
-        })
-    })
-
-
-    firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
-    .then(snap => { 
-        snap.forEach(docs =>{
-          firebase.firestore().collection('promotion').doc(docs.id).update({
-            image: require('../../../../assets/coldstorage.jpg')
-          })
-        })
-    })
-      if (this.props.route.params.byGoogle == false) { //from signup + login page
-        if (this.props.route.params.name != null){
-          const {email} = this.props.route.params
-          const {username} = this.props.route.params
-          const {name} = this.props.route.params
-          //Creates db for each customer in Info collection
-          firebase.firestore().collection('info').doc(email).set({ 
-          name: name,
-          email: email, 
-          username: username,
-          frequency:'', //for Auto-Post frequency, to be updated eventually
-          pushToken:''})
-        }
-      } else if (this.props.route.params.byGoogle == true) { // sign in but gooogle
-        const {result} = this.props.route.params
-        firebase.firestore().collection('info').doc(result.user.email).set({ 
-          name: result.user.name,
-          email: result.user.email, 
-          username: result.user.name,
-          frequency:'', //for Auto-Post frequency, to be updated eventually
-          pushToken:''
-        })          
-      }
-      return <Search navigation = {this.props.navigation} result ={this.props.route.params.result} 
-      byGoogle = {this.props.route.params.byGoogle}/>
+      return <Search 
+                navigation = {this.props.navigation} 
+                result ={this.props.route.params.result} 
+                byGoogle = {this.props.route.params.byGoogle}
+             />
     }
 }
 

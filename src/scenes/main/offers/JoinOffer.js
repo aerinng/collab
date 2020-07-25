@@ -15,7 +15,6 @@ class JoinOffer extends React.Component {
 
     // fetch offer details data from Cloud Firestore database
     componentDidMount() {
-        var user = firebase.auth().currentUser; 
         const {orderID} = this.props.route.params
         this.setState({currOrderID: orderID})
         this.state.unsubscribe = firebase.firestore()
@@ -40,7 +39,12 @@ class JoinOffer extends React.Component {
 
     // currently user only has to input their current total
     // addition of total amount to Cloud Firestore database
-    addToDB = () => {
+    addToDB = (result) => {
+        if (result != null){ 
+            var email = result.user.email;
+        } else {
+            var email = firebase.auth().currentUser.email;
+        }
         firebase.firestore()
                 .collection("offers")
                 .doc(this.state.currOrderID)
@@ -53,12 +57,13 @@ class JoinOffer extends React.Component {
                 .collection("offers")
                 .doc(this.state.currOrderID)
                 .update({
-                    userJoined: firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.email),
+                    userJoined: firebase.firestore.FieldValue.arrayUnion(email),
                     total: parseInt(this.state.total) + parseInt(this.state.currTotal)
                 })
     }
 
     render(){
+        const {result} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -80,7 +85,7 @@ class JoinOffer extends React.Component {
                             <Text style = { styles.data }>{item.data}</Text>
                             <Text style = { styles.titles }> Category </Text>
                             <Text style ={ styles.data }>{item.category}</Text>
-                            <Text style = { styles.titles }> Your Current Total </Text>
+                            <Text style = { styles.titles }> Your Current Total ($)</Text>
                             <TextInput 
                                 style ={ styles.TextInput }
                                 keyboardType = {'numeric'} 
@@ -94,7 +99,7 @@ class JoinOffer extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button}
                     onPress = {() => {
-                        this.addToDB();
+                        this.addToDB(result);
                         alert('You have successfully joined the offer!')
                     }}
                 >

@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, SafeAreaView, ActivityIndicator, TouchableOpacity, 
-  Image, Modal, TextInput, View } from "react-native";
+  Image, Modal, TextInput, View, KeyboardAvoidingView } from "react-native";
 import { IconButton } from 'react-native-paper';
 import firebase from "firebase";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import { GiftedChat, Bubble, Send, SystemMessage, Actions, ActionsProps, Avatar, GiftedAvatar } from 'react-native-gifted-chat';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 export default function ChatRoom({route, user}) {
     const [messages, setMessages] = useState([]);
@@ -16,36 +17,18 @@ export default function ChatRoom({route, user}) {
     try{
         if (route.params.route.result.user != null){ 
             var user = route.params.route.result.user.id;
-            console.log("the id for the user in CR is", user)
+            //console.log("the id for the user in CR is", user)
             var email = route.params.route.result.user.email; 
          } else {
-            console.log("chatroom, result is empty" )
+            //console.log("chatroom, result is empty" )
             var user = firebase.auth().currentUser.uid;
             var email = firebase.auth().currentUser.email;
          } 
-    }catch{
+    } catch {
         var user = firebase.auth().currentUser.uid;
         var email = firebase.auth().currentUser.email;
     }    
     //threads._id is the friend's email
-
-    /*const [imgFriend, setImgFriend] = React.useState('');
-    const otherUser = {
-        name: 'A',
-        avatar: imgFriend
-    }
-
-    var friendUser = firebase.firestore()
-    .collection('info')
-    .doc(threads._id)
-    .get()
-    .then(snap =>  {
-        //console.log(snap.data().avatar)
-        setImgFriend(snap.data().avatar);
-    })
-    .catch(function(error) {
-        console.log("Error getting document:", error);
-    });*/
     
     // enable the sending of messages from the sender to the receiver
     async function handleSend(messages) {
@@ -84,7 +67,7 @@ export default function ChatRoom({route, user}) {
                 { merge: true }
                 )
                 .catch(function(error) {
-                    console.log("Eeeeerror getting document:", error);
+                    console.log("Error getting document:", error);
                 });
 
         // friend user to add message
@@ -154,13 +137,15 @@ export default function ChatRoom({route, user}) {
                     backgroundColor: '#266E7D',
                     padding: 5,
                     marginRight: 10,
-                    marginVertical: 2
+                    marginTop: 2,
+                    marginBottom: 10
                 },
                 left: {
                     backgroundColor: '#0b323b',
                     padding: 5,
                     marginLeft: 10,
-                    marginVertical: 2
+                    marginTop: 2,
+                    marginBottom: 10
                 }
             }}
             textStyle={{
@@ -202,8 +187,7 @@ export default function ChatRoom({route, user}) {
         return (
             <GiftedAvatar 
                 {...props}
-               // containerStyle={{ left: { borderWidth: 3, borderColor: 'red' }, right: {} }}
-               //imageStyle={{ left: { borderWidth: 3, borderColor: 'blue' }, right: {} }}
+                avatarStyle = {{ marginBottom: 10 }}
             />
         
         )
@@ -229,7 +213,7 @@ export default function ChatRoom({route, user}) {
             options={{
                 'Choose from Library': async () => {
                     //askPermission
-                    if (Constants.platform.ios) {
+                    if (Constants.platform.ios || Constants.platform.android) {
                         const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
                         if (status !== 'granted') {
                           alert('Oops, we need camera roll permission :")');
@@ -255,40 +239,32 @@ export default function ChatRoom({route, user}) {
         />
         )
     }
-      
-    // get current user's avatar
-    const [img, setImg] = React.useState('');
-    firebase.firestore()
-    .collection('info')
-    .doc(email)
-    .get()
-    .then(snap => {
-        setImg(snap.data().avatar);
-    })
-    .catch(function(error) {
-        console.log("Error getting document:", error);
-    });
     
     return (
-        <GiftedChat 
-            messages={messages}
-            onSend={handleSend}
-            user={{ _id: user, avatar: img}}
-            renderBubble={renderBubble} // bubble display function
-            placeholder='Message' // placeholder text in sending container
-            showUserAvatar// shows users icon
-            showAvatarForEveryMessage
-            alwaysShowSend // shows send button
-            scrollToBottom // always scrolls to latest message at bottom
-            renderSend={renderSend} // send icon function
-            renderActions={renderImage} // send image
-            renderLoading={renderLoading} // loading screen
-            scrollToBottomComponent={scrollToBottomComponent} // function that scrolls to latest message at bottom
-            textInputStyle={styles.composer}
-            isTyping = {true}
-            bottomOffset = {70}
-            renderAvatar = {renderAvatar} // user's avatar
-        />
+        <View style={{ flex: 1 }}>
+            <GiftedChat 
+                messages={messages}
+                onSend={handleSend}
+                user={{ _id: user, name: email, avatar: "https://img.icons8.com/dusk/64/000000/guest-male.png"}}
+                renderBubble={renderBubble} // bubble display function
+                placeholder='Message' // placeholder text in sending container
+                showUserAvatar// shows users icon
+                showAvatarForEveryMessage
+                alwaysShowSend // shows send button
+                scrollToBottom // always scrolls to latest message at bottom
+                renderSend={renderSend} // send icon function
+                renderActions={renderImage} // send image
+                renderLoading={renderLoading} // loading screen
+                scrollToBottomComponent={scrollToBottomComponent} // function that scrolls to latest message at bottom
+                textInputStyle={styles.composer}
+                isTyping = {true}
+                bottomOffset = {45}
+                renderAvatar = {renderAvatar} // user's avatar
+            />
+            {
+                Platform.OS === 'android' && <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={-155}/>
+            }
+        </View>
     );
 }
 
@@ -296,23 +272,24 @@ const styles = StyleSheet.create({
     loadingContainer: {
       flex: 1,
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      marginTop: 275
     },
     sendingContainer: {
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: 5
+      marginBottom: 5,
     },
     bottomComponentContainer: {
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: 10
+      marginBottom: 10,
     },
     systemMessageWrapper: {
       backgroundColor: '#6646ee',
       borderRadius: 4,
       padding: 5,
-      marginBottom: 5
+      marginBottom: 5,
     },
     systemMessageText: {
       fontSize: 14,

@@ -12,7 +12,6 @@ class OfferDetailsReceived extends React.Component {
 
     // fetch offer details data from Cloud Firestore database upon renders
     componentDidMount() {
-        var user = firebase.auth().currentUser; 
         const {orderID} = this.props.route.params;
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
@@ -60,7 +59,7 @@ class OfferDetailsReceived extends React.Component {
                             <Text style ={ styles.data}>{item.location}</Text>  
                             <Text style = { styles.titles }> Category </Text>
                             <Text style ={ styles.data }>{item.category}</Text>
-                            <Text style = { styles.titles }> Current Total </Text>
+                            <Text style = { styles.titles }> Current Total ($)</Text>
                             <Text style ={ styles.data }>{item.total}</Text>
                             <Text style = { styles.titles }> Progress </Text>
                             <Progress.Bar 

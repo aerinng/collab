@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, ScrollView,  Image, FlatList, TouchableOpacity, Button } from "react-native";
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
   // list of user's My Groups
   const DATA = [];
@@ -114,7 +115,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
               backgroundColor: "#266E7D", paddingHorizontal: 15, 
               paddingVertical: 5, borderRadius: 10, marginBottom: -40,
               zIndex: 1}}
-              onPress = {() => navigation.navigate("AddGroups", {DATA: DATA})}
+              onPress = {() => navigation.navigate("AddGroups", {DATA: DATA, result: result})}
             >
               <Text style = {{fontSize: 18, fontWeight: '600', color: "#fff"}}> Join </Text>
             </TouchableOpacity>
@@ -186,7 +187,8 @@ const styles = StyleSheet.create({
       padding: 35,
       flex: 1,
       marginHorizontal: 10,
-      marginBottom: 33
+      marginBottom: 33,
+      width: wp('96%')
     },
     header: {
         fontSize: 30,
