@@ -209,6 +209,7 @@ The Usability Testing document can be found [here](https://drive.google.com/file
 3) Some pages takes a really long loading time or requires a scroll before items can render. We will attempt to optimise the loading time of our screens in Milestone 3. Loading time is improved for Milestone 3.
 4) When searching for usernames to create a Chat Room with, user must type in the entire username in order to search for the user.
 5) Connection to Firebase while running simulator: Quota limits are hit sometimes even though database does not reflect that limit was hit. We are not sure why does this happen but so far it is not a big issue as it only affected us a few times.
+6) React Native notifications libraries could not be read and used. Hence, this error was circumvented by using Expo notifications. 
 
 ## Possible Enhancements for Milestone 3
 Target | Target Date | Status
