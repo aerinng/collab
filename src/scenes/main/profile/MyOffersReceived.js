@@ -10,12 +10,12 @@ import ProgressBarAnimated from 'react-native-progress-bar-animated';
   const DATA = [];
 
   // individual offer item
-  function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
+  function Item({ max,total, id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
         onPress={() => {
             onSelect(id);
-            navigation.navigate('OfferDetailsReceived', {orderID: id})
+            navigation.navigate('OfferDetailsReceived', {orderID: id, max:max, total:total})
         }}
         style={[ styles.item ]}
       >

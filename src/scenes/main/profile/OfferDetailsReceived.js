@@ -33,9 +33,10 @@ class OfferDetailsReceived extends React.Component {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
-
     render(){
         const {orderID} = this.props.route.params;
+        const {total} = this.props.route.params;
+        const {max} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -43,8 +44,7 @@ class OfferDetailsReceived extends React.Component {
                         <>
                             <TouchableOpacity  
                                 style = {styles.backbutton}
-                                onPress={() => {this.props.navigation.goBack()}}
-                            >     
+                                onPress={() => {this.props.navigation.goBack()}}>     
                                 <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
                             </TouchableOpacity>
                             <Text style = {styles.header} > Offer Details </Text>

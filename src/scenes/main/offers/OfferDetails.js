@@ -37,6 +37,8 @@ class OfferDetails extends React.Component {
     render(){
         const {orderID} = this.props.route.params;
         const {result} = this.props.route.params;
+        const {max} = this.props.route.params;
+        const {total} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList

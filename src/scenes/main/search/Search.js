@@ -20,7 +20,7 @@ import ProgressBarAnimated from 'react-native-progress-bar-animated';
         onPress={() => {
             onSelect(id);
             if ((result == null && user === firebase.auth().currentUser.email) || (result != null && user === result.user.email)) {
-                navigation.navigate('OfferDetails',  {orderID: id, result: result})
+                navigation.navigate('OfferDetails',  {orderID: id, result: result,max:max, total: total})
             } else {
                 navigation.navigate('OfferDetailsJoin',  {orderID: id, result: result, max:max, total: total}) 
             }
