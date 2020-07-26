@@ -185,7 +185,8 @@ No. | Issue | Solution | Fixed?
 10 | Profile Page: Doesn't auto update user's picture or username after changing them on Edit Profile Page | Use componentDidUpdate from React Lifecycle Components and compared props so data would be fetched from firebase, hence displaying the latest user data on profile page | :white_check_mark:
 11 | Preference Page: Page is bypassed despite being inserted in the navigations | Used firebase then() function to return a new Promise and navigate to Preference page | :white_check_mark:
 12 | Chat Page: Could not find the opposing user's username and email when passed as parameters to another function from Chat to Chat Room, hence received an error due to passing an empty object to firebase | Define the parameters inside an object in Chats then pass the entire object to Chat Room | :white_check_mark:
-13 | Notifications: Unable to navigate users to intended page after clicking on notification | Work In Progress! | :negative_squared_cross_mark:
+13 | Notifications: Unable to navigate users to intended page after clicking on notification | There were issues with using react-native-push-notifications due to version error. Hence, we used expo-notifications which provides APIs for us to implement our notifications feature.
+ | :white_check_mark:
 14 | Preference Page: User cannot join multiple groups at once. Unable to add into array via multiple selection of items with the first click, requires a second click | Since useState hook is not async, tried useEffect hook to re-render after change in array and it didn't work. Hence, will allow user to only add 1 group into My Groups at a time so reducing the need to use arrays in useState. But still allowing users to be in multiple groups. | :white_check_mark:
 15 | Chat Page: Avatar icons for both sender and receiver are the same | Allowed display of a generic user icon for both receiver and sender. Could not find function in the chat module to vary icons for both receiver and sender. | :white_check_mark:
 16 | Chat Page: User able to select image to send but Front End unable to display the image | Added in additional parameters into the chat object to allow the display of images sent | :white_check_mark:
@@ -194,7 +195,7 @@ No. | Issue | Solution | Fixed?
 19 | Unhandled promise rejection warning from Firebase | Added exception handlings for all fetching and writing of data from and to Cloud Firestore database | :white_check_mark:
 
 ## Usability Testing
-Coming to you on 27 July!
+The Usability Testing document can be found [here](https://drive.google.com/file/d/18wo6ih_QVEtWigcI4TG1moURY7P8R13g/view?usp=sharing)!
 
 ## Security Features
 1) Authentication: Only registered users in Collab can gain access to the application
@@ -209,7 +210,6 @@ Coming to you on 27 July!
 3) Some pages takes a really long loading time or requires a scroll before items can render. We will attempt to optimise the loading time of our screens in Milestone 3. Loading time is improved for Milestone 3.
 4) When searching for usernames to create a Chat Room with, user must type in the entire username in order to search for the user.
 5) Connection to Firebase while running simulator: Quota limits are hit sometimes even though database does not reflect that limit was hit. We are not sure why does this happen but so far it is not a big issue as it only affected us a few times.
-6) Google authentication is currently only available for iOS devices.
 
 ## Possible Enhancements for Milestone 3
 Target | Target Date | Status
@@ -223,8 +223,7 @@ Enhance chat page modal to search for username to be more user friendly | 19 Jul
 Allow users to send images in chat rooms | 19 July | :white_check_mark:
 Optimisation of loading time | 19 July | :white_check_mark:
 Additional Security Features: Encryption | 19 July | :white_check_mark:
-For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 25 July | :negative_squared_cross_mark:
+For offers listing, when progress bar reached 100%, to include an indicator to show that required minimum amount has been reached | 25 July | :white_check_mark:
 Allow the display of avatar icons on chat rooms | 25 July | :white_check_mark:
-Auto-post frequency can have more than 1 setting | 25 July | :negative_squared_cross_mark:
-Enable Google Analytics on Firebase | 25 July | :negative_squared_cross_mark:
+Enable Google Analytics on Firebase | 25 July | :white_check_mark:
 Make screens responsive for different screen sizes | 25 July | :white_check_mark:
