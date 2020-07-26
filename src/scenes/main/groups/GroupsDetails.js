@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList } from "react-native";
-import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';

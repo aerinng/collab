@@ -122,9 +122,14 @@ class AddOrder extends React.Component {
         }
 
             // validate current total to be only integers
-    validateAmt = (amt) => {
-        var re = /^\d+(\.\d{1,2})?$/;
-          return re.test(amt);
+    validateAmt = (amt,max) => {
+        if (amt > max){
+            alert("Your amount is too much! Amount entered is more than the free delivery amount required. ")
+        } else {
+            var re = /^\d+(\.\d{1,2})?$/;
+            return re.test(amt);
+        }
+
     };
     render() {
         //these things are carried over from Store Promo.
@@ -221,7 +226,7 @@ class AddOrder extends React.Component {
                             this.state.total == '' ||
                             this.state.displayDate == '') {
                             alert("Please fill in all mandatory fields!")
-                        } else if (!this.validateAmt(this.state.total)) {
+                        } else if (!this.validateAmt(this.state.total, max)) {
                             alert("Please input a valid Current Total!")
                         } else {
                             this.addToDB(data, title, image, max)

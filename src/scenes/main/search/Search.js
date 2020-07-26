@@ -57,6 +57,8 @@ const Search = ({navigation, result, byGoogle}) => {
         setSelected(id);
     }
     const isFocused = useIsFocused();
+    {isFocused ? console.log('focused') : console.log('unfocused')}
+
 
     //entering in DATA from this logged in user
     firebase.firestore().collection("offers").get()

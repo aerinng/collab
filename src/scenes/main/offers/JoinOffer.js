@@ -48,7 +48,6 @@ class JoinOffer extends React.Component {
                 this.setState({
                     diff:((doc.data().max) - (doc.data().total))                   
                 }) 
-                console.log("diffin JO, ", this.state.diff )
             })
 
         }

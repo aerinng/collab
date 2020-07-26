@@ -47,6 +47,7 @@ const MyOffers = ({navigation, result}) => {
         const onSelect = id => {
             setSelected(id);
         };
+        
 
         if (result != null){
             var user = result.user.email; 
@@ -61,6 +62,7 @@ const MyOffers = ({navigation, result}) => {
 
         // fetching user's offers data from Cloud Firestore database
         const getData = () => {
+            DATA.length = 0;
             firebase.firestore()
                     .collection("offers")
                     .where("user", "==", user)

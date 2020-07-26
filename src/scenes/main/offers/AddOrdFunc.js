@@ -1,8 +1,6 @@
 import firebase from 'firebase';
 import {useEffect} from 'react'; 
 import moment from 'moment';
-// var PushNotification = require('react-native-push-notification');
-// import PushNotification from 'react-native-push-notification';
 
 export function stimulateOrder(docID,user){
   //Check if settings is a Weekly, biweekly etc
