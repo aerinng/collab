@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View, SafeAreaView } from "react-native";
+import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View} from "react-native";
 import * as Progress from 'react-native-progress';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import firebase from 'firebase';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
 
 class OfferDetailsReceived extends React.Component {
     state = {
@@ -9,32 +11,30 @@ class OfferDetailsReceived extends React.Component {
         unsubscribe:''
     }
 
+    // fetch offer details data from Cloud Firestore database upon renders
     componentDidMount() {
-        //trying to update state, but code is gone 
-        var user = firebase.auth().currentUser; 
         const {orderID} = this.props.route.params;
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
                                          .doc(orderID)
                                          .get()
-                                        . then(sth => {
+                                        . then(snap => {
                                                 const results = []
-                                                results.push(sth.data())
+                                                results.push(snap.data())
                                                 this.setState({
                                                     users: results
                                                 })
-                                                //console.log("users: " , this.state.users)
                                         })
                                         .catch(err => console.error(err));
     }    
 
+    // unsubscribe from fetching data from database
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
     render(){
-        //console.log("Offer Details: render"); 
         const {orderID} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
@@ -59,16 +59,23 @@ class OfferDetailsReceived extends React.Component {
                             <Text style ={ styles.data}>{item.location}</Text>  
                             <Text style = { styles.titles }> Category </Text>
                             <Text style ={ styles.data }>{item.category}</Text>
-                            <Text style = { styles.titles }> Current Total </Text>
-                            <Text style ={ styles.data }>{item.total}</Text>
+                            <Text style = { styles.titles }> Current Total ($)</Text>
+                            <Text style ={ styles.data }> $ {item.total}</Text>
                             <Text style = { styles.titles }> Progress </Text>
-                            <Progress.Bar 
-                                progress={0.33} width={330} height ={30} borderRadius = {15} 
-                                color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-                                style = {{marginBottom: 15, alignSelf: 'center'}}
-                            />
+                            <ProgressBarAnimated
+                                borderRadius = {15} 
+                                style = {{marginTop: 38, alignSelf: 'center'}}
+                                width={330} height ={30}
+                                value={(total*100.00)/max} 
+                                backgroundColorOnComplete="#6CC644"
+                                maxValue= {parseInt(max)}
+                                onComplete={() => {
+                                    Alert.alert('Minimum Purchase Reached!');}}
+                                />                            
                             <Text style = { styles.titles }> Estimated Order Date </Text>
-                            <Text style ={ styles.data }>{item.date.toString().substring(4,16)}</Text>
+                            <Text style ={ styles.data }>{item.date.toString()}</Text>
+                            <Text style = { styles.titles }> User </Text>           
+                            <Text style ={ styles.data }>{item.user}</Text>  
                             <Text style = { styles.titles }> Description </Text>           
                             <Text style ={ styles.data, {marginBottom: 80} }>{item.desc}</Text>
                         </View>

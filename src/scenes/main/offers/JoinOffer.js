@@ -1,63 +1,99 @@
 import React from 'react';
-import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View, SafeAreaView, TextInput } from "react-native";
+import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View, TextInput } from "react-native";
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { diff } from 'react-native-reanimated';
 
 class JoinOffer extends React.Component {
     state = {
-        users:null,
+        users: [],
         unsubscribe: '',
         currOrderID: '',
-        currTotal: 0,
-        total: 0
+        currTotal: 0.0,
+        total: 0.0,
+        diff: 0.0
     }
+
+    // fetch offer details data from Cloud Firestore database
     componentDidMount() {
-        //trying to update state, but code is gone 
-        var user = firebase.auth().currentUser; 
-        const {docID} = this.props.route.params
-        this.setState({currOrderID: docID})
+        const {orderID} = this.props.route.params;
+        this.setState({currOrderID: orderID})
+        console.log(orderID)
         this.state.unsubscribe = firebase.firestore()
                                          .collection("offers")
-                                         .doc(docID)
+                                         .doc(orderID)
                                          .get()
-                                        . then(sth => {
+                                        . then(snapshot => {
                                                 const results = []
-                                                results.push(sth.data())
+                                                results.push(snapshot.data())
                                                 this.setState({
                                                     users: results
                                                 })
-                                                //console.log("users: " , this.state.users)
-                                        })
-                                        .catch(err => console.error(err));
+                                        }).catch(err => console.error(err));
     }    
 
+    // unsubscribe from fetching of data from database
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
-    // currently user only has to input their current total
-    // addition of total amount in database is done
-    addToDB = () => {
+        findDiff =() =>{
+            firebase.firestore()
+            .collection("offers")
+            .doc(this.state.currOrderID)
+            .get()
+            .then(doc => {
+                this.setState({
+                    diff:((doc.data().max) - (doc.data().total))                   
+                }) 
+                console.log("diffin JO, ", this.state.diff )
+            })
+
+        }
+
+        validateAmount = () => {
+            if (this.state.diff < this.state.currTotal){
+                alert("Please enter an amount less than the remaining amount!")
+            } else {
+                if (this.state.currTotal == 0) {
+                    alert("Please fill in all mandatory fields!");
+                } else if (!this.validateAmt(this.state.currTotal)) {
+                    alert("Please input a valid Current Total!");
+                } else {
+                    this.addToDB();
+                    alert('You have successfully joined the offer!');
+                }
+            }
+        }
+    //ALTERNATIVELY
+        addToDB = () => {
         firebase.firestore()
                 .collection("offers")
                 .doc(this.state.currOrderID)
                 .get()
                 .then(doc => {
-                    this.setState({total: doc.data().total})
+                    this.setState({total:doc.data().total})
+                        firebase.firestore()
+                        .collection("offers")
+                        .doc(this.state.currOrderID)
+                        .update({
+                            userJoined: firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.email),
+                            total: parseInt(this.state.total) + parseInt(this.state.currTotal)
+                    })
                 })
-                console.log(this.state.total)
-        firebase.firestore()
-                .collection("offers")
-                .doc(this.state.currOrderID)
-                .update({
-                    userJoined: firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.email),
-                    total: parseInt(this.state.total) + parseInt(this.state.currTotal)
-                })
-    }
+
+        }
+
+    // validate current total to be only integers
+    validateAmt = (amt) => {
+        var re = /^\d+(\.\d{1,2})?$/;
+          return re.test(amt);
+    };
 
     render(){
-        //console.log("Offer Details: render"); 
+        const {result} = this.props.route.params;
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -79,7 +115,9 @@ class JoinOffer extends React.Component {
                             <Text style = { styles.data }>{item.data}</Text>
                             <Text style = { styles.titles }> Category </Text>
                             <Text style ={ styles.data }>{item.category}</Text>
-                            <Text style = { styles.titles }> Your Current Total </Text>
+                            <Text style = { styles.titles }> Remaining Amount </Text>
+                            <Text style ={ styles.data }> {this.findDiff()} ${this.state.diff} </Text>                            
+                            <Text style = { styles.titles }> Your Current Total ($) </Text>
                             <TextInput 
                                 style ={ styles.TextInput }
                                 keyboardType = {'numeric'} 
@@ -93,8 +131,8 @@ class JoinOffer extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button}
                     onPress = {() => {
-                        this.addToDB();
-                        alert('You have successfully joined the offer!')
+                        //this.setTotalRequest();
+                        this.validateAmount();
                     }}
                 >
                     <Text style = {styles.buttonText}> Done </Text>

@@ -1,11 +1,15 @@
 import React, {useEffect} from 'react';
-import { View, StyleSheet, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, FlatList } from "react-native";
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Image, FlatList } from "react-native";
 import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
 
-const DATA = [];
+  // list of offers data
+  const DATA = [];
 
+  // individual offer item
   function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
@@ -21,46 +25,54 @@ const DATA = [];
         <Image source = {image} style = {styles.icons} />
         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
         <Text style = {styles.progressText}>{progress}</Text>
-        <Progress.Bar 
-            progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-            color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-            style = {{marginTop: 38, alignSelf: 'center'}} />
+        <ProgressBarAnimated
+          borderRadius = {15} 
+          style = {{marginTop: 38, alignSelf: 'center'}}
+          width={330} height ={30}
+          value={(total*100.00)/max}
+          backgroundColorOnComplete="#6CC644"
+          maxValue= {parseInt(max)}
+          onComplete={() => {
+            Alert.alert('Minimum Purchase Reached!');}}
+          />
       </TouchableOpacity>
     );
   }
 
 const MyOffersReceived = ({navigation, result}) => {
         const isFocused = useIsFocused();
+
+        // allow the selection of offers
         const [selected, setSelected] = React.useState(null);
         const onSelect = id => {
             setSelected(id);
         };
 
+        // check if user is Google or Collab login
         if (result != null){
             var user = result.user.email; 
-          } else {
+        } else {
             var user = firebase.auth().currentUser.email;
-          }          
-        // var user = firebase.auth().currentUser; 
+        }        
+
         //entering in DATA from this logged in user
         useEffect(() => {
             getData()
         },[]);
 
+        // fetch user's offers received data from Cloud Firestore database
         const getData = () => {
-            DATA.length = 0;
             firebase.firestore()
                     .collection("offers")
                     .where("userJoined", "array-contains", user)
                     .get()
                     .then(snap => {
                         snap.forEach(docs =>{      
-                            DATA.push(docs.data())//just push the id
+                            DATA.push(docs.data())
                         })
                     }).catch(function(error) {
                         console.log("Error getting document:", error);
                     });
-            //console.log(DATA)
         }
         
         return (
@@ -73,13 +85,13 @@ const MyOffersReceived = ({navigation, result}) => {
                         title={item.title}
                         data = {item.data}
                         image = {item.image}
-                        //progressIdx = {item.progressIdx}
-                        //progress = {item.progress}
                         user = {item.user}
                         username = {item.username}
                         selected={item.id == selected}
                         onSelect={onSelect}
                         navigation = {navigation}
+                        max = {item.max}
+                        total = {item.total}
                     />
                     )}
                     keyExtractor={item => item.id}
@@ -91,10 +103,23 @@ const MyOffersReceived = ({navigation, result}) => {
 };
 
 export default class MyOffersScreen extends React.Component {
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props !== nextProps) {
+        return true;
+        }
+        return false;
+    }
+    
+    componentDidUpdate(nextProps, nextState) {
+        if (this.props !== nextProps) {
+          return true;
+        }
+        return false;
+    }
+
     render() {
-        //const {docID} = this.props.route.params;
-        return <MyOffersReceived navigation = {this.props.navigation} 
-        result ={this.props.route.params.result}/>;
+        return <MyOffersReceived navigation = {this.props.navigation} result ={this.props.route.params.result}/>;
     }
 }
 

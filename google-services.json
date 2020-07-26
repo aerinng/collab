@@ -1,0 +1,47 @@
+{
+    "project_info": {
+      "project_number": "688778678705",
+      "firebase_url": "https://collab-8af51.firebaseio.com",
+      "project_id": "collab-8af51",
+      "storage_bucket": "collab-8af51.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:688778678705:android:d8e832bc597a4535512d90",
+          "android_client_info": {
+            "package_name": "com.collab.collabAndroid"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "688778678705-juktdm059i7970kq8psbuluijl6uc5be.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyA1QXAAUWgxDrmojFv3JUVDAe_60Jdp0Ng"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "688778678705-juktdm059i7970kq8psbuluijl6uc5be.apps.googleusercontent.com",
+                "client_type": 3
+              },
+              {
+                "client_id": "688778678705-spt6qrgpbheqvbn945kea81j2trbl3q7.apps.googleusercontent.com",
+                "client_type": 2,
+                "ios_info": {
+                  "bundle_id": "collabios"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

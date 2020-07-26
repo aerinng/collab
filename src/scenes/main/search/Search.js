@@ -1,74 +1,64 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 import {  Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { useIsFocused } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
+ 
+  // list of offers data
+  const DATA = [];
 
-const DATA = [];
-
-function Item({ id, title, data, image, user, username, progress, progressIdx, result, byGoogle, selected, onSelect, navigation }) {
-  return (
-    <TouchableOpacity
-      onPress={() => {
-          onSelect(id);
-          console.log("loaded on select : Search")
-          if (byGoogle == false){
-          //NEW CODES: to see if user is:
-          //Google login OR Collab login
-            if (user === firebase.auth().currentUser.email) {
-              navigation.navigate('OfferDetails',  {docID: id})
+  // individual offer item
+  function Item({ id, title, data, image, user, username, progress, 
+    progressIdx, result, byGoogle, selected, onSelect, navigation,max, total}) {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+            onSelect(id);
+            if ((result == null && user === firebase.auth().currentUser.email) || (result != null && user === result.user.email)) {
+                navigation.navigate('OfferDetails',  {orderID: id, result: result})
             } else {
-              navigation.navigate('OfferDetailsJoin',  {docID: id})
+                navigation.navigate('OfferDetailsJoin',  {orderID: id, result: result, max:max, total: total}) 
             }
-          } else {
-            if (user === result.user.email) {
-              navigation.navigate('OfferDetails',  {docID: id})
-            } 
-            navigation.navigate('OfferDetailsJoin',  {docID: id})
-            
-          }
-          // //see if this has any error 
-          //   if (user === this.props.route.params.result.user.email
-          //     || user === firebase.auth().currentUser.email)  {
-          //     navigation.navigate('OfferDetails',  {docID: id})
-          //   } else {
-          //     navigation.navigate('OfferDetailsJoin',  {docID: id})
-          //   }
-            
-            
-             
-      }}
-      style={[ styles.item]}
-    >
-      <Text style={styles.users}>{username}</Text>
-      <Text style={styles.detailsTitle}>{title}</Text>
-      <Text style={styles.details}>{data}</Text>
-      <Image source = {image} style = {styles.icons} />
-      <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
-      <Text style = {styles.progressText}>{progress}</Text>
-      <Progress.Bar 
-          progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-          color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-          style = {{marginTop: 38, alignSelf: 'center'}} />
-    </TouchableOpacity>
-  );
-}
+        }}
+        style={[ styles.item]}
+      >
+        <Text style={styles.users}>{username}</Text>
+        <Text style={styles.detailsTitle}>{title}</Text>
+        <Text style={styles.details}>{data}</Text>
+        <Image source = {image} style = {styles.icons} />
+        <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
+        <Text style = {styles.progressText}>{progress}</Text>
+       <ProgressBarAnimated
+          borderRadius = {15} 
+          style = {{marginTop: 38, alignSelf: 'center'}}
+          width={330} height ={30}
+          value={(total*100.00)/max}
+          backgroundColorOnComplete="#6CC644"
+          maxValue= {parseInt(max)}
+          onComplete={() => {
+            Alert.alert('Minimum Purchase Reached!');}}
+          />
+      </TouchableOpacity>
+    );
+  }
 
 const Search = ({navigation, result, byGoogle}) => {
-  
+    // allow the setting of offers data
     const [DATA, setDATA] = React.useState([]);
+
+    // allow the selection of offers
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
-
-    console.log("is focused loaded")
     const isFocused = useIsFocused();
 
-
+    //entering in DATA from this logged in user
     firebase.firestore().collection("offers").get()
     .then(snap => {
       DATA.length = 0;
@@ -77,10 +67,11 @@ const Search = ({navigation, result, byGoogle}) => {
         })
     })
 
-  // FROM HERE: SEARCH BAR 
+  // variables required for search bar filter function
   const [query, setQuery] = React.useState('');
   const [typingTimeout, setTypingTimeout] = React.useState(0);
 
+  // impose a timeout before search function is called
   const searched = (text) => {
     setQuery(text);
     if (typingTimeout) {
@@ -91,6 +82,7 @@ const Search = ({navigation, result, byGoogle}) => {
       }, 500))
   }
 
+  // function to allow the filtering in the search bar
   const searchFilterFunction = text => {
     const newData = (DATA.filter(function(item) {
       return item.title.indexOf(text) > -1;
@@ -98,7 +90,7 @@ const Search = ({navigation, result, byGoogle}) => {
     DATA.length = 0;
     DATA.push(...newData);
   };
-// UNTIL HERE: SEARCH BAR 
+
     return (
         <SafeAreaView style = {styles.container}>
             <Image
@@ -125,8 +117,12 @@ const Search = ({navigation, result, byGoogle}) => {
                       querySnapshot.forEach(doc => {
                         firebase.firestore().collection("offers").doc(doc.id).update({
                           image: require('../../../../assets/sephora.jpg')
-                        })
+                        }).catch(function(error) {
+                          console.log("Error getting document:", error);
+                        });
                       });  
+                  }).catch(function(error) {
+                    console.log("Error getting document:", error);
                   }),
                   firebase.firestore().collection("offers").where("title", "==", 'Cold Storage')
                   .get()
@@ -134,8 +130,12 @@ const Search = ({navigation, result, byGoogle}) => {
                       querySnapshot.forEach(doc => {
                         firebase.firestore().collection("offers").doc(doc.id).update({
                           image: require('../../../../assets/coldstorage.jpg')
-                        })
+                        }).catch(function(error) {
+                          console.log("Error getting document:", error);
+                        });
                       });  
+                  }).catch(function(error) {
+                    console.log("Error getting document:", error);
                   }),
                   firebase.firestore().collection("offers").where("title", "==", 'Fairprice')
                   .get()
@@ -143,8 +143,12 @@ const Search = ({navigation, result, byGoogle}) => {
                       querySnapshot.forEach(doc => {
                         firebase.firestore().collection("offers").doc(doc.id).update({
                           image: require('../../../../assets/fairprice.jpg')
-                        })
+                        }).catch(function(error) {
+                          console.log("Error getting document:", error);
+                        });
                       });  
+                  }).catch(function(error) {
+                    console.log("Error getting document:", error);
                   }),
                 <Item
                     id={item.id}
@@ -152,12 +156,14 @@ const Search = ({navigation, result, byGoogle}) => {
                     data = {item.data}
                     image = {item.image}
                     user = {item.user}
-                    // username = {item.username}
+                    username = {item.username}
                     result = {result}
                     byGoogle = {byGoogle}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
+                    total = {item.total}
+                    max = {item.max}
                 />
                 )}
                 keyExtractor={item => item.id}
@@ -173,111 +179,125 @@ const Search = ({navigation, result, byGoogle}) => {
 };
 
 export default class SearchScreen extends React.Component {
-    state = {
-        err:'',
-        foo:false
-    }
+  state = {
+    err:'',
+    users:null,
+    foo:false
+  }
+  
+  registerForPushNotificationsAsync = async () => {
+    var result = this.props.route.params.result;
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
 
-    registerForPushNotificationsAsync = async ({result}) => {
-        // var user = await firebase.auth().currentUser;
-        const { status: existingStatus } = await Permissions.getAsync(
-          Permissions.NOTIFICATIONS
-        );
-        let finalStatus = existingStatus;
-        // only ask if permissions have not already been determined, because
-        // iOS won't necessarily prompt the user a second time.
-        if (existingStatus !== 'granted') {
-          // Android remote notification permissions are granted during the app
-          // install, so this will only ask on iOS
-          const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-          finalStatus = status;
-        }
-        // Stop here if the user did not grant permissions
-        if (finalStatus !== 'granted') {
-          return;
-        }
-        try {
-          // Get the token that uniquely identifies this device
-          let token = await Notifications.getExpoPushTokenAsync();
-          try{
-            // POST the token to your backend server from where you can retrieve it to send push notifications.
-            firebase.firestore().collection('info').doc(user.email).update({
-                pushToken: token
-            })
-          }catch(error){
-            console.log("error")
-          }
-          //Creating a new collection 
-          try{
-            const {pref} = this.props.route.params.pref; ///from login page 
-            firebase.firestore().collection(pref).doc(result.user.email).set({
-              pushToken:token
-            })
-          }catch(error){
-            console.log('error')
-          }
-        } catch (error) {
-          console.log('error');
-        }
-    };            
-    async componentDidMount() {      
-      await this.registerForPushNotificationsAsync();
+    let finalStatus = existingStatus;
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
     }
-    render(){ 
-      console.log("renderedd once : Search")
-      DATA.length = 0;
-      firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
-      .then(snap => { 
-          snap.forEach(docs =>{
-            firebase.firestore().collection('promotion').doc(docs.id).update({
-              image: require('../../../../assets/fairprice.jpg')
-            })
-          })
-      })
-  
-      firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
-      .then(snap => { 
-          snap.forEach(docs =>{
-            firebase.firestore().collection('promotion').doc(docs.id).update({
-              image: require('../../../../assets/sephora.jpg')
-            })
-          })
-      })
-  
-  
-      firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
-      .then(snap => { 
-          snap.forEach(docs =>{
-            firebase.firestore().collection('promotion').doc(docs.id).update({
-              image: require('../../../../assets/coldstorage.jpg')
-            })
-          })
-      })
-        if (this.props.route.params.byGoogle == false) { //from signup + login page
-          if (this.props.route.params.name != null){
-            const {email} = this.props.route.params
-            const {username} = this.props.route.params
-            const {name} = this.props.route.params
-            //Creates db for each customer in Info collection
-            firebase.firestore().collection('info').doc(email).set({ 
-            name: name,
-            email: email, 
-            username: username,
-            frequency:'', //for Auto-Post frequency, to be updated eventually
-            pushToken:''})
-          }
-        } else if (this.props.route.params.byGoogle == true) { // sign in but gooogle
-          const {result} = this.props.route.params
-          firebase.firestore().collection('info').doc(result.user.email).set({ 
-            name: result.user.name,
-            email: result.user.email, 
-            username: result.user.name,
-            frequency:'', //for Auto-Post frequency, to be updated eventually
-            pushToken:''
-          })          
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      return;
+    }
+    try {
+      // Get the token that uniquely identifies this device
+      let token = await Notifications.getExpoPushTokenAsync();
+      if (result == null) {
+        try {
+          // POST the token to your backend server from where you can retrieve it to send push notifications.
+          firebase.firestore().collection('info').doc(user.email).update({
+              pushToken: token
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        } catch (error) {
+          console.log("error")
         }
-        return <Search navigation = {this.props.navigation} result ={this.props.route.params.result} 
-        byGoogle = {this.props.route.params.byGoogle}/>
+      } else {
+      //Creating a new collection 
+        try {
+          const {pref} = this.props.route.params.pref; //from Login page 
+          firebase.firestore().collection(pref).doc(result.user.email).set({
+            pushToken:token
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        } catch(error) {
+          console.log('error')
+        }
+      }
+    } catch (error) {
+      console.log('error');
+    }
+  };   
+
+  async componentDidMount() {
+    
+    await this.registerForPushNotificationsAsync();
+    DATA.length = 0;
+    firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/fairprice.jpg')
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        })
+    }).catch(function(error) {
+      console.log("Error getting document:", error);
+    });
+
+    firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/sephora.jpg')
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        })
+    }).catch(function(error) {
+      console.log("Error getting document:", error);
+    });
+
+    firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
+    .then(snap => { 
+        snap.forEach(docs =>{
+          firebase.firestore().collection('promotion').doc(docs.id).update({
+            image: require('../../../../assets/coldstorage.jpg')
+          }).catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+        })
+    }).catch(function(error) {
+      console.log("Error getting document:", error);
+    });
+  }     
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props !== nextProps) {
+      return true;
+    }
+    return false;
+  }
+
+  componentDidUpdate(nextProps, nextState) {
+    if (this.props !== nextProps) {
+      return true;
+    }
+    return false;
+  }
+
+  render(){      
+      return <Search 
+                navigation = {this.props.navigation} 
+                result ={this.props.route.params.result} 
+                byGoogle = {this.props.route.params.byGoogle}
+             />
     }
 }
 

@@ -9,7 +9,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import AddOrderButton from './src/scenes/main/offers/AddOrderButton';
 import Login from './src/scenes/login/Login';
 import Signup from './src/scenes/login/Signup';
+import SignupGoogle from './src/scenes/login/SignupGoogle';
+import PreferenceGoogle from './src/scenes/login/PreferenceGoogle';
 import Preference from './src/scenes/login/Preference';
+import ForgetPassword from './src/scenes/login/ForgetPassword';
 import Profile from './src/scenes/main/profile/Profile';
 import Groups from './src/scenes/main/groups/Groups';
 import GroupsDetails from './src/scenes/main/groups/GroupsDetails';
@@ -30,6 +33,7 @@ import OfferDetailsCancel from './src/scenes/main/profile/OfferDetailsCancel';
 import OfferDetailsReceived from './src/scenes/main/profile/OfferDetailsReceived';
 import Settings from './src/scenes/main/profile/Settings';
 import ChangePassword from './src/scenes/main/profile/ChangePassword';
+import AddGroups from './src/scenes/main/groups/AddGroups';
 
 // icons imports
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -41,7 +45,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import * as firebase from 'firebase';
 import firestore from 'firebase/firestore';
 import {decode, encode} from 'base-64';
-import { ProgressViewIOSComponent } from 'react-native';
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode } 
@@ -54,12 +57,12 @@ var firebaseConfig = {
     projectId: "collab-8af51",
     storageBucket: "collab-8af51.appspot.com",
     messagingSenderId: "688778678705",
-    appId: "1:688778678705:web:97a9bcc682a22bd4512d90"
+    appId: "1:688778678705:web:97a9bcc682a22bd4512d90",
+    measurementId: "G-B2P2PYGRCX"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
 firebase.firestore();
 
 //User navigated to Login page by default
@@ -73,7 +76,9 @@ const RootScreen = () => (
 >    
   <Root.Screen name = "Login" component = {Login} />
   <Root.Screen name = "Tabs" component = {TabNavigator} />
+  <Root.Screen name = "ForgetPassword" component = {ForgetPassword}/>
   <Root.Screen name = "SignUpScreen" component = {SignUpScreens}/>
+  <Root.Screen name = "SignUpGoogleScreens" component = {SignUpGoogleScreens}/>
 </Root.Navigator>
 );
 
@@ -90,6 +95,22 @@ function SignUpScreens(props) {
       <SignUpStack.Screen name = "Signup" component = {Signup} initialParams={props.route.params}/>
       <SignUpStack.Screen name = "Preferences" component = {Preference} initialParams={props.route.params}/> 
     </SignUpStack.Navigator>
+  )
+}
+
+const SignUpGoogleStack = createStackNavigator();
+function SignUpGoogleScreens(props) {
+  return (
+    <SignUpGoogleStack.Navigator
+      initialRouteName = "SignupGoogle"
+      screenOptions = {{
+        gestureEnabled: true,
+        headerShown: false
+      }}
+    >
+      <SignUpGoogleStack.Screen name = "SignupGoogle" component = {SignupGoogle} initialParams={props.route.params}/>
+      <SignUpGoogleStack.Screen name = "PreferenceGoogle" component = {PreferenceGoogle} initialParams={props.route.params}/> 
+    </SignUpGoogleStack.Navigator>
   )
 }
 
@@ -142,6 +163,7 @@ function GroupsScreens(props) {
       }}
     >
       <GroupsStack.Screen name = "GroupsScreen" component = {Groups} initialParams={props.route.params}/>
+      <GroupsStack.Screen name = "AddGroups" component = {AddGroups} initialParams={props.route.params}/>
       <GroupsStack.Screen name = "GroupsDetails" component = {GroupsDetails} initialParams={props.route.params}/>
       <GroupsStack.Screen name = "OfferDetails" component = {OfferDetails} initialParams={props.route.params} />
       <GroupsStack.Screen name = "EditOffer" component = {EditOffer} initialParams={props.route.params} />
@@ -244,7 +266,7 @@ function ChatStackScreen(props) {
       <ChatStack.Screen 
         name = "ChatRoom" 
         component = {ChatRoom} 
-        initialParams={{route: props.route.params}} 
+        initialParams={{route: props.route.params}}
         options={({route}) => ({title: route.params.threads.name,
           headerTitleStyle: {fontSize: 24, fontWeight: 'bold'}, 
           headerTintColor: "#000"})}

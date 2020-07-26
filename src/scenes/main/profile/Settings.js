@@ -1,10 +1,10 @@
 import React , {useState} from 'react';
 import { TextInput, StyleSheet, Text, ScrollView, 
-    SafeAreaView, TouchableOpacity, Image, Switch } from "react-native";
+    TouchableOpacity, Image, Switch } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase'; 
-// import { Item } from 'react-native-paper/lib/typescript/src/components/List/List';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default class SettingsScreen extends React.Component {
     state = { 
@@ -14,9 +14,11 @@ export default class SettingsScreen extends React.Component {
         switchValue4: false,
         isDateTimePickerVisible: false, 
         displayTime: "", 
-        freq:'',
-        frequency:''
+        frequency: "",
+        freq:''
     };
+
+    // enable toggling of switches for notification settings
     toggleSwitch1 = (value) => {
         this.setState({switchValue1: value})
     }
@@ -29,24 +31,29 @@ export default class SettingsScreen extends React.Component {
     toggleSwitch4 = (value) => {
         this.setState({switchValue4: value})
     }
+
+    // display of datetime picker
     showDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: true });
     };
     
+    // hide display of datetime picker
     hideDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: false });
     };
     
+    // allow the choosing of time picked from datetime picker
     handleTimePicked = time => {
         this.hideDateTimePicker();
         this.setState({displayTime : time});
     };
 
+    // allow the changing of auto-post frequency
     changeFreq = (item) => {
-        this.setState({freq: item.value})
-        console.log("the iem v for setState", item.value);
+        this.setState({freq: item.value});
     }
 
+    // allow the saving of settings into Cloud Firestore database
     onSave = () => {
         var user = firebase.auth().currentUser;
         //Update this into 'info' collection
@@ -58,6 +65,7 @@ export default class SettingsScreen extends React.Component {
 
     render() {
         const time = this.state.displayTime.toString().substring(16, 21);
+        
         return (
             <SafeAreaView style = {styles.container}>
                 <ScrollView style = {styles.scrollView}>
@@ -71,13 +79,14 @@ export default class SettingsScreen extends React.Component {
                     <Text style = {styles.title}> Auto-Post Frequency</Text>
                     <DropDownPicker 
                         style = {styles.Picker}
+                        placeholder = "Select a Frequency"
+                        defaultValue = ""
                         items = {[
                             {label: 'Weekly', value: 'Weekly'},
                             {label: 'Daily', value: 'Daily'},
                             {label: 'Biweekly', value: 'Biweekly'},
                             {label: 'Monthly', value: 'Monthly'},
                         ]}
-                        onChangeItem = {this.changeFreq}
                     />
                     <Text style = {styles.title}> Auto-Post Timing</Text>
                     <TouchableOpacity 
@@ -128,7 +137,8 @@ export default class SettingsScreen extends React.Component {
                     />
                     <TouchableOpacity 
                         style = {styles.Button} 
-                        onPress= {this.onSave}>
+                        onPress={() => this.onSave()}
+                    >
                         <Text style = {styles.buttonText}>Save</Text>
                     </TouchableOpacity>
                 </ScrollView>

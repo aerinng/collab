@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import firebase from 'firebase';
-import { StyleSheet, Text, ScrollView, SafeAreaView, Image, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, ScrollView, Image, FlatList, TouchableOpacity } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const DATA = [
     {
@@ -35,18 +37,12 @@ const DATA = [
         },
 ];
 
-function Item({ id, name, image, email, selected, onSelect, updateCategory, setChosen, setID}) {
+function Item({ id, name, image, email, selected, onSelect, updateCategory, setChosen, setCurr }) {
     return (
         <TouchableOpacity
             onPress={() => {
-                // set selection of group to be true/false
-                //onSelect(id);
-                setID(id)
+                onSelect(id, name);
                 console.log("done")
-                updateCategory(selected, name);
-                updateCategory(selected, name);
-                //},1000)
-                // indicate true because user has selected at least 1 group
                 setChosen(true);
             }}
         >
@@ -56,63 +52,50 @@ function Item({ id, name, image, email, selected, onSelect, updateCategory, setC
     );
 }
 
-export default class Preference extends React.Component {
-    email = 'sdf@mail.com'
-    component(props) {
-        this.state = {
-            selected: new Map(),
-            category: [],
-            chosen: false,
-            id: ''
-        };
-    }
-    // to track the selection of groups
+const updateCategory = (category, email, navigation, result) => {
+    const temp = [];
+    temp.push(category);
+    firebase.firestore()
+            .collection('info')
+            .doc(email)
+            .update({
+                category: temp
+            })
+            .catch(function(error) {
+                console.log("Error updating document:", error);
+            });
+    navigation.navigate('Tabs', {result: result, byGoogle:true});
+}
 
-    shouldComponentUpdate(nextProps, nextState) {
-        if (this.props.selected !== nextProps.selected) {
-            const temp = this.state.selected;
-            const newSelected = new Map(temp);
-            newSelected.set(this.state.id, !temp.get(this.state.id));
-            this.setState({selected: newSelected});
-        }
-    }
-
-    setID = (id) => {
-        this.setState({id: id})
+const Preference = ({navigation, email, name, username, result}) => {
+    const [selected, setSelected] = React.useState(null);
+    const onSelect = (id, itemName) => {
+        setSelected(id);
+        setCategory(itemName)
+        console.log("SEE: " + category)
     }
 
-    setChosen = () => {
-        this.setState({chosen: true})
-    }
+    // to track the categories that the user has chosen in an array
+    const [category, setCategory] = React.useState('');
 
-    updateCategory = (bool, name) => {
-        // include category inside array
-        let array = [...this.state.category];
-        if (!bool) {
-            this.setState({category: array});
-        } else { // remove category from array
-            array.splice(array.length - 1, 1);
-            this.setState({category: array});
-        }
-        console.log(bool)
-        console.log("testing: " + name)
-        console.log(this.state.category)
-        // update to firebase
-        firebase.firestore()
-                .collection('info')
-                .doc(email)
-                .update({
-                    category: category
-                })
-                .catch(function(error) {
-                    console.log("Error updating document:", error);
-                });
-    }
-render() {
+    // to determine if user has selected at least 1 group
+    const [chosen, setChosen] = React.useState(false);
+
+    //const [bool, setBool] = React.useState(false);
+    const [itemName, setName] = React.useState('');
+
+   const setCurr = (currName) => {
+        setName(currName);
+   }
+
+    React.useEffect(() => {
+    }, [category])
+
+
     return (
         <SafeAreaView style = {styles.container}>
             <Text style = {styles.header}> Discover Groups </Text>
-            <Text style = {styles.title}> Choose at least 1 Group that interests you! </Text>
+            <Text style = {styles.title}> Choose 1 Group that interests you! </Text>
             <FlatList
                 data={DATA}
                 numColumns = {2}
@@ -123,38 +106,37 @@ render() {
                     name={item.name}
                     image = {item.image}
                     email = {email}
-                    selected={!!this.state.selected.get(item.id)}
+                    selected={item.id == selected}
                     onSelect={onSelect}
-                    updateCategory = {updateCategory}
                     setChosen = {setChosen}
-                    setID = {setID}
+                    setCurr = {setCurr}
                 />
                 )}
                 keyExtractor={item => item.id}
-                extraData={this.state.selected}
+                extraData={selected}
             />
             <TouchableOpacity 
                 style = {styles.Button} 
                 onPress={() => 
                     chosen 
-                    ? this.props.navigation.navigate('Login') 
-                    : alert("Please select at least 1 Group!")}
+                    ? updateCategory(category, email, navigation, result)
+                    : alert("Please select 1 Group!")}
             > 
                 <Text style = {styles.buttonText}> Done </Text>
             </TouchableOpacity>
         </SafeAreaView>
     )
-    }
 };
 
-/*export default class PrefScreen extends React.Component {
- 
+export default class PrefScreen extends React.Component {
     render() {
-        //const {email} = this.props.route.params;
-        const email = 'sdf@mail.com'
-        return <Preference navigation = {this.props.navigation} email = {email} />;
+        const {email} = this.props.route.params;
+        const {name} = this.props.route.params;
+        const {username} = this.props.route.params;
+        const {result} = this.props.route.params;
+        return <Preference navigation = {this.props.navigation} email = {email} name ={name} username = {username} result={result}/>;
     }
-}*/
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -162,7 +144,8 @@ const styles = StyleSheet.create({
       padding: 35,
       flex: 1,
       marginHorizontal: 10,
-      marginBottom: 33
+      marginBottom: 33,
+      width: wp('96%')
     },
     header: {
         fontSize: 30,

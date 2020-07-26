@@ -1,17 +1,20 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, TextInput, Switch, TouchableOpacity, 
-    ScrollView, SafeAreaView, Image, Linking } from "react-native";
+    ScrollView, Image, Linking } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
 import {stimulateOrder} from './AddOrdFunc'
+import { max } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Analytics from 'expo-firebase-analytics';
 
 class AddOrder extends React.Component {
     state = {
         promo:'', 
         location:'', 
-        total: '',//0,
+        total: '',
         category:'', 
         date:'',
         desc:'',
@@ -24,31 +27,35 @@ class AddOrder extends React.Component {
         data: ''
     }
 
+    // allow the setting of category for the offer
     changeCategory(item) {
         this.setState({category: item.value});
         console.log(this.state.category)
     }
 
+    // allow the auto posting switch to be toggled
     toggleSwitch = (value) => {
         this.setState({switchValue: value})
     }
 
+    // display the datetime picker
     showDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: true });
     };
-    
+
+    // hide the display of datetime picker
     hideDateTimePicker = () => {
         this.setState({ isDateTimePickerVisible: false });
     };
-    
+
+    // set the date picked from the datetime picker
     handleDatePicked = date => {
         this.hideDateTimePicker();
         this.setState({displayDate : date});
     };
 
-    componentDidMount() {
-        //NEW CODES: to see if user is:
-        //Google login OR Collab login        
+    // fetch username from Cloud Firestore database
+    componentDidMount() {     
         if (this.props.route.params.result != null){
             const {result} = this.props.route.params;
             this.state.user = result.user; 
@@ -70,14 +77,14 @@ class AddOrder extends React.Component {
                                         });
     }
 
-    //what is this for....
+     // perform clean up, unsubscribe from firebase data
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
-    addToDB = (data, title, image) => {
-        
+    // add offer data to Cloud Firestore database
+    addToDB = (data, title, image, max) => {
         firebase.firestore()
                 .collection("offers")
                 .add({ //add my order id inside
@@ -87,37 +94,46 @@ class AddOrder extends React.Component {
                     data: data,
                     title: title,
                     location: this.state.location,
-                    total: this.state.total, 
+                    total: parseFloat(this.state.total),
                     category: this.state.category, 
-                    date: this.state.displayDate.toString(),
+                    date: this.state.displayDate.toString().substring(4,16),
                     desc: this.state.desc,
                     image: image,
+                    max: max,
                     switch: this.state.switchValue
-                }).then((snapshot) => { //all asynchronous
-                    //console.log("already added"); 
+                }).then((snapshot) => { 
                     snapshot.update({
                         id:snapshot.id
                     })
-                    /*this.setState({
-                        promo:'',
-                        location:'', 
-                        total:0, 
-                        date:'',
-                        desc:''                            
-                    })*/
                     if (this.state.switchValue){
                         stimulateOrder(snapshot.id, this.state.user.email)
                     }
                     alert("Added Successfully"); 
                 })
+                this.logsEvent();
     }
+        // add into analytics
+        logsEvent = async () => { 
+            await Analytics.logEvent('AddOffer', {
+                name: 'addoffer',
+                screen: 'addoffer',
+                purpose: 'Added a new offer in Collab',
+              });
+        }
 
+            // validate current total to be only integers
+    validateAmt = (amt) => {
+        var re = /^\d+(\.\d{1,2})?$/;
+          return re.test(amt);
+    };
     render() {
         //these things are carried over from Store Promo.
         const {data} = this.props.route.params
         const {title} = this.props.route.params
         const {Pid} = this.props.route.params
         const {image} = this.props.route.params
+        const {max} = this.props.route.params
+        
         const orderDate = this.state.displayDate.toString().substring(4,16);
         return (
         <SafeAreaView style = {styles.container}>
@@ -157,7 +173,6 @@ class AddOrder extends React.Component {
                     value = {this.state.category}
                     onChangeItem = {item => {
                         this.setState({category: item.value});
-                        //console.log(this.state.category);
                     }}
                 />
                 <Text style = { styles.titles }> Current Total *</Text>
@@ -201,14 +216,15 @@ class AddOrder extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button} 
                     onPress={() =>  {
-                        if (this.state.location != '' &&
-                            this.state.category != '' &&
-                            this.state.total != '' &&
-                            this.state.date != null) { //its THE DATE THAT HAS PROBELM
-                                // alert("lol")
-                            this.addToDB(data, title, image)
-                        } else {
+                        if (this.state.location == '' ||
+                            this.state.category == '' ||
+                            this.state.total == '' ||
+                            this.state.displayDate == '') {
                             alert("Please fill in all mandatory fields!")
+                        } else if (!this.validateAmt(this.state.total)) {
+                            alert("Please input a valid Current Total!")
+                        } else {
+                            this.addToDB(data, title, image, max)
                         }
                     }}
                 >

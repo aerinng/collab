@@ -1,20 +1,20 @@
 import React, {useState, useRef, useEffect} from 'react';
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList, ActivityIndicator, Linking } from "react-native";
 import firebase from 'firebase'; 
 import { Searchbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { max } from 'react-native-reanimated';
 
-//const DATA = [];
 
-function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
+// individual store promotion item
+function Item({ id, title, data, image, url, selected, onSelect, navigation,max }) {
   return (
     <TouchableOpacity
       onPress={() => {
         onSelect(id);
-        navigation.navigate('AddOrder', {Pid:id, title:title, data:data, image:image});
+        navigation.navigate('AddOrder', {Pid:id, title:title, max:max,  data:data, image:image});
       }}
-      style={[
-        styles.item
-      ]}
+      style={[styles.item]}
     >
       <TouchableOpacity
         style = {{backgroundColor: "#C5C5C5", borderRadius: 15, marginLeft: 255, marginRight: 10, marginTop: -30, padding: 10}}
@@ -31,27 +31,48 @@ function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
 }
 
 const StorePromo = ({navigation}) => {
-  const [DATA, setDATA] = React.useState([]);
+
+  // array for store promotions
+  const [DATA, setDATA] = React.useState([
+    {
+      id: '1',
+      title: 'Fairprice',
+      data: "Free delivery with purchase above $79",
+      image: require('../../../../assets/fairprice.jpg'),
+      url: 'https://www.fairprice.com.sg/promotions', 
+      max: 79
+    },
+    {
+      id: '2',
+      title: 'Cold Storage',
+      data: "Free delivery with purchase above $79",
+      image: require('../../../../assets/coldstorage.jpg'),
+      url: 'https://coldstorage.com.sg/deals/',
+      max:79
+    },
+    {
+      id: '3',
+      title: 'Sephora',
+      data: "Free delivery with purchase above $50",
+      image: require('../../../../assets/sephora.jpg'),
+      url: 'https://www.sephora.sg/sale',
+      max: 50, 
+    },
+  ]);
+
+  // allow the selection of store promotions
   const [selected, setSelected] = React.useState(null);
   const onSelect = (id) => {
       setSelected(id);
-      // console.log(id);
   }
-  
-  DATA.length = 0;
 
-  // FROM HERE: SEARCH BAR DRAFT
-  // it's not working yet LOL
+  // variables needed for search bar filter feature
   const [query, setQuery] = React.useState('');
-
-  // only call search after 1.5 seconds after user has finish typing
-  //const timer = setTimeout(() => searchFilterFunction(query), 1500);
   const [typingTimeout, setTypingTimeout] = React.useState(0);
 
+  // impose a timeout before the search function is called
   const searched = (text) => {
-    // console.log("before: " + query)
     setQuery(text);
-    // console.log("after: " + query)
 
     if (typingTimeout) {
       clearTimeout(typingTimeout);
@@ -59,27 +80,23 @@ const StorePromo = ({navigation}) => {
 
     setTypingTimeout(setTimeout(function() {
         searchFilterFunction(text);
-      }, 5000))
+      }, 500))
   }
 
+  // function to filter from search bar
   const searchFilterFunction = text => {
     const newData = (DATA.filter(function(item) {
-      const itemData = item.title ? item.title : '';
-      return itemData.indexOf(text) > -1;
+      return item.title.indexOf(text) > -1;
     }));
-    // console.log("before: " + DATA.length)
-    DATA.length = 0;
-    setDATA(DATA => [...DATA, newData]);
-    console.log("after: " + DATA.length)
+    setDATA(newData);
   };
-// UNTIL HERE: SEARCH BAR DRAFT
 
-  useEffect(() => {
-    fetchData();
-  })
+  // fetch data of store promotions from database whenever there's a new render
+  useEffect(() => {}, [DATA])
 
-  const fetchData = () => {
-    //just for fairprice...
+
+  // fetch data of store promotions from database
+  const setDataa = () => {
     firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
       .then(snap => { 
           snap.forEach(docs =>{
@@ -88,7 +105,6 @@ const StorePromo = ({navigation}) => {
             })
             DATA.push(docs.data()) //from firebase
           })
-          // console.log("Data", DATA)
       })
 
     firebase.firestore().collection('promotion').where("title", "==", 'Sephora').get()
@@ -101,7 +117,6 @@ const StorePromo = ({navigation}) => {
         })
     })
 
-
     firebase.firestore().collection('promotion').where("title", "==", 'Cold Storage').get()
     .then(snap => { 
         snap.forEach(docs =>{
@@ -112,7 +127,7 @@ const StorePromo = ({navigation}) => {
         })
     })
   }
-
+  
     return (
         <SafeAreaView style = {styles.container}>
             <TouchableOpacity onPress = {() => navigation.navigate('Search')} >
@@ -131,16 +146,11 @@ const StorePromo = ({navigation}) => {
               Store Promotions
             </Text>
             <Searchbar 
-              onChangeText={text => {
-                setTimeout((text) => searched(text), 1500);
-              }}
+              onChangeText={text => {searched(text)}}
               placeholder = "Search Stores"
               style = {{backgroundColor: '#fff', borderRadius: 15, marginHorizontal: 20, marginVertical: 15}}
               value = {query}
-              //theme = {{color: "266E7D"}}
-              // to change cursor colour bc its purple rn 
             />
-            
            <FlatList
                 data={DATA}
                 renderItem={({ item }) => (
@@ -153,16 +163,28 @@ const StorePromo = ({navigation}) => {
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
+                    max = {item.max}
                 />
                 )}
                 keyExtractor={item => item.id}
                 extraData={selected}
+                getItemLayout={(data, index) => (
+                  {length: 15, offset: 15 * index, index}
+                )}
             />
         </SafeAreaView>  
     )
 };
 
 export default class Promo extends React.Component {
+
+  shouldComponentUpdate(nextProps) {
+    if (this.props !== nextProps) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
       return <StorePromo navigation = {this.props.navigation} />;
   }

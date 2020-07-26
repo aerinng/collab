@@ -1,7 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity, SafeAreaView } from "react-native";
+import { View, StyleSheet, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Analytics from 'expo-firebase-analytics';
+import md5 from 'md5';
 
 export default class Signup extends React.Component{
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
@@ -15,15 +18,24 @@ export default class Signup extends React.Component{
         error:'',
         err: ''
     }
+
+    // Add into analytics
+  logsEvent = async () => { 
+    await Analytics.logEvent('Signup', {
+        name: 'signup',
+        screen: 'signup',
+        purpose: 'User successfully signed up via Collab login method',
+      });
+  }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
     onBottomPress = () => {
         firebase.auth()
                 .createUserWithEmailAndPassword(this.state.email,this.state.password)
-                .then(this.onSignupSuccess())
                 .catch(err => {
                     alert(err);
                 })
+        this.onSignupSuccess();
     }
 
     //If successful, no error message shown
@@ -45,7 +57,9 @@ export default class Signup extends React.Component{
                     addressLine2: this.state.addressLine2,
                     name: this.state.name,
                     username: this.state.username,
-                    pushToken: ''
+                    pushToken: '',
+                    frequency: '',
+                    hashPwd:md5(this.state.password)
                 })
                 .then(() => {
                    this.props.navigation.navigate(
@@ -53,7 +67,8 @@ export default class Signup extends React.Component{
                        {email: mail, 
                         name: this.state.name, 
                         username: this.state.username,
-                        byGoogle: false
+                        byGoogle: false,
+                        password: this.state.password
                     });
                 })
                 .catch(error => {
@@ -61,10 +76,16 @@ export default class Signup extends React.Component{
                 });
     }
 
+    // Email validation
+    validateEmail = (email) => {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return re.test(email);
+    };
+
     render() {
         return (           
             <SafeAreaView style = {styles.container}>
-            <KeyboardAwareScrollView>
+                <KeyboardAwareScrollView>
                 <View style = {styles.container}>
                     <Image 
                         style = {styles.image}
@@ -90,7 +111,9 @@ export default class Signup extends React.Component{
                         style = {styles.TextInput}
                         placeholder = "Email"
                         //value={this.state.email}
-                        onChangeText={email => this.setState({email: email})}
+                        onChangeText={email => {
+                                this.setState({email: email})
+                        }}
                         autoCapitalize = 'none'
                     />
                     <Image 
@@ -119,7 +142,17 @@ export default class Signup extends React.Component{
                     <TouchableOpacity 
                         style = {styles.Button} 
                         onPress = {() => {
-                            this.onBottomPress();
+                            if (this.state.name == '' || 
+                                this.state.email == '' ||
+                                this.state.username == '' ||
+                                this.state.password =='') {
+                                alert("Please input all mandatory fields!")
+                            } else if (!this.validateEmail(this.state.email)) {
+                                alert("Please input a valid email!")
+                            } else {
+                                this.logsEvent();
+                                this.onBottomPress();
+                            }
                         }}
                     > 
                         <Text style = {styles.buttonText}> Sign Up </Text>
@@ -142,14 +175,13 @@ const styles = StyleSheet.create({
         width: 130,
         height: 130,
         alignSelf: 'center',
-        marginTop: 10
     },
     icons: {
         position: 'absolute',
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 435,
+        marginTop: 425,
         padding: 10,
         zIndex: 1
     },
@@ -158,7 +190,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 505,
+        marginTop: 495,
         padding: 10,
         zIndex: 1
     },
@@ -167,7 +199,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 280,
+        marginTop: 270,
         padding: 10,
         zIndex: 1
     },
@@ -176,7 +208,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 355,
+        marginTop: 345,
         padding: 10,
         zIndex: 1
     },

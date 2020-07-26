@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, FlatList ,ScrollView, SafeAreaView, TouchableOpacity, Image } from "react-native";
 import firebase from 'firebase';
 import * as Progress from 'react-native-progress';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
  
 
 class MyOfferDetails extends React.Component{
@@ -23,7 +24,6 @@ class MyOfferDetails extends React.Component{
     }    
 
     render(){
-        console.log("My Offer Details: render"); 
         return (
             <SafeAreaView style = {styles.container}>
             <FlatList
@@ -42,7 +42,6 @@ class MyOfferDetails extends React.Component{
             renderItem={({item}) => (
             <View style={styles.itemContainer}>
             <Text style = { styles.titles }> Store Promotion </Text>
-            {/* <Text style = { styles.data }>Fairprice - Free delivery with purchase above $79</Text> */}
             <Text style ={ styles.data}>{item.data}</Text>
             <Text style = { styles.titles }> My Location </Text>
             <Text style ={ styles.data}>{item.location}</Text>  
@@ -52,11 +51,16 @@ class MyOfferDetails extends React.Component{
             <Text style ={ styles.data }>{item.total}</Text>
             <Text style = { styles.titles }> Progress </Text>
             <Text style = {styles.progressText}>33% of $79.00</Text>
-           <Progress.Bar 
-                progress={0.33} width={330} height ={30} borderRadius = {15} 
-                color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-                style = {{marginBottom: 15, alignSelf: 'center'}}
-            />            
+            <ProgressBarAnimated
+                borderRadius = {15} 
+                style = {{marginTop: 38, alignSelf: 'center'}}
+                width={330} height ={30}
+                value={(total*100.00)/max} 
+                backgroundColorOnComplete="#6CC644"
+                maxValue= {parseInt(max)}
+                onComplete={() => {
+                    Alert.alert('Minimum Purchase Reached!');}}
+                />            
             <Text style = { styles.titles }> Estimated Order Date </Text>
             <Text style ={ styles.data }>{item.date}</Text>
             <Text style = { styles.titles }> Description </Text>           

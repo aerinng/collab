@@ -1,7 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, SafeAreaView, TouchableOpacity, Image} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, Image} from "react-native";
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import * as Analytics from 'expo-firebase-analytics';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -14,6 +17,7 @@ class Profile extends React.Component {
         };
     }
 
+    // allow user to sign out of Collab
     onSignOut = () => {
         firebase.auth().signOut().then(function() {
             alert("You have signed out successfully.");
@@ -23,16 +27,15 @@ class Profile extends React.Component {
         this.props.navigation.navigate('Login');
     }
 
+    // fetch profile data from Cloud Firestore database
     getData = () => {
-        //NEW CODES: to see if user is:
-        //Google login OR Collab login
-         if (this.props.route.params.result != null){
+        if (this.props.route.params.result != null){
             const {result} = this.props.route.params;
             var user = result.user.email; 
          } else {
             var user = firebase.auth().currentUser.email;
          }
-         
+
         var document = firebase.firestore().collection('info').doc(user);
         this.state.unsubscribe = document.get().then((doc) => {
             var data = doc.data();
@@ -48,10 +51,21 @@ class Profile extends React.Component {
         });
     }
 
+    // add into analytics
+    logsEvent = async () => { 
+        await Analytics.logEvent('EditProfileAttempt', {
+            name: 'editprofileattempt',
+            screen: 'profile',
+            purpose: 'Clicked on Edit profile',
+          });
+    }
+
+    // fetch profile data from Cloud Firestore database upon renders
     componentDidMount() {
         this.getData();
     }
 
+    // re-render if user's avatar changed
     componentDidUpdate(prevProps, prevState) {
         if (this.state.userAvatar !== prevState.userAvatar ||
             this.props !== prevProps) {
@@ -59,12 +73,22 @@ class Profile extends React.Component {
         }
       }
 
+    // unsubscribe from fetching data from database
     componentWillUnmount() {
         var unsubscribe = this.state.unsubscribe;
         unsubscribe;
     }
 
     render() {
+        //NEW CODES: to see if user is:
+        //Google login OR Collab login
+        if (this.props.route.params.result != null){
+            const {result} = this.props.route.params;
+            var user = result.user.email; 
+        } else {
+            var user = firebase.auth().currentUser.email;
+        }
+        const result = this.props.route.params.result;
         return (
             <SafeAreaView style = {styles.container}>
                 <Image source = {{uri: this.state.userAvatar}} style = {styles.userIcon}/>
@@ -73,7 +97,10 @@ class Profile extends React.Component {
                 <Text style = {styles.header}>{ this.state.username }</Text>
                 <TouchableOpacity 
                     style = {styles.Button}
-                    onPress={() => this.props.navigation.navigate('EditProfile')}
+                    onPress={() => {
+                        this.logsEvent();
+                        this.props.navigation.navigate('EditProfile', {user: user, result: result});
+                    }}
                 >
                     <Text style = {styles.buttonTexts}> Edit Profile</Text>
                 </TouchableOpacity>
@@ -92,10 +119,14 @@ class Profile extends React.Component {
                     <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
                 </TouchableOpacity>
                 <TouchableOpacity 
-                    style = {styles.itemNew}
-                    onPress = {() => this.props.navigation.navigate('ChangePassword')}
+                    style = {[styles.itemNew, {opacity: this.props.route.params.result != null ? 0 : 1}]}
+                    onPress = {() => {
+                        if (this.props.route.params.result == null) {
+                            this.props.navigation.navigate('ChangePassword')
+                        }
+                    }}
                 >
-                    <Text style = {styles.detailsTitleNew}> Change Password</Text>
+                    <Text style = {[styles.detailsTitleNew, {opacity: this.props.route.params.result != null ? 0 : 1}]}> Change Password</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style = {styles.itemNew2}
@@ -148,7 +179,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 40,
         borderRadius: 15,
-        backgroundColor: "#fff"
+        backgroundColor: "#fff",
     },
     detailsTitle: {
         fontSize: 25,

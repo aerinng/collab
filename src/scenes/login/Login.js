@@ -1,41 +1,81 @@
 import React from 'react';
 import firebase from 'firebase';
 import { View, StyleSheet, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity } from "react-native";
-
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import * as Google from 'expo-google-app-auth';
-
 export default class Login extends React.Component {
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
     state = {        
             email:'',
             password:'',
             error:''
-    }   
+    } 
+
 
     //NEW SET OF CODES [GOOGLE SIGNIN]
     async googleSignin() {
+        var curr = this;
         try {
           const result = await Google.logInAsync({
-            // androidClientId: YOUR_CLIENT_ID_HERE,
+            androidClientId: "335681130717-5b2ck0a52e1iq6dudurf4um9q49pf9ba.apps.googleusercontent.com",
             iosClientId: "335681130717-oai52figqvp0f5dgjdmvlqgtqco7qvsl.apps.googleusercontent.com",
           });
           if (result.type === 'success') {
-            //PLEASE IGNORE THE COMMENTED CODES HERE 
-            //check if first time user
-            // this.props.navigation.navigate('Preferences', {result: result, byGoogle:true})
-
-
-            //byGoogle login: [boolean value]
-            this.props.navigation.navigate('Tabs', {result: result, byGoogle:true})
+            var doc = firebase.firestore().collection("info").doc(result.user.email);
+            doc.get().then(function(docRef) {
+                if (!docRef.exists) {
+                    console.log("not exists")
+                    curr.props.navigation.navigate('SignUpGoogleScreens', {result: result, byGoogle:true})
+                } else {
+                    console.log("exists")
+                    curr.props.navigation.navigate('Tabs', {result: result, byGoogle:true})
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
           } else {
             console.log("cancelled")
           }
         } 
-        catch (e) {
-          console.log("error", e);
+        catch (error) {
+          console.log("error: ", error);
         }
     }     
+
+    googleSignUp = () => {
+        //Creates individual email user as a Collection
+        var mail = this.state.email;
+        firebase.firestore()
+                .collection('info')
+                .doc(mail)
+                .set({
+                    promo:'',
+                    location:'',
+                    category:'',
+                    total:'', 
+                    date:'',
+                    desc:'',
+                    avatar: 'null',
+                    addressLine1: this.state.addressLine1,
+                    addressLine2: this.state.addressLine2,
+                    name: this.state.name,
+                    username: this.state.username,
+                    pushToken: ''
+                })
+                .then(() => {
+                    this.props.navigation.navigate(
+                        'Preferences', 
+                        {email: mail, 
+                        name: this.state.name, 
+                        username: this.state.username,
+                        byGoogle: false
+                    });
+                })
+                .catch(error => {
+                    alert(error);
+                });
+    }
+
 
     //Sign In users with the given email and password (FOR AUTHENTICATION)
     onBottomPress = () =>{
@@ -62,30 +102,37 @@ export default class Login extends React.Component {
             error:''
         })
         try{
-                const {name} = this.props.route.params
-                const {email} = this.props.route.params
-                //const {password} = this.props.route.params
-                const {username} = this.props.route.params
-                this.props.navigation.navigate('Tabs', {name:name, email:email,username:username, byGoogle: false}) // removed password, if you need please add it back in!!
+            const {name} = this.props.route.params
+            const {email} = this.props.route.params
+            const {username} = this.props.route.params
             
+            this.props.navigation.navigate('Tabs', {name:name, email:email, username:username, byGoogle: false})
         }catch{
             this.props.navigation.navigate('Tabs', {byGoogle: false})
-        }
+        }   
     }
 
     updateCategory = (category, email) => {
+        const temp = [];
+        temp.push(category);
         firebase.firestore()
                 .collection('info')
                 .doc(email)
                 .update({
-                    category: category
+                    category: temp
                 })
                 .catch(function(error) {
                     console.log("Error updating document:", error);
                 });
     }
 
-    render(){ 
+    // email validation
+    validateEmail = (email) => {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
+
+    render(){
         if (this.props.route.params != null) {
             const {category} = this.props.route.params;
             const {email} = this.props.route.params;
@@ -103,6 +150,10 @@ export default class Login extends React.Component {
                     style = {styles.icons}
                     source = {require('../../../assets/user.png')}
                 />
+                <TouchableOpacity onPress={() => this.googleSignin()}>
+                    <Image source = {require('../../../assets/google.png')} style = {styles.google}/>
+                </TouchableOpacity>
+                <Text style = {styles.or}>OR</Text>
                 <TextInput 
                     style = {styles.TextInput} 
                     onChangeText={email => this.setState({email})}
@@ -124,17 +175,21 @@ export default class Login extends React.Component {
                     underlineColorAndroid = { 'transparent' }
                     autoCapitalize = 'none'
                 />
-                <TouchableOpacity style = {styles.Button} onPress = {() => {
-                    this.onBottomPress();
-                }}>
+                <TouchableOpacity 
+                    style = {styles.Button} 
+                    onPress = {() => {
+                        if (!this.validateEmail(this.state.email)) {
+                            alert("Please input a valid email!")
+                        } else {
+                            this.onBottomPress();
+                        }
+                    }}
+                >
                     <Text style = {styles.buttonText}> Sign In </Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => this.googleSignin()}>
-                    <Text style = {styles.ForgetPW}> GOOGLE LOGINNN</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress = {() => {this.props.navigation.navigate('ForgetPassword')}}
+                >
                     <Text style = {styles.ForgetPW}> Forget Password? </Text>
                 </TouchableOpacity>
                 <Text style = {styles.NoAccountText}> Don't have an account? </Text>
@@ -160,14 +215,14 @@ const styles = StyleSheet.create({
         width: 130,
         height: 130,
         alignSelf: 'center',
-        marginTop: 75,
+        marginTop: 45,
     },
     icons: {
         position: 'absolute',
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 370,
+        marginTop: 405,
         padding: 10,
         zIndex: 1
     },
@@ -176,7 +231,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft: 50,
-        marginTop: 445,
+        marginTop: 480,
         padding: 10,
         zIndex: 1
     },
@@ -184,7 +239,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 45,
         fontWeight: '600',
-        paddingBottom: 55
+        paddingBottom: 20
     },
     TextInput: {
         alignSelf: 'stretch',
@@ -226,6 +281,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '700',
         marginTop: 5
-       
+    },
+    google: {
+        width: 205,
+        height: 50,
+        alignSelf: 'center',
+        marginBottom: 15
+    },
+    or: {
+        alignSelf: 'center',
+        fontSize: 20,
+        fontWeight: '700',
+        marginBottom: 10
     }
 });
+ 

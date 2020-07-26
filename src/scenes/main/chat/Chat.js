@@ -1,10 +1,12 @@
 import React, {useEffect} from 'react';
 import { StyleSheet, Text, FlatList, TouchableOpacity, 
-  Image, Modal, TextInput, View } from "react-native";
+  Image, Modal, TextInput, View, Alert, TouchableWithoutFeedback } from "react-native";
 import firebase from "firebase";
 import { List, Divider, Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Analytics from 'expo-firebase-analytics';
 
+// function for the search bar to filter by usernames
 const searchFilterFunction = (text, threads) => {
   var DATA = threads;
   const newData = (DATA.filter(function(item) {
@@ -31,6 +33,7 @@ export default class Chat extends React.Component {
     };
   }
 
+  // set visibility of modal to input username
   setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
   }
@@ -42,22 +45,17 @@ export default class Chat extends React.Component {
   setFriendDetails = (email, user) => {
     this.setState({friendEmail: email});
     this.setState({friendUsername: user});
-   //console.log("test1: " + this.state.friendEmail);
-    //console.log("test2: " + this.state.friendUsername)
   }
 
-  // fetch chats data from Firestore
+  // fetch chats data from Cloud Firestore database
   componentDidMount() {
-    //NEW CODES: to see if user is:
-    //Google login OR Collab login    
     if (this.props.route.params.result != null){
       const {result} = this.props.route.params;
       var user = result.user; 
-      
-   } else {
-      var user = firebase.auth().currentUser;
-   }       
-    this.getChats(user.email)
+    } else {
+        var user = firebase.auth().currentUser;
+    }       
+    this.getChats(user.email);
   }
 
   // stop listening to changes from Firestore
@@ -79,7 +77,8 @@ export default class Chat extends React.Component {
                                             _id: documentSnapshot.id,
                                             name: '',
                                             latestMessage: {
-                                              text: ''
+                                              text: '',
+                                              image: ''
                                             },
                                             ...firebaseData
                                           };
@@ -89,67 +88,107 @@ export default class Chat extends React.Component {
                                       });
   }
 
+  // check if username created is own user's username
+  checkIfOwnUsername = () => {
+    if (this.props.route.params.result != null){
+      const {result} = this.props.route.params;
+      var user = result.user; 
+    } else {
+      var user = firebase.auth().currentUser;
+    }   
+    firebase.firestore()
+            .collection('info')
+            .doc(user.email)
+            .get()
+            .then(qs=>{
+                console.log("qs,", qs.data().username, "and ", this.state.textInputName)
+                if ( qs.data().username == this.state.textInputName){
+                  alert("You cannot create a chatroom with your own username.")
+                } else {
+                  this.findUsername();
+                  this.seeGotUserNot();
+                  this.logsEvent();
+                }
+              })
+  }
+
+  // find username from user's text input
   findUsername = () => {
     firebase.firestore()
             .collection('info')
             .where('username', '==', this.state.textInputName)
             .get()
             .then(querySnapshot => {
-              var curr = this;
-              console.log("in chat, curr ",curr)
-              const threads = querySnapshot.forEach(function(doc) {
-                var mail = doc.id;
-                var userObtained = doc.data().username;
-                //console.log("firstmail: " + mail)
-                //console.log("firstuser: " + userObtained)
-                curr.setFriendDetails(mail, userObtained);
-                curr.findName(mail);
-                //console.log("text input: " + curr.state.textInputName)
-                //console.log("username found: " + doc.data().username)
+                var curr = this;
+                const threads = querySnapshot.forEach(function(doc) {
+                  var mail = doc.id;
+                  var userObtained = doc.data().username;
+                  curr.setFriendDetails(mail, userObtained);
+                  curr.findName(mail);
+                  curr.setCurrUser();
+                  // console.log("inside qs")
               })
-              //console.log("username updated " + this.state.username)
-              this.setState({gotUser: true})
+              // console.log("outside qs")
             })
             .catch((error) => {
               this.setState({gotUser: false})
               alert("Username cannot be found.");
-              console.log(error)
             });
   }
 
+  // set boolean as true if user is found
+  setCurrUser = () => {
+    this.setState({gotUser: true})
+  }
+  
+  // impose a timeout before function starts checking if username exists
+  seeGotUserNot = () => {
+    if (this.state.typingTimeout) {
+      clearTimeout(this.state.typingTimeout);
+   }
+   var temp = setTimeout(
+     this.checkUser
+   , 500);
+  
+   this.setState({typingTimeout: temp})
+  }
+
+  // function to check if username exists
+  checkUser = () => {
+    //console.log(this.state.gotUser)
+    if (!this.state.gotUser) {
+      Alert.alert("Alert", "Username cannot be found!")
+    } else {
+      this.setModalVisible(!this.state.modalVisible);
+    }
+  }
+
+  // find username of sender and call functions to add chats into databases
   findName = (email) => {
     var mail = email;
-    console.log("chat currently in findName")
-
+    //NEW CODES: to see if user is:
+    //Google login OR Collab login    
     if (this.props.route.params.result != null){
-      const {result} = this.props.route.params;
-      var currU = result.user.email; 
-      
-   } else {
-      var currU = firebase.auth().currentUser.email;
-   }       
-    // var currU = firebase.auth().currentUser.email;
-    //console.log("curr email: " + currU)
-    //console.log("friendMail: " + mail)
-
+        const {result} = this.props.route.params;
+        var currU = result.user.email; 
+    } else {
+        var currU = firebase.auth().currentUser.email;
+    }       
     var document = firebase.firestore().collection('info').doc(currU);
+
     document.get()
             .then(doc => {
               var curr = this;
-              // console.log("in chat, curr:", curr)
               this.setState({username: doc.data().username})
-              //console.log("name attained11: " + this.state.username)
-              // console.log("in chat, username", this.state.username)
               this.addOwnChat(currU, mail);
-              // console.log("in chat, nail", mail)
               this.addFriendChat(mail, this.state.username, currU);
             })
             .catch(function(error) {
-              console.log("Eeeeerror getting document:", error);
+              console.log("Error getting document:", error);
             });
-          //console.log("name attained: " + this.state.username)
   }
 
+  // add chat into sender's database
   addOwnChat = (user, friendEmail) => {
     var docRef = firebase.firestore()
                          .collection('chats: ' + user)
@@ -172,11 +211,9 @@ export default class Chat extends React.Component {
             text: 'You have created a room.',
             system: true
           })
-            //this.props.navigation.navigate('Chat');
-          //})
-          
   }
 
+  // add chat into receiver's database
   addFriendChat = (email, name, ownEmail) => {
     var docRef = firebase.firestore()
             .collection('chats: ' + email)
@@ -191,7 +228,6 @@ export default class Chat extends React.Component {
           .catch(function(error) {
             console.error("Error writing document: ", error);
           });
-            //.then(docRef => {
     docRef.collection('msg')
           .add({
             timeStamp: new Date().getTime(),
@@ -200,24 +236,36 @@ export default class Chat extends React.Component {
           })
   }
 
+  // impose a timeout before starting the filtering via username on the search bar
   searched = (text) => {
     this.setState({query: text});
     if (this.state.typingTimeout) {
       clearTimeout(this.state.typingTimeout);
-   }
-   var data = this.state.threads;
-   var temp = setTimeout(function() {
-    searchFilterFunction(text, data)
-   }, 500);
-  
-   this.setState({typingTimeout: temp})
+    }
+    var data = this.state.threads;
+    var temp = setTimeout(function() {
+      searchFilterFunction(text, data)
+    }, 500);
+    
+    this.setState({typingTimeout: temp})
   }
+
+  // add into analytics
+  logsEvent = async () => { 
+    await Analytics.logEvent('Chat', {
+        name: 'addchat',
+        screen: 'chat',
+        purpose: 'Added new chat room',
+      });
+  }
+
 
   render() {
     const { modalVisible } = this.state;
     return (
         <SafeAreaView style = {styles.container}>
-            <TouchableOpacity onPress = {() => {this.setModalVisible(true)}} >
+            <TouchableOpacity onPress = {() => {console.log(modalVisible) 
+              this.setModalVisible(true)}} >
               <Image
                 source = {require('../../../../assets/edit.png')}
                 style = {{marginTop: 15, resizeMode: 'stretch', width: 30, height: 30, alignSelf: 'flex-end', marginRight: 25}}
@@ -236,6 +284,7 @@ export default class Chat extends React.Component {
               value = {this.state.query}
             />
             <View style = {[styles.container]}>
+            <TouchableWithoutFeedback onPress={() => {}}>
                     <Modal
                       transparent={true}
                       style = {{
@@ -249,11 +298,6 @@ export default class Chat extends React.Component {
                       animationType="slide"
                     >
                       <View style = {styles.container}>
-                        <TouchableOpacity
-                          onPress = {() => this.setModalVisible(!modalVisible)}
-                        >
-                          <Image source = {require('../../../../assets/delete.png')} style = {{resizeMode: 'stretch', width: 15, height: 15, marginTop: 200, marginBottom: -310}}/>
-                        </TouchableOpacity>
                         <TextInput 
                           placeholder = "Enter a username to start chatting!"
                           autoCapitalize = 'none'
@@ -263,17 +307,25 @@ export default class Chat extends React.Component {
                           style ={{backgroundColor: "#fff", marginTop: 250, marginHorizontal: 10, borderRadius: 15, padding: 10}}
                         />
                         <TouchableOpacity
-                          style = {{paddingHorizontal: 37, 
-                            paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, 
-                            alignSelf: 'center', borderRadius: 10}}
+                        style = {{paddingHorizontal: 37, 
+                          paddingVertical: 15, backgroundColor: "#266E7D", marginTop: 10, borderRadius: 10, alignSelf: 'flex-start'}}
                           onPress = {() => {
-                            //console.log("hello " + this.state.textInputName)
-                            this.findUsername();
-                            this.setModalVisible(!modalVisible);
-                            /*if (!this.state.gotUser) {
-                              alert("Username cannot be found!")
-                            }*/
-                            //console.log("after " + this.state.modalVisible);
+                            this.setModalVisible(!modalVisible)
+                          }}
+                        >
+                          <Text
+                              style = {{fontSize: 18, fontWeight: '600', 
+                              position: 'absolute', marginTop: 3, color: "#fff", marginLeft: 8}}
+                            > 
+                              Cancel 
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style = {{paddingHorizontal: 37, 
+                            paddingVertical: 15, backgroundColor: "#266E7D", marginTop: -30, 
+                            alignSelf: 'flex-end', borderRadius: 10}}
+                          onPress = {() => {
+                            this.checkIfOwnUsername(); 
                           }}
                         >
                             <Text
@@ -285,6 +337,7 @@ export default class Chat extends React.Component {
                           </TouchableOpacity>
                           </View>
                       </Modal>
+                      </TouchableWithoutFeedback>
                     </View>
                     <View style = {styles.container2}>
                       <FlatList
@@ -293,13 +346,11 @@ export default class Chat extends React.Component {
                         ItemSeparatorComponent={() => <Divider />}
                         renderItem={({ item }) => (
                           <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate(
+                            onPress={() => {this.props.navigation.navigate(
                               'ChatRoom', { 
-                                threads: item , 
-                                result: this.props.params
-                                //friendEmail: this.state.friendEmail, 
-                                //friendUsername: this.state.friendUsername 
+                                threads: item
                               })}
+                          }
                           >
                           <List.Item
                             title={item.name}
@@ -312,8 +363,6 @@ export default class Chat extends React.Component {
                           />
                           </TouchableOpacity>
                         )}
-                        // optimisation, length number is a random number,
-                        // doesn't seem to affect anything
                         getItemLayout={(data, index) => (
                           {length: 15, offset: 15 * index, index}
                         )}

@@ -4,40 +4,42 @@ import { StyleSheet, Text, ScrollView, Image, FlatList, TouchableOpacity } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-const DATA = [
+// list of all groups
+const DATA2 = [
     {
         id: '1',
         name: 'Clothes',
-        image: require('../../../assets/clothes.jpg'),
+        image: require('../../../../assets/clothes.jpg'),
     },
     {
         id: '2',
         name: 'Groceries',
-        image: require('../../../assets/groceries.jpg'),
+        image: require('../../../../assets/groceries.jpg'),
     },
     {
         id: '3',
         name: 'Make Up',
-        image: require('../../../assets/makeup.jpg'),
+        image: require('../../../../assets/makeup.jpg'),
     },
     {
         id: '4',
         name: 'Pet Supplies',
-        image: require('../../../assets/pet.jpg'),
+        image: require('../../../../assets/pet.jpg'),
     },
     {
         id: '5',
         name: 'Shoes',
-        image: require('../../../assets/shoes.jpg'),
+        image: require('../../../../assets/shoes.jpg'),
     },
     {
         id: '6',
         name: 'Stationeries',
-        image: require('../../../assets/stationeries.jpg'),
+        image: require('../../../../assets/stationeries.jpg'),
         },
 ];
 
-function Item({ id, name, image, email, selected, onSelect, updateCategory, setChosen, setCurr }) {
+// function of individual group item
+function Item({ id, name, image, selected, onSelect, updateCategory, setChosen, setCurr }) {
     return (
         <TouchableOpacity
             onPress={() => {
@@ -53,7 +55,8 @@ function Item({ id, name, image, email, selected, onSelect, updateCategory, setC
     );
 }
 
-const Preference = ({navigation, email, name, username}) => {
+const AddGroups = ({navigation, DATA, result}) => {
+    // allow the selection of group items
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id, itemName) => {
         setSelected(id);
@@ -63,31 +66,59 @@ const Preference = ({navigation, email, name, username}) => {
     // to track the categories that the user has chosen in an array
     const [category, setCategory] = React.useState('');
 
-    // to determine if user has selected at least 1 group
+    // to determine if user has selected 1 group
     const [chosen, setChosen] = React.useState(false);
 
-    //const [bool, setBool] = React.useState(false);
+    // set the current chosen category name
     const [itemName, setName] = React.useState('');
+    const setCurr = (currName) => {
+            setName(currName);
+    }
 
-   const setCurr = (currName) => {
-        setName(currName);
-   }
+    React.useEffect(() => {}, [category])
 
-    React.useEffect(() => {
-        console.log("useeffect test: " + category)
-        
-        //setCategory(name);
-        console.log("TEST: " + name);
-        console.log("TEST2: " + category);
-    }, [category])
+   // check if user has already joined a certain category before adding into My Groups
+   const checkCategory = (category, navigation, result) => {
+       for (var idx = 0; idx < DATA.DATA.length; idx++) {
+            if (DATA.DATA[idx].name == category) {
+                alert("You have already joined this Group!")
+            } else {
+                updateCategory(category, navigation, result);
+            }
+        }
+    }
 
+    // update the list of categories under user's My Groups
+    const updateCategory = (category, navigation, result) => {
+        if (result != null){ 
+            var email = result.user.email;
+        } else {
+            var email = firebase.auth().currentUser.email;
+        }
+        firebase.firestore()
+                .collection('info')
+                .doc(email)
+                .update({
+                    category: firebase.firestore.FieldValue.arrayUnion(category)
+                })
+                .catch(function(error) {
+                    console.log("Error updating document:", error);
+                });
+        navigation.navigate("GroupsScreen");
+    }
 
     return (
         <SafeAreaView style = {styles.container}>
-            <Text style = {styles.header}> Discover Groups </Text>
+             <TouchableOpacity  
+                style = {styles.backbutton}
+                onPress={() => navigation.navigate('GroupsScreen')}
+            >
+                <Image source = {require('../../../../assets/arrow.png')} style = {styles.backbutton}/>
+            </TouchableOpacity>
+            <Text style = {styles.header}> Join Groups </Text>
             <Text style = {styles.title}> Choose 1 Group that interests you! </Text>
             <FlatList
-                data={DATA}
+                data={DATA2}
                 numColumns = {2}
                 columnWrapperStyle = {{justifyContent: 'space-around', flex: 1}}
                 renderItem={({ item }) => (
@@ -95,7 +126,6 @@ const Preference = ({navigation, email, name, username}) => {
                     id={item.id}
                     name={item.name}
                     image = {item.image}
-                    email = {email}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     setChosen = {setChosen}
@@ -109,26 +139,20 @@ const Preference = ({navigation, email, name, username}) => {
                 style = {styles.Button} 
                 onPress={() => 
                     chosen 
-                    ? navigation.navigate('Login', {category: category, email: email, name: name, username: username}) 
-                    : alert("Please select 1 Group!")}> 
+                    ? checkCategory(category, navigation, result)
+                    : alert("Please select 1 Group!")}
+            > 
                 <Text style = {styles.buttonText}> Done </Text>
             </TouchableOpacity>
         </SafeAreaView>
     )
 };
 
-export default class PrefScreen extends React.Component {
+export default class AddGroupsScreen extends React.Component {
     render() {
-        //from Signup page
-        const {email} = this.props.route.params
-        const {name} = this.props.route.params
-        const {username} = this.props.route.params
-        const {password} = this.props.route.params
-
-        return <Preference navigation = {this.props.navigation} email = {email} name ={name}
-            password = {password} 
-            username = {username}/>;
-        
+        const DATA = this.props.route.params;
+        const result = this.props.route.params.result;
+        return <AddGroups navigation = {this.props.navigation} DATA = {DATA} result = {result}/>;
     }
 }
 
@@ -184,5 +208,14 @@ const styles = StyleSheet.create({
         fontSize: 23,
         fontWeight: '600',
         color: '#ffffff',
+    },
+    backbutton: {
+        zIndex: 1,
+        width: 20,
+        height: 20,
+        resizeMode: 'stretch',
+        marginTop: 15,
+        marginBottom: -30,
+        marginLeft: 8
     },
 });

@@ -1,15 +1,20 @@
 import React, {useEffect} from 'react';
-import { View, StyleSheet, Text, Image, SafeAreaView, TouchableOpacity, FlatList } from "react-native";
+import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import { GorgeousHeader } from "@freakycoder/react-native-header-view";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 import {  Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { useIsFocused } from '@react-navigation/native';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
 
-const DATA = [];
 
-  function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
+  // list of offers under a particular group
+  const DATA = [];
+
+  // individual offer item
+  function Item({ max, total, id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
         onPress={() => {
@@ -17,7 +22,7 @@ const DATA = [];
             if (user === firebase.auth().currentUser.email) {
                 navigation.navigate('OfferDetails',  {orderID: id})
             } else {
-                navigation.navigate('OfferDetailsJoin',  {orderID: id})
+                navigation.navigate('OfferDetailsJoin',  {orderID: id, total: total, max: max})
             }
         }}
         style={[styles.item]}
@@ -28,31 +33,38 @@ const DATA = [];
         <Image source = {image} style = {styles.icons} />
         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
         <Text style = {styles.progressText}>{progress}</Text>
-        <Progress.Bar 
-            progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-            color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-            style = {{marginTop: 38, alignSelf: 'center'}} />
+        <ProgressBarAnimated
+            borderRadius = {15} 
+            style = {{marginTop: 38, alignSelf: 'center'}}
+            width={330} height ={30}
+            value={(total*100.00)/max}
+            backgroundColorOnComplete="#6CC644"
+            maxValue= {parseInt(max)}
+            onComplete={() => {
+            Alert.alert('Minimum Purchase Reached!');}}
+          />
       </TouchableOpacity>
     );
   }
 
 const GroupsDetails = ({name, navigation}) => {
+    // allow the selection of offers
     const [selected, setSelected] = React.useState(null);
     const onSelect = (id) => {
         setSelected(id);
     }
 
-    const isFocused = useIsFocused();
-
-    var user = firebase.auth().currentUser;
+    //const isFocused = useIsFocused();
     var currName = name;
+
     //entering in DATA from this logged in user
     useEffect(() => {
         getData();
     }, [DATA])
 
+    // fetch list of offers under a particular category
     const getData = () => {
-        console.log(currName)
+        //console.log(currName)
         firebase.firestore()
                 .collection("offers")
                 .where("category", "==", currName)
@@ -60,11 +72,11 @@ const GroupsDetails = ({name, navigation}) => {
                 .then(snap => {
                     DATA.length = 0;
                     snap.forEach(docs =>{      
-                        DATA.push(docs.data())
+                        DATA.push(docs.data());
                     })
-                    //console.log(DATA)
                 })
     }
+
     return (
         <SafeAreaView style = {styles.container}>
             <TouchableOpacity onPress = {() => navigation.goBack()} >
@@ -86,13 +98,13 @@ const GroupsDetails = ({name, navigation}) => {
                     title={item.title}
                     data = {item.data}
                     image = {item.image}
-                    //progressIdx = {item.progressIdx}
-                    //progress = {item.progress}
                     user = {item.user}
                     username = {item.username}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
+                    total = {item.total}
+                    max = {item.max}                    
                 />
                 )}
                 keyExtractor={item => item.id}
@@ -103,8 +115,22 @@ const GroupsDetails = ({name, navigation}) => {
 };
 
 export default class GroupsDetailsScreen extends React.Component {
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props !== nextProps) {
+          return true;
+        }
+        return false;
+    }
+    
+    componentDidUpdate(nextProps, nextState) {
+        if (this.props !== nextProps) {
+          return true;
+        }
+        return false;
+    }
+
     render(){       
-        var user = firebase.auth().currentUser; 
         const {name} = this.props.route.params;
         return <GroupsDetails name = {name} navigation = {this.props.navigation}/>
     }
