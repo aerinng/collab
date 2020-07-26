@@ -83,7 +83,7 @@ We want shoppers to be able to communicate with other buyers in their neighbourh
 4) I want to enjoy savings from purchases I make regularly without needing to go through the physical trouble of gathering people to reach the minimum purchase amount.
 
 ## App Features
-We will be developing an application for iOS that contains these features. 
+We will be developing an application mainly for iOS but also works for Android that contains these features. 
 1. Auto-Post of Requests
    - Allows users to automate the request of posting their offer on Collab at a frequency set by the main buyers
    - Reduces the physical inconvenience required for main buyers to add an offer repetitively, which may occur at a frequent rate (e.g. daily, weekly)
