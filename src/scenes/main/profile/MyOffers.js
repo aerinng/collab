@@ -1,20 +1,22 @@
 import React, {useEffect} from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Image, FlatList } from "react-native";
-import * as Progress from 'react-native-progress';
 import { useIsFocused } from '@react-navigation/native';
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
   // list of offers data
   const DATA = [];
 
   // individual offer item
-  function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
+  function Item({ id, title, data, image, user, username, progress, 
+    progressIdx, selected, onSelect, navigation, max, total }) {
     return (
       <TouchableOpacity
         onPress={() => {
             onSelect(id);
-            navigation.navigate('OfferDetailsCancel', {orderID: id})
+            navigation.navigate('OfferDetailsCancel', {orderID: id, max: max, total:total})
         }}
         style={[ styles.item ]}
       >
@@ -24,10 +26,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
         <Image source = {image} style = {styles.icons} />
         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
         <Text style = {styles.progressText}>{progress}</Text>
-        <Progress.Bar 
-            progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-            color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-            style = {{marginTop: 38, alignSelf: 'center'}} />
+        <Text></Text>
+        <ProgressBarAnimated
+          borderRadius = {15} 
+          style = {{marginTop: 38, alignSelf: 'center'}}
+          width={wp('82%')} height ={30}
+          value={(total*100.00)/max} 
+          backgroundColorOnComplete="#6CC644"
+          maxValue= {parseInt(max)}
+          onComplete={() => {
+            Alert.alert('Minimum Purchase Reached!');
+          }}
+        />    
       </TouchableOpacity>
     );
   }
@@ -41,8 +51,6 @@ const MyOffers = ({navigation, result}) => {
             setSelected(id);
         };
 
-        //NEW CODES: to see if user is:
-        //Google login OR Collab login
         if (result != null){
             var user = result.user.email; 
         } else {
@@ -80,13 +88,13 @@ const MyOffers = ({navigation, result}) => {
                         title={item.title}
                         data = {item.data}
                         image = {item.image}
-                        //progressIdx = {item.progressIdx}
-                        //progress = {item.progress}
                         user = {item.user}
                         username = {item.username}
                         selected={item.id == selected}
                         onSelect={onSelect}
                         navigation = {navigation}
+                        max = {item.max}
+                        total = {item.total}
                     />
                     )}
                     keyExtractor={item => item.id}

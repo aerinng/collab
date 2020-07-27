@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View} from "react-native";
-import * as Progress from 'react-native-progress';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import firebase from 'firebase';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 class OfferDetailsJoin extends React.Component {
     state = {
@@ -36,6 +37,9 @@ class OfferDetailsJoin extends React.Component {
     render(){
         const {orderID} = this.props.route.params;
         const {result} = this.props.route.params;
+        const {total} = this.props.route.params;
+        const {max} = this.props.route.params;
+
         return (
             <SafeAreaView style = {styles.container}>
                 <FlatList
@@ -60,13 +64,19 @@ class OfferDetailsJoin extends React.Component {
                             <Text style = { styles.titles }> Category </Text>
                             <Text style ={ styles.data }>{item.category}</Text>
                             <Text style = { styles.titles }> Current Total ($)</Text>
-                            <Text style ={ styles.data }>{item.total}</Text>
+                            <Text style ={ styles.data }>$ {item.total}</Text>
                             <Text style = { styles.titles }> Progress </Text>
-                            <Progress.Bar 
-                                progress={0.33} width={330} height ={30} borderRadius = {15} 
-                                color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-                                style = {{marginBottom: 15, alignSelf: 'center'}}
-                            />
+                            <ProgressBarAnimated
+                                borderRadius = {15} 
+                                style = {{marginTop: 38, alignSelf: 'center'}}
+                                width={wp('80%')} height ={30}
+                                value={(total*100.00)/max}
+                                backgroundColorOnComplete="#6CC644"
+                                maxValue= {parseInt(max)}
+                                onComplete={() => {
+                                    Alert.alert('Minimum Purchase Reached!')
+                                }}
+                            /> 
                             <Text style = { styles.titles }> Estimated Order Date </Text>
                             <Text style ={ styles.data }>{item.date.toString()}</Text>
                             <Text style = { styles.titles }> User </Text>           

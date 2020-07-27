@@ -43,10 +43,6 @@ function Item({ id, name, image, email, selected, onSelect, updateCategory, setC
             onPress={() => {
                 // set selection of group to be true/false
                 onSelect(id, name);
-                console.log("done")
-                //setCurr(name)
-                //updateCategory(selected, name);
-                //},1000)
                 // indicate true because user has selected at least 1 group
                 setChosen(true);
             }}

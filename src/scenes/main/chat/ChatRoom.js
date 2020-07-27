@@ -12,15 +12,12 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 export default function ChatRoom({route, user}) {
     const [messages, setMessages] = useState([]);
     const {threads} = route.params;
-    //NEW CODES: to see if user is:
-    //Google login OR Collab login
+    
     try{
         if (route.params.route.result.user != null){ 
             var user = route.params.route.result.user.id;
-            //console.log("the id for the user in CR is", user)
             var email = route.params.route.result.user.email; 
          } else {
-            //console.log("chatroom, result is empty" )
             var user = firebase.auth().currentUser.uid;
             var email = firebase.auth().currentUser.email;
          } 
@@ -28,7 +25,6 @@ export default function ChatRoom({route, user}) {
         var user = firebase.auth().currentUser.uid;
         var email = firebase.auth().currentUser.email;
     }    
-    //threads._id is the friend's email
     
     // enable the sending of messages from the sender to the receiver
     async function handleSend(messages) {
@@ -52,6 +48,28 @@ export default function ChatRoom({route, user}) {
                         email: email
                     }
                 });
+        //Sends notifications for every message sent
+        firebase.firestore().collection("info").where("username","==", threads.name)
+        .get()
+        .then(sn => {
+            sn.forEach(qs =>{
+                const response = fetch('https://exp.host/--/api/v2/push/send', {
+                    method: 'POST',
+                    headers: {
+                    Accept: 'application/json',
+                    'Accept-encoding': 'gzip, deflate',
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                    to: qs.data().pushToken,
+                    sound: 'default',
+                    title: 'Order Added!',
+                    body: 'A chat has been sent!',
+                    _displayInForeground: true,
+                    })
+                });                 
+            })
+        })
         
         await firebase.firestore()
                 .collection('chats: ' + email)
@@ -64,8 +82,7 @@ export default function ChatRoom({route, user}) {
                         timeStamp: new Date().getTime()
                     }
                 },
-                { merge: true }
-                )
+                { merge: true })
                 .catch(function(error) {
                     console.log("Error getting document:", error);
                 });
@@ -96,10 +113,9 @@ export default function ChatRoom({route, user}) {
                         timeStamp: new Date().getTime()
                     },
                 },
-                { merge: true }
-                )
+                { merge: true })
                 .catch(function(error) {
-                    console.log("Eeeeerror getting document:", error);
+                    console.log("Error getting document:", error);
                 });
     }
 

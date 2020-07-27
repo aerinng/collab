@@ -1,26 +1,26 @@
 import React, {useEffect} from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList } from "react-native";
-import { GorgeousHeader } from "@freakycoder/react-native-header-view";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 import {  Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { useIsFocused } from '@react-navigation/native';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
   // list of offers under a particular group
   const DATA = [];
 
   // individual offer item
-  function Item({ id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
+  function Item({ max, total, id, title, data, image, user, username, progress, progressIdx, selected, onSelect, navigation }) {
     return (
       <TouchableOpacity
         onPress={() => {
             onSelect(id);
             if (user === firebase.auth().currentUser.email) {
-                navigation.navigate('OfferDetails',  {orderID: id})
+                navigation.navigate('OfferDetails', {orderID: id})
             } else {
-                navigation.navigate('OfferDetailsJoin',  {orderID: id})
+                navigation.navigate('OfferDetailsJoin', {orderID: id, total: total, max: max})
             }
         }}
         style={[styles.item]}
@@ -31,10 +31,16 @@ import { useIsFocused } from '@react-navigation/native';
         <Image source = {image} style = {styles.icons} />
         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
         <Text style = {styles.progressText}>{progress}</Text>
-        <Progress.Bar 
-            progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-            color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-            style = {{marginTop: 38, alignSelf: 'center'}} />
+        <Text></Text>
+        <ProgressBarAnimated
+            borderRadius = {15} 
+            width={wp('91%')} height ={30}
+            value={(total*100.00)/max}
+            backgroundColorOnComplete="#6CC644"
+            maxValue= {parseInt(max)}
+            onComplete={() => {
+            Alert.alert('Minimum Purchase Reached!');}}
+        />
       </TouchableOpacity>
     );
   }
@@ -90,13 +96,13 @@ const GroupsDetails = ({name, navigation}) => {
                     title={item.title}
                     data = {item.data}
                     image = {item.image}
-                    //progressIdx = {item.progressIdx}
-                    //progress = {item.progress}
                     user = {item.user}
                     username = {item.username}
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
+                    total = {item.total}
+                    max = {item.max}     
                 />
                 )}
                 keyExtractor={item => item.id}

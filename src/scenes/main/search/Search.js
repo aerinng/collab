@@ -1,30 +1,31 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList } from "react-native";
-import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 import {  Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import { useIsFocused } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ProgressBarAnimated from 'react-native-progress-bar-animated';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
  
   // list of offers data
   const DATA = [];
 
   // individual offer item
   function Item({ id, title, data, image, user, username, progress, 
-    progressIdx, result, byGoogle, selected, onSelect, navigation }) {
+    progressIdx, result, byGoogle, selected, onSelect, navigation, max, total }) {
     return (
       <TouchableOpacity
         onPress={() => {
             onSelect(id);
             if ((result == null && user === firebase.auth().currentUser.email) || (result != null && user === result.user.email)) {
-                navigation.navigate('OfferDetails',  {orderID: id, result: result})
+                navigation.navigate('OfferDetails',  {orderID: id, result: result, max: max, total: total})
             } else {
-                navigation.navigate('OfferDetailsJoin',  {orderID: id, result: result}) 
+                navigation.navigate('OfferDetailsJoin',  {orderID: id, result: result, max: max, total: total}) 
             }
         }}
-        style={[ styles.item]}
+        style={[styles.item]}
       >
         <Text style={styles.users}>{username}</Text>
         <Text style={styles.detailsTitle}>{title}</Text>
@@ -32,10 +33,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
         <Image source = {image} style = {styles.icons} />
         <Image source = {require('../../../../assets/arrowright.png')} style = {styles.arrow} />
         <Text style = {styles.progressText}>{progress}</Text>
-        <Progress.Bar 
-            progress={progressIdx} width={330} height ={30} borderRadius = {15} 
-            color = '#93D17D' borderColor = '#ffffff' unfilledColor = '#C4C4C4' 
-            style = {{marginTop: 38, alignSelf: 'center'}} />
+        <Text></Text>
+        <ProgressBarAnimated
+          borderRadius = {15}
+          width={wp('91%')} height ={30}
+          value={(total*100.00)/max}
+          backgroundColorOnComplete="#6CC644"
+          maxValue= {parseInt(max)}
+          onComplete={() => {
+            Alert.alert('Minimum Purchase Reached!');
+          }}
+        />
       </TouchableOpacity>
     );
   }
@@ -50,6 +58,7 @@ const Search = ({navigation, result, byGoogle}) => {
         setSelected(id);
     }
     const isFocused = useIsFocused();
+    {isFocused ? console.log('focused') : console.log('unfocused')}
 
     //entering in DATA from this logged in user
     firebase.firestore().collection("offers").get()
@@ -148,8 +157,6 @@ const Search = ({navigation, result, byGoogle}) => {
                     title={item.title}
                     data = {item.data}
                     image = {item.image}
-                    //progressIdx = {item.progressIdx}
-                    //progress = {item.progress}
                     user = {item.user}
                     username = {item.username}
                     result = {result}
@@ -157,12 +164,14 @@ const Search = ({navigation, result, byGoogle}) => {
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
+                    total = {item.total}
+                    max = {item.max}
+
                 />
                 )}
                 keyExtractor={item => item.id}
                 extraData={selected}
-                // optimisation, length number is a random number,
-                // doesn't seem to affect anything
+                // optimisation
                 getItemLayout={(data, index) => (
                   {length: 15, offset: 15 * index, index}
                 )}
@@ -178,7 +187,8 @@ export default class SearchScreen extends React.Component {
     foo:false
   }
   
-  registerForPushNotificationsAsync = async ({result}) => {
+  registerForPushNotificationsAsync = async () => {
+    var result = this.props.route.params.result;
     const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
 
     let finalStatus = existingStatus;
@@ -211,7 +221,7 @@ export default class SearchScreen extends React.Component {
       } else {
       //Creating a new collection 
         try {
-          const {pref} = this.props.route.params.pref; ///from login page 
+          const {pref} = this.props.route.params.pref; ///from Login page 
           firebase.firestore().collection(pref).doc(result.user.email).set({
             pushToken:token
           }).catch(function(error) {
@@ -227,8 +237,7 @@ export default class SearchScreen extends React.Component {
   };   
 
   async componentDidMount() {
-    var result = this.props.route.params.result;
-    await this.registerForPushNotificationsAsync(result);
+    await this.registerForPushNotificationsAsync();
     DATA.length = 0;
     firebase.firestore().collection('promotion').where("title", "==", 'Fairprice').get()
     .then(snap => { 

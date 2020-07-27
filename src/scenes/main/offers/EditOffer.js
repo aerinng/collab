@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, FlatList, TouchableOpacity, Image, 
     View, TextInput, Switch } from "react-native";
-import * as Progress from 'react-native-progress';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -116,7 +115,7 @@ class EditOffer extends React.Component {
                             <Text style = { styles.titles }> Category </Text>
                             <Text style ={ styles.data }>{item.category}</Text>
                             <Text style = { styles.titles }> Current Total ($)</Text>
-                            <Text style ={ styles.data }>{item.total}</Text>
+                            <Text style ={ styles.data }>$ {item.total}</Text>
                             <Text style = { styles.autopost }> Auto - Post </Text>
                             <Switch
                                 trackColor={{ false: "#ff0000", true: "#93D17D" }}

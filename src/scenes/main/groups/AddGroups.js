@@ -45,10 +45,6 @@ function Item({ id, name, image, selected, onSelect, updateCategory, setChosen, 
             onPress={() => {
                 // set selection of group to be true/false
                 onSelect(id, name);
-                console.log("done")
-                //setCurr(name)
-                //updateCategory(selected, name);
-                //},1000)
                 // indicate true because user has selected at least 1 group
                 setChosen(true);
             }}
@@ -130,10 +126,8 @@ const AddGroups = ({navigation, DATA, result}) => {
                     id={item.id}
                     name={item.name}
                     image = {item.image}
-                    //email = {email}
                     selected={item.id == selected}
                     onSelect={onSelect}
-                    //updateCategory = {updateCategory}
                     setChosen = {setChosen}
                     setCurr = {setCurr}
                 />
