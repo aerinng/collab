@@ -40,7 +40,7 @@ Collab is an application serving as a communication platform to facilitate buyer
 
 Collab is not an e-commerce platform. Collab will not be responsible for any payment to be made between buyers or orders to be made in external stores and is simply a platform to reach out to potential collaborators. There is also no platform fee incurred to list an offer on Collab.
 
-To preview Collab, iOS will be the most ideal to preview Collab as we mainly designed Collab for iOS devices. However, due to security measures by the Expo team, other users are unable to preview the app on iOS without prior authentication from the project owner. Tentatively, previewing it with Android will not have all the elements aligned to the page properly, although it still works on Android as well. This will be improved by the next submission.  
+To access Collab, iOS will be the most ideal to preview Collab as we mainly designed Collab for iOS devices but it still works for Android. However, due to security measures by the Expo team, other users are unable to preview the app on iOS without prior authentication from the project owner. 
 
 You may preview Collab by following the [User Guide](https://github.com/aerinng/collab#user-guide).
 
