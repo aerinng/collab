@@ -3,14 +3,15 @@ import { View, StyleSheet, Text, Image, TouchableOpacity, FlatList, ActivityIndi
 import firebase from 'firebase'; 
 import { Searchbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { max } from 'react-native-reanimated';
 
 // individual store promotion item
-function Item({ id, title, data, image, url, selected, onSelect, navigation }) {
+function Item({ id, title, data, image, url, selected, onSelect, navigation, max }) {
   return (
     <TouchableOpacity
       onPress={() => {
         onSelect(id);
-        navigation.navigate('AddOrder', {Pid:id, title:title, data:data, image:image});
+        navigation.navigate('AddOrder', {Pid:id, title:title, max: max, data:data, image:image});
       }}
       style={[styles.item]}
     >
@@ -37,21 +38,24 @@ const StorePromo = ({navigation}) => {
       title: 'Fairprice',
       data: "Free delivery with purchase above $79",
       image: require('../../../../assets/fairprice.jpg'),
-      url: 'https://www.fairprice.com.sg/promotions'
+      url: 'https://www.fairprice.com.sg/promotions', 
+      max: 79
     },
     {
       id: '2',
       title: 'Cold Storage',
-      data: "Free delivery with purchase above $79",
+      data: "Free delivery with purchase above $59",
       image: require('../../../../assets/coldstorage.jpg'),
-      url: 'https://coldstorage.com.sg/deals/'
+      url: 'https://coldstorage.com.sg/deals/', 
+      max: 59
     },
     {
       id: '3',
       title: 'Sephora',
       data: "Free delivery with purchase above $50",
       image: require('../../../../assets/sephora.jpg'),
-      url: 'https://www.sephora.sg/sale'
+      url: 'https://www.sephora.sg/sale', 
+      max: 50
     },
   ]);
 
@@ -159,12 +163,12 @@ const StorePromo = ({navigation}) => {
                     selected={item.id == selected}
                     onSelect={onSelect}
                     navigation={navigation}
+                    max = {item.max}
                 />
                 )}
                 keyExtractor={item => item.id}
                 extraData={selected}
-                // optimisation, length number is a random number,
-                // doesn't seem to affect anything
+                // optimisation
                 getItemLayout={(data, index) => (
                   {length: 15, offset: 15 * index, index}
                 )}

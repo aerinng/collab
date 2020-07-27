@@ -29,8 +29,6 @@ class Profile extends React.Component {
 
     // fetch profile data from Cloud Firestore database
     getData = () => {
-        //NEW CODES: to see if user is:
-        //Google login OR Collab login
         if (this.props.route.params.result != null){
             const {result} = this.props.route.params;
             var user = result.user.email; 

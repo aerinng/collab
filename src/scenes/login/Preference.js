@@ -44,9 +44,6 @@ function Item({ id, name, image, email, selected, onSelect, updateCategory, setC
                 // set selection of group to be true/false
                 onSelect(id, name);
                 console.log("done")
-                //setCurr(name)
-                //updateCategory(selected, name);
-                //},1000)
                 // indicate true because user has selected at least 1 group
                 setChosen(true);
             }}
@@ -62,8 +59,6 @@ const Preference = ({navigation, email, name, username}) => {
     const onSelect = (id, itemName) => {
         setSelected(id);
         setCategory(itemName)
-        //console.log(name)
-        console.log("SEE: " + category)
     }
 
     // to track the categories that the user has chosen in an array
@@ -80,13 +75,6 @@ const Preference = ({navigation, email, name, username}) => {
    }
 
     React.useEffect(() => {
-        //console.log("useeffect test: " + category)
-        
-        //setCategory(name);
-        //console.log("TEST: " + name);
-        //console.log("TEST2: " + category);
-        //updateCategory(bool, name);
-        //console.log("testeffect: " + category)
     }, [category])
 
 
@@ -129,10 +117,14 @@ const Preference = ({navigation, email, name, username}) => {
 
 export default class PrefScreen extends React.Component {
     render() {
+        // from Sign Up page
         const {email} = this.props.route.params
         const {name} = this.props.route.params
         const {username} = this.props.route.params
-        return <Preference navigation = {this.props.navigation} email = {email} name ={name} username = {username}/>;
+        const {password} = this.props.route.params
+        return <Preference navigation = {this.props.navigation} email = {email} 
+                name ={name} password = {password} username = {username}
+               />;
     }
 }
 

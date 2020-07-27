@@ -17,7 +17,7 @@ export default class Login extends React.Component {
         var curr = this;
         try {
           const result = await Google.logInAsync({
-            // androidClientId: YOUR_CLIENT_ID_HERE,
+            androidClientId: "335681130717-5b2ck0a52e1iq6dudurf4um9q49pf9ba.apps.googleusercontent.com",
             iosClientId: "335681130717-oai52figqvp0f5dgjdmvlqgtqco7qvsl.apps.googleusercontent.com",
           });
           if (result.type === 'success') {
@@ -104,10 +104,9 @@ export default class Login extends React.Component {
         try{
             const {name} = this.props.route.params
             const {email} = this.props.route.params
-            //const {password} = this.props.route.params
             const {username} = this.props.route.params
             
-            this.props.navigation.navigate('Tabs', {name:name, email:email, username:username, byGoogle: false}) // removed password, if you need please add it back in!!
+            this.props.navigation.navigate('Tabs', {name:name, email:email, username:username, byGoogle: false})
         }catch{
             this.props.navigation.navigate('Tabs', {byGoogle: false})
         }   

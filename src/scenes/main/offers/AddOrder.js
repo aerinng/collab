@@ -6,6 +6,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import firebase from 'firebase';
 import {stimulateOrder} from './AddOrdFunc'
+import { max } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Analytics from 'expo-firebase-analytics';
 
@@ -55,9 +56,7 @@ class AddOrder extends React.Component {
     };
 
     // fetch username from Cloud Firestore database
-    componentDidMount() {
-        //NEW CODES: to see if user is:
-        //Google login OR Collab login        
+    componentDidMount() {     
         if (this.props.route.params.result != null){
             const {result} = this.props.route.params;
             this.state.user = result.user; 
@@ -85,7 +84,7 @@ class AddOrder extends React.Component {
     }
 
     // add offer data to Cloud Firestore database
-    addToDB = (data, title, image) => {
+    addToDB = (data, title, image, max) => {
         firebase.firestore()
                 .collection("offers")
                 .add({ //add my order id inside
@@ -100,18 +99,12 @@ class AddOrder extends React.Component {
                     date: this.state.displayDate.toString().substring(4,16),
                     desc: this.state.desc,
                     image: image,
+                    max: max,
                     switch: this.state.switchValue
-                }).then((snapshot) => { //all asynchronous
+                }).then((snapshot) => { 
                     snapshot.update({
                         id:snapshot.id
                     })
-                    /*this.setState({
-                        promo:'',
-                        location:'', 
-                        total:0, 
-                        date:'',
-                        desc:''                            
-                    })*/
                     if (this.state.switchValue){
                         stimulateOrder(snapshot.id, this.state.user.email)
                     }
@@ -130,9 +123,13 @@ class AddOrder extends React.Component {
     }
 
     // validate current total to be only integers
-    validateAmt = (amt) => {
-        var re = /^\d+(\.\d{1,2})?$/;
-          return re.test(amt);
+    validateAmt = (amt, max) => {
+        if (amt > max){
+            alert("Your amount is too much! Amount entered is more than the free delivery amount required. ")
+        } else {
+            var re = /^\d+(\.\d{1,2})?$/;
+            return re.test(amt);
+        }
     };
 
     render() {
@@ -141,6 +138,8 @@ class AddOrder extends React.Component {
         const {title} = this.props.route.params
         const {Pid} = this.props.route.params
         const {image} = this.props.route.params
+        const {max} = this.props.route.params
+
         const orderDate = this.state.displayDate.toString().substring(4,16);
 
         return (
@@ -229,10 +228,10 @@ class AddOrder extends React.Component {
                             this.state.total == '' ||
                             this.state.displayDate == '') {
                             alert("Please fill in all mandatory fields!")
-                        } else if (!this.validateAmt(this.state.total)) {
+                        } else if (!this.validateAmt(this.state.total, max)) {
                             alert("Please input a valid Current Total!")
                         } else {
-                            this.addToDB(data, title, image)
+                            this.addToDB(data, title, image, max)
                         }
                     }}
                 >
@@ -285,7 +284,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         marginBottom: 15,
-        borderRadius: 5,
+        borderRadius: 5
     },
     TextInputDesc: {
         alignSelf: 'stretch',
@@ -295,10 +294,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         marginBottom: 15,
-        borderRadius: 5,
+        borderRadius: 5
     },
     Picker: {
-        marginBottom: 15,
+        marginBottom: 15
     },
     Button: {
         borderColor: '#000000',

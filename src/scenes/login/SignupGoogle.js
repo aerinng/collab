@@ -17,7 +17,6 @@ export default class SignupGoogle extends React.Component{
     onSignupSuccess =  () => {
         var result = this.props.route.params.result;
         //Creates individual email user as a Collection
-        console.log(result.user)
         var user = result.user.id;
         var name = result.user.name;
         var mail = result.user.email; 

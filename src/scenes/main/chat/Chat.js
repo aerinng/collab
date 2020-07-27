@@ -48,9 +48,7 @@ export default class Chat extends React.Component {
   }
 
   // fetch chats data from Cloud Firestore database
-  componentDidMount() {
-    //NEW CODES: to see if user is:
-    //Google login OR Collab login    
+  componentDidMount() {  
     if (this.props.route.params.result != null){
       const {result} = this.props.route.params;
       var user = result.user; 
@@ -88,6 +86,31 @@ export default class Chat extends React.Component {
                                         });
                                         this.setThreads(threads);
                                       });
+  }
+
+  // Check if username created is own user's username
+  checkIfOwnUsername = () => {
+    if (this.props.route.params.result != null){
+      const {result} = this.props.route.params;
+      var user = result.user; 
+    } else {
+      var user = firebase.auth().currentUser;
+    }   
+
+    firebase.firestore()
+            .collection('info')
+            .doc(user.email)
+            .get()
+            .then(qs=>{
+                console.log("qs,", qs.data().username, "and ", this.state.textInputName)
+                if ( qs.data().username == this.state.textInputName){
+                  alert("You cannot create a chatroom with your own username.")
+                } else {
+                  this.findUsername();
+                  this.seeGotUserNot();
+                  this.logsEvent();
+                }
+              })
   }
 
   // find username from user's text input
@@ -302,9 +325,7 @@ export default class Chat extends React.Component {
                             paddingVertical: 15, backgroundColor: "#266E7D", marginTop: -30, 
                             alignSelf: 'flex-end', borderRadius: 10}}
                           onPress = {() => {
-                            this.findUsername();
-                            this.seeGotUserNot();
-                            this.logsEvent();
+                            this.checkIfOwnUsername(); 
                           }}
                         >
                             <Text
@@ -325,10 +346,11 @@ export default class Chat extends React.Component {
                         ItemSeparatorComponent={() => <Divider />}
                         renderItem={({ item }) => (
                           <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate(
+                            onPress={() => {this.props.navigation.navigate(
                               'ChatRoom', { 
                                 threads: item
                               })}
+                            }
                           >
                           <List.Item
                             title={item.name}
@@ -341,8 +363,7 @@ export default class Chat extends React.Component {
                           />
                           </TouchableOpacity>
                         )}
-                        // optimisation, length number is a random number,
-                        // doesn't seem to affect anything
+                        // optimisation
                         getItemLayout={(data, index) => (
                           {length: 15, offset: 15 * index, index}
                         )}

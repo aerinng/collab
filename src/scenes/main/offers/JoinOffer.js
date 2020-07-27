@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, FlatList, TouchableOpacity, Image, View, TextInput } from "react-native";
-import * as Progress from 'react-native-progress';
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,7 +9,8 @@ class JoinOffer extends React.Component {
         unsubscribe: '',
         currOrderID: '',
         currTotal: 0.0,
-        total: 0.0
+        total: 0.0,
+        diff: 0.0
     }
 
     // fetch offer details data from Cloud Firestore database
@@ -37,38 +37,51 @@ class JoinOffer extends React.Component {
         unsubscribe;
     }
 
-    // currently user only has to input their current total
-    // addition of total amount to Cloud Firestore database
-    addToDB = (result) => {
-        if (result != null){ 
-            var email = result.user.email;
-        } else {
-            var email = firebase.auth().currentUser.email;
-        }
-        const {orderID} = this.props.route.params;
-        var curr = this;
+    // find the difference between the minimum delivery fee and current total
+    findDiff = () =>{
         firebase.firestore()
-                .collection("offers")
-                .doc(orderID)
-                .get()
-                .then(doc => {
-                    var total = doc.data().total;
-                    //console.log("fb " + total)
-                    curr.setTotal(total)
-                }).catch(err => console.error(err));
-        firebase.firestore()
-                .collection("offers")
-                .doc(orderID)
-                .update({
-                    userJoined: firebase.firestore.FieldValue.arrayUnion(email),
-                    total: parseFloat(this.state.total) + parseFloat(this.state.currTotal)
-                }).catch(err => console.error(err));
+        .collection("offers")
+        .doc(this.state.currOrderID)
+        .get()
+        .then(doc => {
+            this.setState({
+                diff:((doc.data().max) - (doc.data().total))                   
+            }) 
+        })
     }
 
-    setTotal = (total) => {
-        this.setState({total: total})
-        //console.log(this.state.total)
-        //console.log(this.state.currTotal)
+    // validation of the current total amount
+    validateAmount = () => {
+        if (this.state.diff < this.state.currTotal){
+            alert("Please enter an amount less than the remaining amount!")
+        } else {
+            if (this.state.currTotal == 0) {
+                alert("Please fill in all mandatory fields!");
+            } else if (!this.validateAmt(this.state.currTotal)) {
+                alert("Please input a valid Current Total!");
+            } else {
+                this.addToDB();
+                alert('You have successfully joined the offer!');
+            }
+        }
+    }
+
+    // ALTERNATIVELY
+    addToDB = () => {
+        firebase.firestore()
+                .collection("offers")
+                .doc(this.state.currOrderID)
+                .get()
+                .then(doc => {
+                    this.setState({total:doc.data().total})
+                        firebase.firestore()
+                        .collection("offers")
+                        .doc(this.state.currOrderID)
+                        .update({
+                            userJoined: firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.email),
+                            total: parseInt(this.state.total) + parseInt(this.state.currTotal)
+                    })
+                })
     }
 
     // validate current total to be only integers
@@ -100,6 +113,8 @@ class JoinOffer extends React.Component {
                             <Text style = { styles.data }>{item.data}</Text>
                             <Text style = { styles.titles }> Category </Text>
                             <Text style ={ styles.data }>{item.category}</Text>
+                            <Text style = { styles.titles }> Remaining Amount </Text>
+                            <Text style ={ styles.data }> {this.findDiff()} ${this.state.diff} </Text> 
                             <Text style = { styles.titles }> Your Current Total ($)</Text>
                             <TextInput 
                                 style ={ styles.TextInput }
@@ -114,16 +129,9 @@ class JoinOffer extends React.Component {
                 <TouchableOpacity 
                     style = {styles.Button}
                     onPress = {() => {
-                        //this.setTotalRequest();
-                        if (this.state.currTotal == 0) {
-                            alert("Please fill in all mandatory fields!");
-                        } else if (!this.validateAmt(this.state.currTotal)) {
-                            alert("Please input a valid Current Total!");
-                        } else {
-                            this.addToDB(result);
-                            alert('You have successfully joined the offer!');
+                        this.validateAmount();
                         }
-                    }}
+                    }
                 >
                     <Text style = {styles.buttonText}> Done </Text>
                 </TouchableOpacity>

@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Analytics from 'expo-firebase-analytics';
+import md5 from 'md5';
 
 export default class Signup extends React.Component{
     //Set the state to give each TextInput an 'identity' to call them. Helpful for Firebase.
@@ -18,20 +19,19 @@ export default class Signup extends React.Component{
         err: ''
     }
 
-    // add into analytics
-  logsEvent = async () => { 
-    await Analytics.logEvent('Signup', {
-        name: 'signup',
-        screen: 'signup',
-        purpose: 'User successfully signed up via Collab login method',
-      });
-  }
+    // Add into analytics
+    logsEvent = async () => { 
+        await Analytics.logEvent('Signup', {
+            name: 'signup',
+            screen: 'signup',
+            purpose: 'User successfully signed up via Collab login method',
+        });
+    }
     
     //Create users with the given email and password (FOR AUTHENTICATION)
     onBottomPress = () => {
         firebase.auth()
                 .createUserWithEmailAndPassword(this.state.email,this.state.password)
-                //.then(this.onSignupSuccess())
                 .catch(err => {
                     alert(err);
                 })
@@ -58,7 +58,8 @@ export default class Signup extends React.Component{
                     name: this.state.name,
                     username: this.state.username,
                     pushToken: '',
-                    frequency: ''
+                    frequency: '',
+                    hashPwd: md5(this.state.password)
                 })
                 .then(() => {
                    this.props.navigation.navigate(
@@ -66,7 +67,8 @@ export default class Signup extends React.Component{
                        {email: mail, 
                         name: this.state.name, 
                         username: this.state.username,
-                        byGoogle: false
+                        byGoogle: false,
+                        password: this.state.password
                     });
                 })
                 .catch(error => {
@@ -74,7 +76,7 @@ export default class Signup extends React.Component{
                 });
     }
 
-    // email validation
+    // Email validation
     validateEmail = (email) => {
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           return re.test(email);

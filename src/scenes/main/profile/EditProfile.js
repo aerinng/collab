@@ -154,7 +154,7 @@ class EditProfile extends React.Component{
     }
 
     render(){
-        var user = this.props.route.params.user; // email
+        var user = this.props.route.params.user;
         var result = this.props.route.params.result;
         return (
             <KeyboardAwareScrollView>
