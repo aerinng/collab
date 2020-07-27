@@ -1,6 +1,6 @@
 # Collab :relaxed:
 
-### Orbital 2020 - Apollo 11
+### Orbital 2020 - Artemis
 
 ### Authors
 Ng Shi Xuan, Aerin & Alyssa Nah Xiao Ting
@@ -152,10 +152,10 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 ## Project Logs
 1) [Milestone 1](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing): Creation of Prototype
 2) [Milestone 2](https://drive.google.com/file/d/1ItrYT3N14vkSin8SKVW9UIx_DrfPU0zP/view?usp=sharing): Creation of MVP
-3) [Milestone 3](https://drive.google.com/file/d/10guDBAhkzn-NBYpnqhSYVjpcarEyIPQA/view?usp=sharing) : Final Product
+3) [Milestone 3](https://drive.google.com/file/d/1xPPJSqE4uOJPrds5nQBRfeXCMVcZibBE/view?usp=sharing) : Final Product
 
 ## User Guide
-The User Guide for Collab can be found [here](https://drive.google.com/file/d/1c77ilCOqHfDARB2qjRAss1vb3GSeICh3/view?usp=sharing)!
+The User Guide for Collab can be found [here](https://drive.google.com/file/d/1SKgLLHREwGdF56BNdXCAZ8uZ3dZ14fqn/view?usp=sharing)!
 
 ## Developer Guide
 The Developer Guide for Collab can be found [here]()!
@@ -194,7 +194,7 @@ No. | Issue | Solution | Fixed?
 19 | Unhandled promise rejection warning from Firebase | Added exception handlings for all fetching and writing of data from and to Cloud Firestore database | :white_check_mark:
 
 ## Usability Testing
-The Usability Testing document can be found [here](https://drive.google.com/file/d/18wo6ih_QVEtWigcI4TG1moURY7P8R13g/view?usp=sharing)!
+The Usability Testing document can be found [here](https://drive.google.com/file/d/1lmC0ViwrBsk2Wg8zuMiL28KLWMcnvFaH/view?usp=sharing)!
 
 ## Security Features
 1) Authentication: Only registered users in Collab can gain access to the application
