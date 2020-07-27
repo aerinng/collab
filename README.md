@@ -11,6 +11,7 @@ AA Battery
 ## Table of Contents
 ### What is Collab
 - [App Description](https://github.com/aerinng/collab#app-description)
+- [Glossary](https://github.com/aerinng/collab#glossary)
 ### Inspiration behind Collab
 - [Problem Research](https://github.com/aerinng/collab#problem-research)
 - [Motivation](https://github.com/aerinng/collab#motivation)
@@ -48,6 +49,19 @@ Find out more about Collab in this [video](https://drive.google.com/file/d/1yEoX
 <p align="center">
    <img src="https://i.imgur.com/V5yb6Li.png" width="600">
 </p>
+
+## Glossary
+Term | Definition 
+------------ | -------------
+Offers/Collabs | Listing posted on Collab to ask other interested buyers to combine order with. Offers is the noun for the listing on the platform. Collabs is the noun for the listing from buyers’ perspective.
+Requested Offer | Offer listing posted by the user, requesting other buyers to combine order with.
+Received Offer | Offer listing that is posted by other buyer which user has joined.
+Main Buyer | User that has posted the Offer listing.
+Sub Buyer | User that has joined the Offer listing.
+Groups | Offers filtered by their category. Categories include Groceries, Make Up and more.
+Auto-Post Frequency | Frequency which user’s listing is automatically posted on Collab platform. Frequency can be daily/weekly/biweekly/monthly.
+Store Promotions | Promotions available in selected stores. Currently, only free delivery promotions are included.
+Notifications | Push notifications will be received by the user for any potential Collabs and new chat messages received.
 
 ## Problem Research
 ### Why React Native
@@ -158,7 +172,7 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 The User Guide for Collab can be found [here](https://drive.google.com/file/d/1SKgLLHREwGdF56BNdXCAZ8uZ3dZ14fqn/view?usp=sharing)!
 
 ## Developer Guide
-The Developer Guide for Collab can be found [here]()!
+The Developer Guide for Collab can be found [here](https://drive.google.com/file/d/1l-C6BQdhcAiMLgW6hSfLkqmmWahbv_Q3/view?usp=sharing)!
 
 ## Development Plan
 Target | Actions to reach target | Target Date (Tentative) | Status
