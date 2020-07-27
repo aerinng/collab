@@ -155,7 +155,7 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 3) [Milestone 3](https://drive.google.com/file/d/10guDBAhkzn-NBYpnqhSYVjpcarEyIPQA/view?usp=sharing) : Final Product
 
 ## User Guide
-The User Guide for Collab can be found [here](https://drive.google.com/file/d/1HVJU8znPSzS2bPH1cGGUivyuvAArADD6/view?usp=sharing)!
+The User Guide for Collab can be found [here](https://drive.google.com/file/d/1c77ilCOqHfDARB2qjRAss1vb3GSeICh3/view?usp=sharing)!
 
 ## Developer Guide
 The Developer Guide for Collab can be found [here]()!
