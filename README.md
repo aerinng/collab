@@ -44,6 +44,8 @@ To access Collab, iOS will be the most ideal to preview Collab as we mainly desi
 
 You may preview Collab by following the [User Guide](https://github.com/aerinng/collab#user-guide).
 
+Alternatively, you can access Collab by cloning the repository. Instructions can be found [here](https://github.com/aerinng/collab#developer-guide).
+
 Find out more about Collab in this [video](https://drive.google.com/file/d/1yEoX7UF2L5jVTuDJbfPLYAWwAbgQAKR7/view?usp=sharing)!
 
 <p align="center">
@@ -169,7 +171,7 @@ Additional Features | ‘Groups’ page which users can join communities who hav
 3) [Milestone 3](https://drive.google.com/file/d/1xPPJSqE4uOJPrds5nQBRfeXCMVcZibBE/view?usp=sharing) : Final Product
 
 ## User Guide
-The User Guide for Collab can be found [here](https://drive.google.com/file/d/1SKgLLHREwGdF56BNdXCAZ8uZ3dZ14fqn/view?usp=sharing)!
+The User Guide for Collab can be found [here](https://drive.google.com/file/d/1cNSz21XaXw-899t_eh6SFICQ5-QrQyXj/view?usp=sharing)!
 
 ## Developer Guide
 The Developer Guide for Collab can be found [here](https://drive.google.com/file/d/1l-C6BQdhcAiMLgW6hSfLkqmmWahbv_Q3/view?usp=sharing)!
