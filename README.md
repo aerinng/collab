@@ -12,6 +12,7 @@ AA Battery
 ### What is Collab
 - [App Description](https://github.com/aerinng/collab#app-description)
 - [Glossary](https://github.com/aerinng/collab#glossary)
+- [Setting Up](https://github.com/aerinng/collab#setting-up)
 ### Inspiration behind Collab
 - [Problem Research](https://github.com/aerinng/collab#problem-research)
 - [Motivation](https://github.com/aerinng/collab#motivation)
@@ -42,10 +43,6 @@ Collab is not an e-commerce platform. Collab will not be responsible for any pay
 
 To access Collab, iOS will be the most ideal to preview Collab as we mainly designed Collab for iOS devices but it still works for Android. However, due to security measures by the Expo team, other users are unable to preview the app on iOS without prior authentication from the project owner. 
 
-You may preview Collab by following the [User Guide](https://github.com/aerinng/collab#user-guide).
-
-Alternatively, you can access Collab by cloning the repository. Instructions can be found [here](https://github.com/aerinng/collab#developer-guide).
-
 Find out more about Collab in this [video](https://drive.google.com/file/d/1yEoX7UF2L5jVTuDJbfPLYAWwAbgQAKR7/view?usp=sharing)!
 
 <p align="center">
@@ -64,6 +61,64 @@ Groups | Offers filtered by their category. Categories include Groceries, Make U
 Auto-Post Frequency | Frequency which user’s listing is automatically posted on Collab platform. Frequency can be daily/weekly/biweekly/monthly.
 Store Promotions | Promotions available in selected stores. Currently, only free delivery promotions are included.
 Notifications | Push notifications will be received by the user for any potential Collabs and new chat messages received.
+
+## Setting Up
+You can set up Collab via 2 methods:
+1. Running Collab Locally
+2. Running Collab via Expo
+
+### Running Collab Locally
+1. To set up Collab locally, visit Collab’s [github](https://github.com/aerinng/collab/) and clone the Collab Master branch
+repository.
+2. Change the directory in your device’s terminal to the Collab folder in your local and use
+your device’s terminal to install expo-cli: ```npm install -g expo-cli``` or ```yarn add
+expo-cli```
+3. Install the following dependencies in your device’s terminal:
+```
+expo install react
+expo install react-native
+expo install firebase
+expo install moment
+expo install base-64
+expo install md5
+expo install @react-navigation/native
+expo install @react-navigation/stack
+expo install @react-navigation/bottom-tabs
+expo install @react-navigation/material-top-tabs
+expo install react-native-gesture-handler
+expo install react-native-gifted-chat
+expo install react-native-safe-area-context
+expo install react-native-keyboard-aware-scroll-view
+expo install react-native-responsive-screen
+expo install react-native-progress-bar-animated
+expo install react-native-paper
+expo install react-native-dropdown-picker
+expo install react-native-modal-datetime-picker
+expo install react-native-reanimated
+expo install react-native-vector-icons/Ionicons
+expo install react-native-vector-icons/FontAwesome5
+expo install react-native-vector-icons/FontAwesome
+expo install react-native-vector-icons/AntDesign
+expo install react-native-vector-icons/MaterialCommunityIcons
+expo install expo-constants
+expo install expo-image-picker
+expo install expo-permissions
+expo install expo-google-app-auth
+expo install expo-firebase-analytics
+expo install expo-image-picker
+```
+4. Start running Collab using the command ```expo start```
+5. Run Collab using either an [iOS Simulator](https://docs.expo.io/workflow/ios-simulator/) or an [Android Studio Emulator](https://docs.expo.io/workflow/android-studio-emulator/)
+
+### Running Collab via Expo
+To access Collab via Expo, users will need to download the [Expo Client App](https://expo.io/tools#client). Collab can be
+accessed by following these steps:
+1. Download the Expo Client App [here](https://expo.io/tools#client).
+2. Access the project [here](https://expo.io/@aerinng/Collab).
+3. For iOS users, send to aaborbital@gmail.com your email so we can send you the link to
+our project to view it on Expo Client App.
+4. For Android users, scan the QR code available on the project site to view it on Expo
+Client App.
 
 ## Problem Research
 ### Why React Native
