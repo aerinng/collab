@@ -8,11 +8,10 @@ Ng Shi Xuan, Aerin & Alyssa Nah Xiao Ting
 ### Team Name
 AA Battery
 
-## Table of Contents
+# Table of Contents
 ### What is Collab
 - [App Description](https://github.com/aerinng/collab#app-description)
 - [Glossary](https://github.com/aerinng/collab#glossary)
-- [Setting Up](https://github.com/aerinng/collab#setting-up)
 ### Inspiration behind Collab
 - [Problem Research](https://github.com/aerinng/collab#problem-research)
 - [Motivation](https://github.com/aerinng/collab#motivation)
@@ -24,10 +23,12 @@ AA Battery
 - [How Collab Works](https://github.com/aerinng/collab#how-collab-works)
 - [Tech Stack](https://github.com/aerinng/collab#tech-stack)
 - [What Makes Collab Unique](https://github.com/aerinng/collab#what-makes-collab-unique)
-### Development of Collab
-- [Project Logs](https://github.com/aerinng/collab#project-logs)
+### Guides
+- [Setting Up](https://github.com/aerinng/collab#setting-up)
 - [User Guide](https://github.com/aerinng/collab#user-guide)
 - [Developer Guide](https://github.com/aerinng/collab#developer-guide)
+### Development of Collab
+- [Project Logs](https://github.com/aerinng/collab#project-logs)
 - [Development Plan](https://github.com/aerinng/collab#development-plan)
 - [System Testing Log](https://github.com/aerinng/collab#system-testing-log)
 - [Usability Testing](https://github.com/aerinng/collab#usability-testing)
@@ -35,6 +36,7 @@ AA Battery
 - [Challenges Encountered](https://github.com/aerinng/collab#challenges-encountered)
 - [Possible Enhancements for Milestone 3](https://github.com/aerinng/collab#possible-enhancements-for-milestone-3)
 
+# What is Collab
 ## App Description
 
 Collab is an application serving as a communication platform to facilitate buyers to collaborate and collate items for a bigger order to achieve higher savings. Collab allows users to list the orders they will be making in order to find other buyers to combine orders with. 
@@ -62,64 +64,7 @@ Auto-Post Frequency | Frequency which user’s listing is automatically posted o
 Store Promotions | Promotions available in selected stores. Currently, only free delivery promotions are included.
 Notifications | Push notifications will be received by the user for any potential Collabs and new chat messages received.
 
-## Setting Up
-You can set up Collab via 2 methods:
-1. Running Collab Locally
-2. Running Collab via Expo
-
-### Running Collab Locally
-1. To set up Collab locally, visit Collab’s [github](https://github.com/aerinng/collab/) and clone the Collab Master branch
-repository.
-2. Change the directory in your device’s terminal to the Collab folder in your local and use
-your device’s terminal to install expo-cli: ```npm install -g expo-cli``` or ```yarn add
-expo-cli```
-3. Install the following dependencies in your device’s terminal:
-```
-expo install react
-expo install react-native
-expo install firebase
-expo install moment
-expo install base-64
-expo install md5
-expo install @react-navigation/native
-expo install @react-navigation/stack
-expo install @react-navigation/bottom-tabs
-expo install @react-navigation/material-top-tabs
-expo install react-native-gesture-handler
-expo install react-native-gifted-chat
-expo install react-native-safe-area-context
-expo install react-native-keyboard-aware-scroll-view
-expo install react-native-responsive-screen
-expo install react-native-progress-bar-animated
-expo install react-native-paper
-expo install react-native-dropdown-picker
-expo install react-native-modal-datetime-picker
-expo install react-native-reanimated
-expo install react-native-vector-icons/Ionicons
-expo install react-native-vector-icons/FontAwesome5
-expo install react-native-vector-icons/FontAwesome
-expo install react-native-vector-icons/AntDesign
-expo install react-native-vector-icons/MaterialCommunityIcons
-expo install expo-constants
-expo install expo-image-picker
-expo install expo-permissions
-expo install expo-google-app-auth
-expo install expo-firebase-analytics
-expo install expo-image-picker
-```
-4. Start running Collab using the command ```expo start```
-5. Run Collab using either an [iOS Simulator](https://docs.expo.io/workflow/ios-simulator/) or an [Android Studio Emulator](https://docs.expo.io/workflow/android-studio-emulator/)
-
-### Running Collab via Expo
-To access Collab via Expo, users will need to download the [Expo Client App](https://expo.io/tools#client). Collab can be
-accessed by following these steps:
-1. Download the Expo Client App [here](https://expo.io/tools#client).
-2. Access the project [here](https://expo.io/@aerinng/Collab).
-3. For iOS users, send to aaborbital@gmail.com your email so we can send you the link to
-our project to view it on Expo Client App.
-4. For Android users, scan the QR code available on the project site to view it on Expo
-Client App.
-
+# Inspiration behind Collab
 ## Problem Research
 ### Why React Native
 We chose to develop our Application using a Hybrid App Framework, React Native, as it is simpler to develop and test compared to Native App Frameworks. It is also easier to update and make changes which can free up some of our time to focus on other aspects of our application.
@@ -153,6 +98,7 @@ We want shoppers to be able to communicate with other buyers in their neighbourh
 3) I want to enjoy the luxury of shopping online and not having to go to a physical store or pay delivery fees for my online order. 
 4) I want to enjoy savings from purchases I make regularly without needing to go through the physical trouble of gathering people to reach the minimum purchase amount.
 
+# About Collab
 ## App Features
 We will be developing an application mainly for iOS but also works for Android that contains these features. 
 1. Auto-Post of Requests
@@ -220,16 +166,76 @@ Range of items showcased | Tentatively, local major stores in Singapore | Grocer
 Watchlist to keep track of favourite item’s promotion | No | Yes | No
 Additional Features | ‘Groups’ page which users can join communities who have bought similar items | Calculate how much savings you will accumulate during a promotion | ‘Coupons’ page with promotional codes and coupons (stores include FoodPanda, Zalora etc)
 
-## Project Logs
-1) [Milestone 1](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing): Creation of Prototype
-2) [Milestone 2](https://drive.google.com/file/d/1ItrYT3N14vkSin8SKVW9UIx_DrfPU0zP/view?usp=sharing): Creation of MVP
-3) [Milestone 3](https://drive.google.com/file/d/1xPPJSqE4uOJPrds5nQBRfeXCMVcZibBE/view?usp=sharing) : Final Product
+# Guides
+## Setting Up
+You can set up Collab via 2 methods:
+1. Running Collab Locally
+2. Running Collab via Expo
+
+### Running Collab Locally
+1. To set up Collab locally, visit Collab’s [github](https://github.com/aerinng/collab/) and clone the Collab Master branch
+repository.
+2. Change the directory in your device’s terminal to the Collab folder in your local and use
+your device’s terminal to install expo-cli: ```npm install -g expo-cli``` or ```yarn add
+expo-cli```
+3. Install the following dependencies in your device’s terminal:
+```
+expo install react
+expo install react-native
+expo install firebase
+expo install moment
+expo install base-64
+expo install md5
+expo install @react-navigation/native
+expo install @react-navigation/stack
+expo install @react-navigation/bottom-tabs
+expo install @react-navigation/material-top-tabs
+expo install react-native-gesture-handler
+expo install react-native-gifted-chat
+expo install react-native-safe-area-context
+expo install react-native-keyboard-aware-scroll-view
+expo install react-native-responsive-screen
+expo install react-native-progress-bar-animated
+expo install react-native-paper
+expo install react-native-dropdown-picker
+expo install react-native-modal-datetime-picker
+expo install react-native-reanimated
+expo install react-native-vector-icons/Ionicons
+expo install react-native-vector-icons/FontAwesome5
+expo install react-native-vector-icons/FontAwesome
+expo install react-native-vector-icons/AntDesign
+expo install react-native-vector-icons/MaterialCommunityIcons
+expo install expo-constants
+expo install expo-image-picker
+expo install expo-permissions
+expo install expo-google-app-auth
+expo install expo-firebase-analytics
+expo install expo-image-picker
+```
+4. Start running Collab using the command ```expo start```
+5. Run Collab using either an [iOS Simulator](https://docs.expo.io/workflow/ios-simulator/) or an [Android Studio Emulator](https://docs.expo.io/workflow/android-studio-emulator/)
+
+### Running Collab via Expo
+To access Collab via Expo, users will need to download the [Expo Client App](https://expo.io/tools#client). Collab can be
+accessed by following these steps:
+1. Download the Expo Client App [here](https://expo.io/tools#client).
+2. Access the project [here](https://expo.io/@aerinng/Collab).
+3. For iOS users, send to aaborbital@gmail.com your email so we can send you the link to
+our project to view it on Expo Client App.
+4. For Android users, scan the QR code available on the project site to view it on Expo
+Client App.
 
 ## User Guide
 The User Guide for Collab can be found [here](https://drive.google.com/file/d/1cNSz21XaXw-899t_eh6SFICQ5-QrQyXj/view?usp=sharing)!
 
 ## Developer Guide
 The Developer Guide for Collab can be found [here](https://drive.google.com/file/d/1l-C6BQdhcAiMLgW6hSfLkqmmWahbv_Q3/view?usp=sharing)!
+
+# Development of Collab
+## Project Logs
+1) [Milestone 1](https://drive.google.com/file/d/1fzQ8Rud7MHVu-OflHw9KMOSbr1W-3Z2g/view?usp=sharing): Creation of Prototype
+2) [Milestone 2](https://drive.google.com/file/d/1ItrYT3N14vkSin8SKVW9UIx_DrfPU0zP/view?usp=sharing): Creation of MVP
+3) [Milestone 3](https://drive.google.com/file/d/1xPPJSqE4uOJPrds5nQBRfeXCMVcZibBE/view?usp=sharing) : Final Product
 
 ## Development Plan
 Target | Actions to reach target | Target Date (Tentative) | Status
