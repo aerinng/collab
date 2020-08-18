@@ -48,7 +48,7 @@ To access Collab, iOS will be the most ideal to preview Collab as we mainly desi
 Find out more about Collab in this [video](https://drive.google.com/file/d/1yEoX7UF2L5jVTuDJbfPLYAWwAbgQAKR7/view?usp=sharing)!
 
 <p align="center">
-   <img src="https://i.imgur.com/V5yb6Li.png" width="600">
+   <img src="https://i.imgur.com/gaVXShp.png" width="600">
 </p>
 
 ## Glossary
